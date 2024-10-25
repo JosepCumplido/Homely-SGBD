@@ -1,6 +1,6 @@
 
 import { ConnectionPool } from 'mssql';
-import { User } from './User';
+import {User} from 'shared/models/user';
 
 export class UserRepository {
     private db: ConnectionPool;
