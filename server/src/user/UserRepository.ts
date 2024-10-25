@@ -24,8 +24,6 @@ export class UserRepository {
     async create(user: User): Promise<void> {
         await this.db.request()
             .input('name', user.name)
-            .input('email', user.email)
-            .input('age', user.age)
             .query(`INSERT INTO [User] (name) VALUES (@name)`);
     }
 
@@ -33,8 +31,6 @@ export class UserRepository {
         await this.db.request()
             .input('id', user.id)
             .input('name', user.name)
-            .input('email', user.email)
-            .input('age', user.age)
             .query(`UPDATE [User] SET name = @name WHERE id = @id`);
     }
 

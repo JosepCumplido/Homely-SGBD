@@ -12,6 +12,8 @@ export default async function Home() {
         <>
             <h1>Hello World</h1>
             <p>Usuaris:</p>
+            <p>Usuaris:</p>
+            <p>Usuaris:</p>
             <ul>
                 {users.map((user: User) => (
                     <li key={user.id}>
