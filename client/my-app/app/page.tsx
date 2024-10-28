@@ -1,26 +1,25 @@
-import {User} from 'shared/models/user';
+import {SearchBox} from "@/components/explore/searchBox";
+import {CategoryFilter} from "@/components/explore/categoryFilter";
+import {Separator} from "@/components/ui/separator";
+import {Frame2xl} from "@/components/explore/frame-2xl";
+import {Posts} from "@/components/explore/posts";
 
 export default async function Home() {
-    /*const user: User = {
-        id: 1,
-        name: "Josep"
-    }*/
-    const response = await fetch("http://localhost:4000/user", { cache: 'no-store' })
-    const users: User[] = await response.json()
+    /*const response = await fetch("http://localhost:4000/user", { cache: 'no-store' })
+    const users: User[] = await response.json()*/
 
     return (
         <>
-            <h1>Hello World</h1>
-            <p>Usuaris:</p>
-            <p>Usuaris:</p>
-            <p>Usuaris:</p>
-            <ul>
-                {users.map((user: User) => (
-                    <li key={user.id}>
-                        <p>{user.name}</p>
-                    </li>
-                ))}
-            </ul>
+            <div className={"flex flex-col space-y-6 justify-center p-14 m-auto"}>
+                <Frame2xl>
+                    <SearchBox/>
+                </Frame2xl>
+                <Separator orientation="horizontal"/>
+                <Frame2xl>
+                    <CategoryFilter></CategoryFilter>
+                </Frame2xl>
+                <Posts/>
+            </div>
         </>
     );
 }
