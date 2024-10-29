@@ -14,16 +14,11 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import Link from "next/link";
+import {Home} from "../../../../shared/models/home";
 
-export interface Property {
-    city: string,
-    country: string,
-    imagesUrls: string[],
-    pricePerNight: number,
-    score: number
-}
+const imagesUrls = ["/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png"]
 
-export function PostCard({property}: { property: Property }) {
+export function PostCard({home}: { home: Home }) {
     const [isFavorite, setIsFavorite] = useState(false);
 
     return (
@@ -32,7 +27,7 @@ export function PostCard({property}: { property: Property }) {
                 <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
                     <Carousel className="relative rounded-2xl w-full h-full">
                         <CarouselContent className={"h-full"}>
-                            {property.imagesUrls.map((image, index) => (
+                            {imagesUrls.map((image, index) => (
                                 <CarouselItem key={index} className={"h-full"}>
                                     <Card className={"h-full"}>
                                         <CardContent className="flex items-center justify-center p-0 h-full">
@@ -64,13 +59,13 @@ export function PostCard({property}: { property: Property }) {
                     )}
                 </button>
                 <div className={"flex flex-row justify-between"}>
-                    <p className={"font-bold"}>{property.city}, {property.country}</p>
+                    <p className={"font-bold"}>{home.city}, {home.country}</p>
                     <span className={"flex flex-row space-x-1 items-center"}>
                     <StarSolid className={"h-4 w-4"}/>
-                    <p className={"font-bold"}>{property.score}</p>
+                    <p className={"font-bold"}>{home.score}</p>
                 </span>
                 </div>
-                <p className={"font-bold"}>€ {property.pricePerNight} <span className={"font-medium"}>night</span></p>
+                <p className={"font-bold"}>€ {home.pricePerNight} <span className={"font-medium"}>night</span></p>
             </div>
         </Link>
     )

@@ -49,28 +49,36 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function PriceRange() {
-    const [value, setValue] = React.useState([20, 540]);
-    console.log(value)
+interface PriceRangeProps {
+    priceRange: number[]
+    onRangeChange: (range: number[]) => void; // Funció per passar el rang de preus a FiltersDialog
+}
 
-    const handleSliderChange = (newValue) => {
-        setValue(newValue)
+export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChange }) => {
+
+    /*const [value, setValue] = React.useState([20, 540]);*/
+
+    const handleSliderChange = (newValue: any) => {
+        /*setValue(newValue)*/
         console.log("Valor del slider:", newValue)
+        onRangeChange(newValue);
     }
 
     const setMinValue = (event) => {
         const inputValue = event.target.value
-        setValue([parseInt(inputValue) || 0, value[1]])
+        /*setValue([parseInt(inputValue) || 0, value[1]])*/
+        onRangeChange(inputValue);
     }
 
     const setMaxValue = (event) => {
         const inputValue = event.target.value
-        setValue([value[0], parseInt(inputValue) || 0])
+        /*setValue([value[0], parseInt(inputValue) || 0])*/
+        onRangeChange(inputValue);
     }
 
     const getBarColor = (dataValue) => {
         console.log({dataValue})
-        return dataValue >= value[0] && dataValue <= value[1]
+        return dataValue >= priceRange[0] && dataValue <= priceRange[1]
             ? 'var(--color-desktop)' // Color si el valor està dins del rang
             : 'gray'; // Color gris si no
     };
@@ -107,7 +115,7 @@ export function PriceRange() {
                     step={20}
                     maxValue={540}
                     minValue={20}
-                    value={value}
+                    value={priceRange}
                     onChange={handleSliderChange}
                     className="max-w-md absolute bottom-0 translate-y-1/2"
                 />
@@ -115,11 +123,11 @@ export function PriceRange() {
             <div className={"flex flex-row justify-between w-full"}>
                 <div className={"flex flex-col"}>
                     <p>Minimum</p>
-                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={value[0]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={priceRange[0]} className={"text-center w-24"}></Input>
                 </div>
                 <div className={"flex flex-col"}>
                     <p>Maximum</p>
-                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={value[1]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={priceRange[1]} className={"text-center w-24"}></Input>
                 </div>
             </div>
         </div>

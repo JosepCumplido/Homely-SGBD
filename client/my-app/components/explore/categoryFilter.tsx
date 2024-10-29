@@ -8,10 +8,9 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import {clsx} from "clsx";
 
-const categories: string[] = ["Countryside", "Lake", "Luxury", "Mountain", "Seaside", "Camping", "Countryside", "Lake", "Luxury", "Mountain", "Seaside", "Camping", "Countryside", "Lake", "Luxury", "Mountain", "Seaside", "Camping", "Countryside", "Lake", "Luxury", "Mountain", "Seaside", "Camping"]
-
-export function CategoryFilter() {
+export function CategoryFilter({categories, selectedCategory, onCategoryChange}: {categories: string[], selectedCategory: string|null, onCategoryChange: (category: string) => void }) {
     return (
         <div className={"flex flex-row space-x-4 items-center justify-center w-full"}>
             <Carousel
@@ -22,7 +21,7 @@ export function CategoryFilter() {
             >
                 <CarouselContent>
                     {categories.map((value, index) => (
-                        <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/12">
+                        <CarouselItem key={index} className={clsx("md:basis-1/2 lg:basis-1/12", {'bg-black': selectedCategory === value})} onClick={() => onCategoryChange(value)}>
                             <div className="p-1">
                                 <Card>
                                     <CardContent className="flex aspect-square items-center justify-center p-6">

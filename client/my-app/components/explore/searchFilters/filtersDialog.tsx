@@ -12,7 +12,14 @@ import {Separator} from "@/components/ui/separator";
 import * as React from "react";
 import {PriceRange} from "@/components/explore/searchFilters/priceRange";
 
-export function FiltersDialog() {
+export function FiltersDialog({priceRange, onPriceRangeChange, searchResults}: { priceRange: number[], onPriceRangeChange: (range: number[]) => void, searchResults: number }) {
+    /*const [searchResults, setSearchResults] = useState(0);*/
+
+    const handleRangeChange = (newRange: number[]) => {
+        onPriceRangeChange(newRange)
+        /*searchHomes(newRange);*/
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -28,15 +35,16 @@ export function FiltersDialog() {
                 <div className="grid gap-16 pt-4 max-h-[75vh] w-full overflow-y-auto overflow-x-hidden px-4">
                     <div>
                         <p className={"text-lg font-semibold leading-none tracking-tight"}>Price range</p>
-                        <PriceRange/>
+                        <PriceRange
+                            priceRange={priceRange}
+                            onRangeChange={handleRangeChange}
+                        />
                     </div>
                     <div>
                         <p className={"text-lg font-semibold leading-none tracking-tight"}>Rooms and beds</p>
-                        <PriceRange/>
                     </div>
                     <div>
                         <p className={"text-lg font-semibold leading-none tracking-tight"}>Amenities</p>
-                        <PriceRange/>
                     </div>
                 </div>
                 <DialogFooter>
@@ -44,7 +52,7 @@ export function FiltersDialog() {
                         <Separator orientation="horizontal" className={""}/>
                         <div className={"flex flex-row justify-between px-4"}>
                             <Button variant="ghost">Clear all</Button>
-                            <Button type="submit">Show places</Button>
+                            <Button type="submit">Show {searchResults} places</Button>
                         </div>
                     </div>
                 </DialogFooter>
