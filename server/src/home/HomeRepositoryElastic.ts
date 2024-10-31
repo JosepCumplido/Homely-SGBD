@@ -13,6 +13,7 @@ export class HomeRepositoryElastic {
         try {
             const response = await this.client.search({
                 index: 'home',
+                size: 1000,
                 query: { match_all: {} }
             });
             const homes = response.hits.hits.map((hit) => hit._source);
@@ -91,6 +92,7 @@ export class HomeRepositoryElastic {
         try {
             const response = await this.client.search({
                 index: 'home',
+                size: 1000,
                 query: {
                     bool: {
                         must: [

@@ -13,11 +13,9 @@ import * as React from "react";
 import {PriceRange} from "@/components/explore/searchFilters/priceRange";
 
 export function FiltersDialog({priceRange, onPriceRangeChange, searchResults}: { priceRange: number[], onPriceRangeChange: (range: number[]) => void, searchResults: number }) {
-    /*const [searchResults, setSearchResults] = useState(0);*/
 
     const handleRangeChange = (newRange: number[]) => {
         onPriceRangeChange(newRange)
-        /*searchHomes(newRange);*/
     };
 
     return (

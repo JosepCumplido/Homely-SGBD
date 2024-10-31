@@ -14,7 +14,7 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import Link from "next/link";
-import {Home} from "../../../../shared/models/home";
+import {Home} from "shared/models/home";
 
 const imagesUrls = ["/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png"]
 

@@ -11,11 +11,11 @@ import {FiltersDialog} from "@/components/explore/searchFilters/filtersDialog";
 export function SearchBox({priceRange, onPriceRangeChange, searchResults}: { priceRange: number[], onPriceRangeChange: (range: number[]) => void, searchResults: number }) {
     return (
         <div className={"flex flex-row space-x-4 items-center h-[60px] justify-center"}>
-            <DestinationSelector></DestinationSelector>
+            <DestinationSelector/>
             <Separator orientation="vertical" />
-            <DatePickerRange></DatePickerRange>
+            <DatePickerRange/>
             <Separator orientation="vertical" />
-            <GuestsSelection></GuestsSelection>
+            <GuestsSelection/>
             <Separator orientation="vertical" />
             <Button className={"mt-auto"}>Search</Button>
             <FiltersDialog

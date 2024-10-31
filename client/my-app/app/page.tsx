@@ -4,15 +4,41 @@ import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
 import {ContentFrame} from "@/components/explore/content-frame";
 import {Posts} from "@/components/explore/posts";
-import type {Home} from '../../../shared/models/home';
-import {useState} from "react";
+import type {Home} from 'shared/models/home';
+import type {Category} from 'shared/models/category';
+import React, {useState} from "react";
+import {
+    Building2,
+    CableCar, Castle,
+    Fence,
+    Gem,
+    LayoutGrid,
+    Mountain,
+    Sailboat,
+    TentTree,
+    TreePalm,
+    TreePine, Waves
+} from "lucide-react";
 
-const categories: string[] = ["All", "Beach", "Countryside", "Cabins", "Boats", "Mansions", "Treehouses", "Castles", "Skiing", "Lake", "Luxe", "Mountain", "Riad", "Camping"]
+const categories: Category[] = [
+    {name: "all", label: "All", icon: <LayoutGrid/>},
+    {name: "beach", label: "Beach", icon: <TreePalm/>},
+    {name: "countryside", label: "Countryside", icon: <Fence/>},
+    {name: "city", label: "City", icon: <Building2/>},
+    {name: "cabins", label: "Cabins", icon: <TreePine/>},
+    {name: "boats", label: "Boats", icon:<Sailboat/>},
+    {name: "castles", label: "Castles", icon: <Castle/>},
+    {name: "skiing", label: "Skiing", icon: <CableCar/>},
+    {name: "lake", label: "Lake", icon: <Waves/>},
+    {name: "luxe", label: "Luxe", icon: <Gem/>},
+    {name: "mountain", label: "Mountain", icon: <Mountain/>},
+    {name: "camping", label: "Camping", icon: <TentTree/>}
+]
 
 export default function Home() {
     const [homes, setHomes] = useState<Home[]>([])
     const [priceRange, setPriceRange] = useState<number[]>([20, 540])
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
     const [searchResults, setSearchResults] = useState(0)
 
     const searchHomes = async (priceRange: number[]) => {
@@ -42,7 +68,7 @@ export default function Home() {
         searchHomes(range)
     }
 
-    searchHomes(priceRange)
+    /*searchHomes(priceRange)*/
 
     return (
         <>
