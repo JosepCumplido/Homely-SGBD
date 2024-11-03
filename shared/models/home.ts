@@ -4,5 +4,7 @@ export type Home = {
     country: string,
     imagesUrls: string[],
     pricePerNight: number,
-    score: number
+    score: number,
+    features: string[],
+    amenities: string[]
 }

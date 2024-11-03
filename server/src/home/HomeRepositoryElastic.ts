@@ -5,7 +5,7 @@ import {Client} from "@elastic/elasticsearch";
 export class HomeRepositoryElastic {
     private client: Client
 
-    constructor(client:Client) {
+    constructor(client: Client) {
         this.client = client
     }
 
@@ -14,7 +14,7 @@ export class HomeRepositoryElastic {
             const response = await this.client.search({
                 index: 'home',
                 size: 1000,
-                query: { match_all: {} }
+                query: {match_all: {}}
             });
             const homes = response.hits.hits.map((hit) => hit._source);
             console.log('All Homes:', homes);
@@ -77,39 +77,64 @@ export class HomeRepositoryElastic {
         }
     }
 
-    async populate(homes: Home[]): Promise<any> {
+    async populate(homes: any[]): Promise<any> {
         const body = homes.flatMap(home => [
-            { index: { _index: 'home' } },
+            {index: {_index: 'home'}},
             home
         ]);
 
-        return await this.client.bulk({ refresh: true, body });
+        return await this.client.bulk({refresh: true, body});
     }
 
     // filter by:
     //  - price range
-    async searchHomes(priceRange: number[]) {
+    async searchHomes(city: string|null, country: string|null, priceRange: number[], score: number|null, featuresList: string[], amenitiesList: string[]) {
         try {
-            const response = await this.client.search({
-                index: 'home',
+            const filters = []
+
+            if (city != null) filters.push({ term: { city } });
+            if (country != null) filters.push({ term: { country } });
+
+            if (priceRange && priceRange.length === 2 && priceRange[0] <= priceRange[1]) {
+                filters.push({
+                    range: {
+                        pricePerNight: {
+                            gte: priceRange[0],
+                            lte: priceRange[1]
+                        }
+                    }
+                });
+            }
+
+            console.log("Filters: " + JSON.stringify(filters))
+
+            if (score != null) filters.push({term: {score: score}});
+
+            if (featuresList && featuresList.length > 0) {
+                featuresList.map((feature) => (
+                    filters.push({term:{features: feature}})
+                ))
+            }
+
+            if (amenitiesList && amenitiesList.length > 0) {
+                amenitiesList.map((amenity) => (
+                    filters.push({term:{amenities: amenity}})
+                ))
+            }
+
+            // Executa la consulta
+            const body = await this.client.search({
+                index: 'home', // Nom de la taula/índex
                 size: 1000,
                 query: {
                     bool: {
-                        must: [
-                            {
-                                range: {
-                                    pricePerNight: {
-                                        gte: priceRange[0],
-                                        lte: priceRange[1]
-                                    }
-                                }
-                            }
-                        ]
+                        must: filters
                     }
                 }
             });
-            const homes = response.hits.hits.map((hit) => hit._source);
-            console.log('All Homes:', homes);
+
+            const homes = body.hits.hits.map(hit => hit._source);
+            console.log('Homes search result:', homes);
             return homes;
         } catch (error) {
             console.error('Error retrieving all homes:', error);

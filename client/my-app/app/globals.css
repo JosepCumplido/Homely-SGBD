@@ -102,6 +102,25 @@ body {
     ::-webkit-scrollbar-thumb {
         @apply rounded-full bg-neutral-400 border-[0.5px] border-transparent border-solid bg-clip-padding;
     }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    .before-content::before {
+        display: block;
+        content: attr(title);
+        font-weight: 600;
+        height: 0;
+        overflow: hidden;
+        visibility: hidden;
+    }
 }
 
 @layer base {

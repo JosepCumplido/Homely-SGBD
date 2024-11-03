@@ -56,12 +56,16 @@ interface PriceRangeProps {
 
 export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChange }) => {
 
-    /*const [value, setValue] = React.useState([20, 540]);*/
+    const [value, setValue] = React.useState([20, 540]);
+
+    const handleSliderChangeEnd = (newValue: number|number[]) => {
+        console.log("Slider change end: " + newValue)
+        onRangeChange(newValue);
+    }
 
     const handleSliderChange = (newValue: any) => {
-        /*setValue(newValue)*/
-        console.log("Valor del slider:", newValue)
-        onRangeChange(newValue);
+        console.log("Slider change: " + newValue)
+        setValue(newValue);
     }
 
     const setMinValue = (event) => {
@@ -77,8 +81,7 @@ export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChang
     }
 
     const getBarColor = (dataValue) => {
-        console.log({dataValue})
-        return dataValue >= priceRange[0] && dataValue <= priceRange[1]
+        return dataValue >= value[0] && dataValue <= value[1]
             ? 'var(--color-desktop)' // Color si el valor està dins del rang
             : 'gray'; // Color gris si no
     };
@@ -115,7 +118,8 @@ export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChang
                     step={20}
                     maxValue={540}
                     minValue={20}
-                    value={priceRange}
+                    value={value}
+                    onChangeEnd={handleSliderChangeEnd}
                     onChange={handleSliderChange}
                     className="max-w-md absolute bottom-0 translate-y-1/2"
                 />
@@ -123,11 +127,11 @@ export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChang
             <div className={"flex flex-row justify-between w-full"}>
                 <div className={"flex flex-col"}>
                     <p>Minimum</p>
-                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={priceRange[0]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={value[0]} className={"text-center w-24"}></Input>
                 </div>
                 <div className={"flex flex-col"}>
                     <p>Maximum</p>
-                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={priceRange[1]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={value[1]} className={"text-center w-24"}></Input>
                 </div>
             </div>
         </div>
