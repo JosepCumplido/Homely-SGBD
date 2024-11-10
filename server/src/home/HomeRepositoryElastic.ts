@@ -1,6 +1,7 @@
 import client from '../config/elasticSearch';
 import {Home} from "shared/models/home";
 import {Client} from "@elastic/elasticsearch";
+import {SearchResponse} from "shared/data/searchRequest";
 
 export class HomeRepositoryElastic {
     private client: Client
@@ -88,7 +89,7 @@ export class HomeRepositoryElastic {
 
     // filter by:
     //  - price range
-    async searchHomes(city: string|null, country: string|null, priceRange: number[], score: number|null, featuresList: string[], amenitiesList: string[]) {
+    async searchHomes(page: number, size: number, city: string|null, country: string|null, priceRange: number[], score: number|null, featuresList: string[], amenitiesList: string[]) {
         try {
             const filters = []
 
@@ -122,10 +123,11 @@ export class HomeRepositoryElastic {
                 ))
             }
 
-            // Executa la consulta
-            const body = await this.client.search({
-                index: 'home', // Nom de la taula/índex
-                size: 1000,
+            const from = (page) * size
+            const response = await this.client.search({
+                index: 'home',
+                size: size,
+                from: from,
                 query: {
                     bool: {
                         must: filters
@@ -133,9 +135,13 @@ export class HomeRepositoryElastic {
                 }
             });
 
-            const homes = body.hits.hits.map(hit => hit._source);
+            const body = response.hits.hits.map(hit => hit._source);
+
+            let homes: Home[] = []
+            if(body as Home[]) homes = body as Home[]
             console.log('Homes search result:', homes);
-            return homes;
+
+            return new SearchResponse(page, size, homes.length, homes)
         } catch (error) {
             console.error('Error retrieving all homes:', error);
             return [];

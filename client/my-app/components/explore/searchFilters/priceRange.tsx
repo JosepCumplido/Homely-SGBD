@@ -56,7 +56,7 @@ interface PriceRangeProps {
 
 export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChange }) => {
 
-    const [value, setValue] = React.useState([20, 540]);
+    const [value, setValue] = React.useState(priceRange);
 
     const handleSliderChangeEnd = (newValue: number|number[]) => {
         console.log("Slider change end: " + newValue)

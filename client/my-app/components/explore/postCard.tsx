@@ -13,26 +13,25 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import Link from "next/link";
 import {Home} from "shared/models/home";
 
-const imagesUrls = ["/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png", "/explore/posts/post_1.png"]
+const imagesUrls = ["/explore/posts/post_1_1.webp", "/explore/posts/post_1_2.webp", "/explore/posts/post_1_3.webp", "/explore/posts/post_1_4.webp"]
 
 export function PostCard({home}: { home: Home }) {
     const [isFavorite, setIsFavorite] = useState(false);
 
     return (
-        <Link href={"/"}>
+        /*<Link href={""}>*/
             <div className={"relative flex flex-col rounded-xl space-y-1 group"}>
                 <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
                     <Carousel className="relative rounded-2xl w-full h-full">
                         <CarouselContent className={"h-full"}>
                             {imagesUrls.map((image, index) => (
-                                <CarouselItem key={index} className={"h-full"}>
+                                <CarouselItem key={index} className={"h-full w-full"}>
                                     <Card className={"h-full"}>
                                         <CardContent className="flex items-center justify-center p-0 h-full">
                                             <Image src={image} alt={"Card image"} width={540} height={720}
-                                                   className={"object-cover w-full h-full"}/>
+                                                   className={"object-cover w-full h-full"} priority/>
                                         </CardContent>
                                     </Card>
                                 </CarouselItem>
@@ -67,6 +66,6 @@ export function PostCard({home}: { home: Home }) {
                 </div>
                 <p className={"font-bold"}>€ {home.pricePerNight} <span className={"font-medium"}>night</span></p>
             </div>
-        </Link>
+        /*</Link>*/
     )
 }

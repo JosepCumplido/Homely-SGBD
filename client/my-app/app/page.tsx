@@ -10,10 +10,11 @@ import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import {SearchRequest} from 'shared/data/searchRequest';
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     Building2,
-    CableCar, Castle,
+    CableCar,
+    Castle,
     Fence,
     Gem,
     LayoutGrid,
@@ -21,7 +22,8 @@ import {
     Sailboat,
     TentTree,
     TreePalm,
-    TreePine, Waves
+    TreePine,
+    Waves
 } from "lucide-react";
 
 const categories: Category[] = [
@@ -72,7 +74,7 @@ const amenityTypes: AmenityType[] = [
 ]
 
 export default function Home() {
-    const [homes, setHomes] = useState<Home[]>([])
+    // Search filters
     const [searchCity, setSearchCity] = useState<string | null>(null)
     const [searchCountry, setSearchCountry] = useState<string | null>(null)
     const [searchPriceRange, setSearchPriceRange] = useState<number[]>([20, 540])
@@ -80,13 +82,24 @@ export default function Home() {
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
     const [selectedAmenitiesList, setSelectedAmenitiesList] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-    const [searchResults, setSearchResults] = useState(0)
+    const [searchResultsNumber, setSearchResultsNumber] = useState(0)
     const [filtersNumber, setFiltersNumber] = useState(0)
 
-    const searchHomes = async (city: string | null, country: string | null, priceRange: number[], score: number | null, featuresList: string[], amenitiesList: string[]) => {
+    const [homes, setHomes] = useState<Home[]>([])
+    const [limit, setLimit] = useState(6);
+    const [page, setPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
+    const searchHomes = useCallback(async (isLoadMore: boolean) => {
+        setLoading(true);
+
+        // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
+        const searchPage = isLoadMore ? page + 1 : 0;
+
+        const request = new SearchRequest(searchPage, limit, searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList)
+
         try {
-            console.log("Search params: " + city, country, priceRange, score, featuresList, amenitiesList)
-            const request = new SearchRequest(city, country, priceRange, score, featuresList, amenitiesList)
             const response = await fetch('http://localhost:4000/home/search', {
                 method: 'POST',
                 headers: {
@@ -95,37 +108,48 @@ export default function Home() {
                 body: JSON.stringify(request)
             });
 
-            if (!response.ok) {
-                new Error('Network response failed');
+            if (!response.ok) new Error('Network response failed');
+
+            const searchResponse = await response.json()
+
+            if (isLoadMore) {
+                setHomes(prevHomes => [...prevHomes, ...searchResponse.homes])
+                setPage(prevPage => prevPage + 1);
+                console.log("Search page: " + searchPage)
+            } else {
+                setHomes(searchResponse.homes)
+                setPage(0);
             }
 
-            const homes: Home[] = await response.json();
-            setSearchResults(homes.length);
-            setHomes(homes)
+            setSearchResultsNumber(searchResponse.homes.length)
+            setHasMore(searchResponse.homes.length > 0)
+
         } catch (error) {
             console.error("Error al cercar cases:", error);
+            setHasMore(false)
+        } finally {
+            setLoading(false)
         }
+    }, [page, searchCity, searchCountry, searchPriceRange, searchScore, selectedAmenitiesList, selectedFeaturesList]);
+
+    // Funció per executar la cerca quan els filtres canvien
+    useEffect(() => {
+        // Si canvia algun filtre, torna a cercar des de la pàgina 0 sense `isLoadMore`
+        searchHomes(false);
+    }, [searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList]);
+
+    // Funció per executar la cerca quan es vol mostrar mes contingut amb els mateixos filtres
+    const infiniteScrollSearch = () => {
+        console.log("Load more")
+        searchHomes(true);
     }
 
-    // Configura el debounced search
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if(selectedFeaturesList.length > 0) {
-                searchHomes(searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList)
-            }
-        }, 500); // Temps d'espera de 300 ms
-
-        return () => clearTimeout(timer); // Neteja el temporitzador en canviar els filtres
-    }, [selectedFeaturesList]);
-
-    useEffect(() => {
-        setFiltersNumber(selectedFeaturesList.length + selectedAmenitiesList.length)
-    }, [selectedFeaturesList, selectedAmenitiesList])
-
-    const onPriceRangeChange = (range: number[]) => {
+    // Modificar rang de preus filtres cerca
+    const onPriceRangeChange = useCallback((range: number[]) => {
         setSearchPriceRange(range)
-    }
+    },[])
 
+    // Modificar features filtres cerca
     const onFeatureClick = (feature: string) => {
         setSelectedFeaturesList((prevSelected) =>
             prevSelected.includes(feature)
@@ -134,6 +158,7 @@ export default function Home() {
         );
     }
 
+    // Modificar amenities filtres cerca
     const onAmenityClick = (amenity: string) => {
         setSelectedAmenitiesList((prevSelected) =>
             prevSelected.includes(amenity)
@@ -142,10 +167,6 @@ export default function Home() {
         );
     }
 
-    useEffect(() => {
-        searchHomes(searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList)
-    }, [searchCity, searchCountry, searchPriceRange, searchScore])
-
     return (
         <>
             <div className={"flex flex-col space-y-6 justify-center py-14 m-auto"}>
@@ -153,7 +174,7 @@ export default function Home() {
                     <SearchBox
                         priceRange={searchPriceRange}
                         onPriceRangeChange={onPriceRangeChange}
-                        searchResults={searchResults}
+                        searchResults={searchResultsNumber}
                         featureTypes={featureTypes}
                         onFeatureClick={onFeatureClick}
                         amenityTypes={amenityTypes}
@@ -168,7 +189,7 @@ export default function Home() {
                         selectedCategory={selectedCategory}
                         onCategoryChange={setSelectedCategory}
                     />
-                    <Posts homes={homes}/>
+                    <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
                 </ContentFrame>
             </div>
         </>

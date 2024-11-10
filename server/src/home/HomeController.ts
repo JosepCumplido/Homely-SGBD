@@ -3,7 +3,7 @@ import {Request, Response} from 'express';
 import {HomeRepository} from './HomeRepository';
 import {HomeRepositoryElastic} from "./HomeRepositoryElastic";
 import {Home} from "shared/models/home";
-import {SearchRequest} from 'shared/data/searchRequest';
+import {SearchRequest, SearchResponse} from 'shared/data/searchRequest';
 
 export class HomeController {
     private homeRepository: HomeRepository;
@@ -157,19 +157,19 @@ export class HomeController {
         }
 
         // Funció per generar un objecte aleatori `Home`
-        function generateRandomHome() {
+        function generateRandomHome(id: number) {
             return {
                 city: cities[randomInt(0, cities.length - 1)],
                 country: countries[randomInt(0, countries.length - 1)],
                 pricePerNight: randomInt(50, 500),
-                score: parseFloat((Math.random() * 5).toFixed(1)),
+                score: /*parseFloat((Math.random() * 5).toFixed(1)),*/ id,
                 features: featureTypes.flatMap(ft => randomSelection(ft.features, randomInt(1, ft.features.length))),
                 amenities: amenityTypes.flatMap(at => randomSelection(at.amenities, randomInt(1, at.amenities.length))),
             };
         }
 
         // Genera una llista de 50 objectes `Home` i imprimeix-la en format JSON
-        const homes = Array.from({length: 500}, generateRandomHome);
+        const homes = Array.from({length: 30}, (_, index) => generateRandomHome(index));
 
         if (!Array.isArray(homes) || homes.length === 0) {
             return res.status(400).send('Request body must be an array of homes');
@@ -186,23 +186,31 @@ export class HomeController {
     async searchHomes(req: Request, res: Response): Promise<any> {
         try {
             const request = req.body as SearchRequest
+            const page: number = request.page
+            const size: number|null = request.size
             const city: string | null = request.city
             const country: string | null = request.country
             const priceRange: number[] = request.priceRange
             const score: number | null = request.score
             const featuresList: string[] = request.featuresList
             const amenitiesList: string[] = request.amenitiesList
-            console.log("Features: " + featuresList)
+
+            const _size: number = size==null ? 1000 : size
+            console.log("Page: " + page)
+            console.log("Size: " + _size)
+            console.log("City: " + city)
+            console.log("Country: " + country)
+            console.log("PriceRange: " + priceRange)
+            console.log("Score: " + score)
+            console.log("FeaturesList: " + featuresList)
 
             if (!Array.isArray(priceRange) || priceRange.length != 2) return res.status(400).send('Invalid price range: price range must be an array of two numbers.')
             if (priceRange[0] > priceRange[1]) return res.status(400).send('Invalid price range: starting price cannot be greater than ending price.')
 
-            try {
-                const response = await this.homeRepositoryElastic.searchHomes(city, country, priceRange, score, featuresList, amenitiesList)
-                return res.status(200).json(response)
-            } catch (error) {
-                return res.status(500).send('Error searching homes')
-            }
+            return this.homeRepositoryElastic.searchHomes(page, _size, city, country, priceRange, score, featuresList, amenitiesList)
+                .then(response => res.status(200).json(response))
+                .catch(error => res.status(error.status).send(error.error))
+
         } catch (e) {
             console.log("Bad request format:" + e)
             return res.status(400).send("Bad request format")
