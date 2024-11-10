@@ -147,7 +147,7 @@ export default function Home() {
     // Modificar rang de preus filtres cerca
     const onPriceRangeChange = useCallback((range: number[]) => {
         setSearchPriceRange(range)
-    },[])
+    }, [])
 
     // Modificar features filtres cerca
     const onFeatureClick = (feature: string) => {
@@ -196,7 +196,15 @@ export default function Home() {
                         selectedCategory={selectedCategory}
                         onCategoryChange={setSelectedCategory}
                     />
-                    <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
+                    {
+                        homes && homes.length > 0 ? (
+                            <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
+                        ) : (
+                            <div className="text-center font-bold pt-10">
+                                No hi ha resultats per mostrar.
+                            </div>
+                        )
+                    }
                 </ContentFrame>
             </div>
         </>
