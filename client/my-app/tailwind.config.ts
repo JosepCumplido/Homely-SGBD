@@ -92,6 +92,6 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [/*require(tailwindcss-animate),*/nextui()],
+  plugins: [/*require(tailwindcss-animate),*/nextui(), require("tailwindcss-animate")],
 };
 export default config;
