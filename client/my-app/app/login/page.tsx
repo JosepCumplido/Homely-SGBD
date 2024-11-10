@@ -1,70 +1,103 @@
 "use client";
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { Input } from "@shadcn/ui";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import {LoginRequest} from 'shared/data/loginRequest';
+
+import { Button } from "@/components/ui/button"
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {useState} from "react";
+
+const formSchema = z.object({
+    username: z.string().min(2, {
+        message: "Username must be at least 2 characters.",
+    }).max(50, {message: "username cannot exceed 50 characters."}),
+
+    password: z.string()
+})
 
 const LoginPage = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
     const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState("")
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            username: "",
+            password: "",
+        },
+    })
 
     const onSubmit = async (data: { username: string; password: string }) => {
         try {
-            // Hacer la petición al backend
-            const response = await axios.post("http://localhost:4000/login", {
-                username: data.username,
-                password: data.password,
+            const request = new LoginRequest(data.username, data.password)
+            const response = await fetch('http://localhost:4000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(request)
             });
 
-            if (response.status === 200) {
-                // Si el login es exitoso, redirigir a la página principal
-                router.push("/dashboard");
-            }
+            if (response.status === 200) router.push("/");
+            else setErrorMessage("Error")
         } catch (error) {
-            alert("Error: Usuario o contraseña incorrectos.");
+            setErrorMessage("Error")
+            alert("Error: " + error);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-4">
-                <div>
-                    <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                        Usuario
-                    </label>
-                    <Input
-                        id="username"
-                        type="text"
-                        {...register("username", { required: "El nombre de usuario es requerido" })}
-                        className="mt-2 p-2 border border-gray-300 rounded-md w-full"
-                    />
-                    {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Contraseña
-                    </label>
-                    <Input
-                        id="password"
-                        type="password"
-                        {...register("password", { required: "La contraseña es requerida" })}
-                        className="mt-2 p-2 border border-gray-300 rounded-md w-full"
-                    />
-                    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-                >
-                    Iniciar sesión
-                </button>
-            </div>
-        </form>
-    );
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Enter your username" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                This is your public display name.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <Input type="password" placeholder="Enter your password" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                                Password must be at least 6 characters long.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <p className={"text-red-600 font-bold"}>{errorMessage}</p>
+                <Button type="submit">Submit</Button>
+            </form>
+        </Form>
+    )
 };
 
 export default LoginPage;
