@@ -8,6 +8,7 @@ import {
 
 import {Slider} from "@nextui-org/react";
 import {Input} from "@/components/ui/input";
+import {useEffect} from "react";
 
 const chartData = [
     {priceValue: "20", quantity: 97},
@@ -54,11 +55,15 @@ interface PriceRangeProps {
     onRangeChange: (range: number[]) => void; // Funció per passar el rang de preus a FiltersDialog
 }
 
-export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChange }) => {
+export const PriceRange: React.FC<PriceRangeProps> = ({priceRange, onRangeChange}) => {
 
     const [value, setValue] = React.useState(priceRange);
 
-    const handleSliderChangeEnd = (newValue: number|number[]) => {
+    useEffect(() => {
+        setValue(priceRange);
+    }, [priceRange]);
+
+    const handleSliderChangeEnd = (newValue: number | number[]) => {
         console.log("Slider change end: " + newValue)
         onRangeChange(newValue);
     }
@@ -105,7 +110,7 @@ export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChang
                         activeBar={false}
                     >
                         {chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={getBarColor(entry.priceValue)} />
+                            <Cell key={`cell-${index}`} fill={getBarColor(entry.priceValue)}/>
                         ))}
                     </Bar>
                 </BarChart>
@@ -127,11 +132,13 @@ export const PriceRange: React.FC<PriceRangeProps> = ({ priceRange, onRangeChang
             <div className={"flex flex-row justify-between w-full"}>
                 <div className={"flex flex-col"}>
                     <p>Minimum</p>
-                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={value[0]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Min value" onChange={setMinValue} value={value[0]}
+                           className={"text-center w-24"}></Input>
                 </div>
                 <div className={"flex flex-col"}>
                     <p>Maximum</p>
-                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={value[1]} className={"text-center w-24"}></Input>
+                    <Input type="number" placeholder="Max value" onChange={setMaxValue} value={value[1]}
+                           className={"text-center w-24"}></Input>
                 </div>
             </div>
         </div>

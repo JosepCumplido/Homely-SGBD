@@ -11,7 +11,7 @@ import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
 import type {FeatureType} from "shared/models/featureType";
 import type {AmenityType} from "shared/models/amenityType";
 
-export function SearchBox({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber}: {
+export function SearchBox({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
     priceRange: number[],
     onPriceRangeChange: (range: number[]) => void,
     searchResults: number,
@@ -19,7 +19,8 @@ export function SearchBox({priceRange, onPriceRangeChange, searchResults, featur
     onFeatureClick: (feature: string) => void,
     amenityTypes: AmenityType[]
     onAmenityClick: (amenity: string) => void,
-    filtersNumber: number
+    filtersNumber: number,
+    onClearAllFilters: () => void,
 
 }) {
     return (
@@ -40,6 +41,7 @@ export function SearchBox({priceRange, onPriceRangeChange, searchResults, featur
                 amenityTypes={amenityTypes}
                 onAmenityClick={onAmenityClick}
                 filtersNumber={filtersNumber}
+                onClearAllFilters={onClearAllFilters}
             />
         </div>
     )

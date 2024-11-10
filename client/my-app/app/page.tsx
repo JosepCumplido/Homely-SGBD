@@ -167,6 +167,12 @@ export default function Home() {
         );
     }
 
+    const onClearAllFilters = () => {
+        setSearchPriceRange([20, 540])
+        setSelectedFeaturesList([])
+        setSelectedAmenitiesList([])
+    }
+
     return (
         <>
             <div className={"flex flex-col space-y-6 justify-center py-14 m-auto"}>
@@ -180,6 +186,7 @@ export default function Home() {
                         amenityTypes={amenityTypes}
                         onAmenityClick={onAmenityClick}
                         filtersNumber={filtersNumber}
+                        onClearAllFilters={onClearAllFilters}
                     />
                 </ContentFrame>
                 <Separator orientation="horizontal"/>

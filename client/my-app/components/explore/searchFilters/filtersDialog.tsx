@@ -18,7 +18,7 @@ import {FeatureSelector} from "@/components/explore/searchFilters/featureSelecto
 import {useState} from "react";
 import {FiltersNumberBadge} from "@/components/explore/searchFilters/filtersNumberBadge";
 
-export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber}: {
+export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
     priceRange: number[],
     onPriceRangeChange: (range: number[]) => void,
     searchResults: number,
@@ -26,7 +26,8 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
     onFeatureClick: (feature: string) => void,
     amenityTypes: AmenityType[]
     onAmenityClick: (amenity: string) => void,
-    filtersNumber: number
+    filtersNumber: number,
+    onClearAllFilters: () => void,
 }) {
 
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
@@ -48,6 +49,12 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
     const handleAmenityClick = (feature: string) => {
         onAmenityClick(feature)
     };
+
+    const handleClearAllFilters = () => {
+        onClearAllFilters()
+        setSelectedFeaturesList([])
+        onPriceRangeChange([20,540])
+    }
 
     return (
         <Dialog>
@@ -102,7 +109,7 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
                     <div className={"flex flex-col w-full h-full gap-4"}>
                         <Separator orientation="horizontal" className={""}/>
                         <div className={"flex flex-row justify-between px-4"}>
-                            <Button variant="ghost">Clear all</Button>
+                            <Button variant="ghost" onClick={handleClearAllFilters}>Clear all</Button>
                             <Button type="submit">Show {searchResults} places</Button>
                         </div>
                     </div>
