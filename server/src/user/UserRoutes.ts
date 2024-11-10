@@ -16,6 +16,6 @@ export function userRoutes(db: ConnectionPool): Router {
   router.post('/user', (req, res) => userController.createUser(req, res));
   router.put('/user/:id', (req, res) => userController.updateUser(req, res));
   router.delete('/user/:id', (req, res) => userController.deleteUser(req, res));
-
+  router.post('/login', (req, res) => userController.login(req, res));
   return router;
 }

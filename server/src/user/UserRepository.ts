@@ -39,4 +39,11 @@ export class UserRepository {
             .input('id', id)
             .query('DELETE FROM [User] WHERE id = @id');
     }
+
+    async findByUsername(username: string): Promise<User | null> {
+        const result = await this.db.request()
+            .input('username', username)
+            .query('SELECT * FROM [User] WHERE username = @username');
+        return result.recordset[0] || null;  // Devuelve el primer usuario encontrado o null si no se encuentra
+    }
 }

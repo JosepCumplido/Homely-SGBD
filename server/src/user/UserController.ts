@@ -1,6 +1,7 @@
 // src/controllers/user.controller.ts
 import { Request, Response } from 'express';
 import { UserRepository } from './UserRepository';
+import {User} from "shared/models/user";
 
 export class UserController {
     private userRepository: UserRepository;
@@ -57,6 +58,42 @@ export class UserController {
             res.send('User deleted');
         } catch (err) {
             res.status(500).send('Error deleting user');
+        }
+    }
+
+    async login(req: Request, res: Response): Promise<any> {
+        const { username, password } = req.body;
+
+        // Asegúrate de que se proporcionan ambos campos
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Username and password are required' });
+        }
+
+        try {
+            // Realizar la consulta a la base de datos para obtener el usuario
+            const result:User|null = await this.userRepository.findByUsername(username);
+            //console.log(result);
+            // Verificar si el usuario existe
+            if (!result) {
+                return res.status(401).json({ message: 'Invalid username or password' });
+            }
+
+            const user:User = result;
+
+            // Comparar la contraseña ingresada con la almacenada (sin usar bcrypt, comparación directa)
+            if (password !== user.password) {
+                return res.status(401).json({ message: 'Invalid username or password' });
+            }
+
+            // Si las credenciales son correctas, puedes generar un token JWT (opcional)
+            // En este caso no generamos un token, solo un mensaje de éxito
+            res.status(200).json({
+                message: 'Login successful',
+            });
+
+        } catch (error) {
+            console.error('Error al consultar la base de datos:', error);
+            res.status(500).json({ message: 'Server error' });
         }
     }
 }
