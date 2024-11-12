@@ -1,11 +1,17 @@
 'use client'
 
 import {SearchBox} from "@/components/explore/searchBox";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
 import {ContentFrame} from "@/components/explore/content-frame";
 import {Posts} from "@/components/explore/posts";
 import type {Home} from 'shared/models/home';
+
+import jwtDecode from "jwt-decode";
+
 import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
@@ -25,6 +31,10 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
+
+interface DecodedToken {
+    username: string;
+}
 
 const categories: Category[] = [
     {name: "all", label: "All", icon: <LayoutGrid height={24} width={24} strokeWidth={1.2}/>},
@@ -73,6 +83,7 @@ const amenityTypes: AmenityType[] = [
     },
 ]
 
+
 export default function Home() {
     // Search filters
     const [searchCity, setSearchCity] = useState<string | null>(null)
@@ -91,11 +102,37 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+    const { isAuthenticated } = useAuth();
+    const router = useRouter();
+
+    const handleProfileClick = () => {
+        if (isAuthenticated) {
+            router.push("/profile"); // Si está autenticado, redirige al perfil
+        } else {
+            router.push("/login"); // Si no está autenticado, redirige al login
+        }
+    };
+    const [username, setUsername] = useState<string | null>(null); // Estado para almacenar el username
+
+    useEffect(() => {
+        // Obtener el token del localStorage
+        const token = localStorage.getItem("authToken");
+        if (token) {
+            try {
+                // Decodificamos el token correctamente usando jwtDecode
+                const decodedToken: DecodedToken = jwtDecode(token);  // Aquí usamos jwtDecode en lugar de jwt_decode
+                setUsername(decodedToken.username);  // Accedemos al campo username
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+            }
+        }
+    }, []);
     const searchHomes = useCallback(async (isLoadMore: boolean) => {
         setLoading(true);
 
         // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
         const searchPage = isLoadMore ? page + 1 : 0;
+
 
         const request = new SearchRequest(searchPage, limit, searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList)
 
@@ -187,7 +224,14 @@ export default function Home() {
                         onAmenityClick={onAmenityClick}
                         filtersNumber={filtersNumber}
                         onClearAllFilters={onClearAllFilters}
+
                     />
+
+                    <Avatar onClick={handleProfileClick} className="cursor-pointer hover:ring hover:ring-offset-2">
+                        <AvatarImage src="explore/avatar/post_1.png" alt="User Profile" />
+                        <AvatarFallback>{username ? username[0] : 'U'}</AvatarFallback> {/* Muestra la inicial del username */}
+                    </Avatar>
+
                 </ContentFrame>
                 <Separator orientation="horizontal"/>
                 <ContentFrame>

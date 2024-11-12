@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { UserRepository } from './UserRepository';
 import {User} from "shared/models/user";
+import jwt from 'jsonwebtoken';
 
 export class UserController {
     private userRepository: UserRepository;
@@ -71,24 +72,31 @@ export class UserController {
 
         try {
             // Realizar la consulta a la base de datos para obtener el usuario
-            const result:User|null = await this.userRepository.findByUsername(username);
-            //console.log(result);
+            const result: User | null = await this.userRepository.findByUsername(username);
+
             // Verificar si el usuario existe
             if (!result) {
                 return res.status(401).json({ message: 'Invalid username or password' });
             }
 
-            const user:User = result;
+            const user: User = result;
 
-            // Comparar la contraseña ingresada con la almacenada (sin usar bcrypt, comparación directa)
+            // Comparar la contraseña ingresada con la almacenada
             if (password !== user.password) {
                 return res.status(401).json({ message: 'Invalid username or password' });
             }
 
-            // Si las credenciales son correctas, puedes generar un token JWT (opcional)
-            // En este caso no generamos un token, solo un mensaje de éxito
+            // Si las credenciales son correctas, generar un token JWT
+            const token = jwt.sign(
+                { username: user.username }, // Información que quieras incluir en el token
+                'your_secret_key', // Tu clave secreta para firmar el token (debería estar en una variable de entorno)
+                { expiresIn: '2h' } // Opcional: El tiempo de expiración del token (1 hora)
+            );
+
+            // Enviar el token al frontend
             res.status(200).json({
                 message: 'Login successful',
+                token: token,  // Enviar el token al frontend
             });
 
         } catch (error) {
