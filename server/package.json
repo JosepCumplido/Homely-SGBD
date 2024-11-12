@@ -8,7 +8,10 @@
     "start": "node dist/app.js"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.15.1",
+    "clsx": "^2.1.1",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "express": "5.0.0",
@@ -25,6 +28,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/mssql": "^9.1.5",
     "@types/node": "^22.7.4",
