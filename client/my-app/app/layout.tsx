@@ -2,6 +2,10 @@ import type {Metadata} from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {NextUIProvider} from "@nextui-org/react";
+import ContentFrame from "@/components/explore/content-frame";
+import {UserAvatar} from "@/components/explore/userAvatar";
+import {Button} from "@/components/ui/button";
+import {router} from "next/client";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -26,12 +30,21 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <NextUIProvider>
-            {children}
-        </NextUIProvider>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}>
+            <section className={"w-full h-20"}>
+                <ContentFrame className={"h-full flex flex-row justify-between items-center"}>
+                    <h1 className={"text-2xl font-bold"}>Homely</h1>
+                    <div className={"flex flex-row gap-6 items-center"}>
+                        <Button variant={"ghost"} onClick={{/*() => router.push('/reservations')*/}}>Your reservations</Button>
+                        <UserAvatar userAvatarUrl={""}/>
+                    </div>
+                </ContentFrame>
+            </section>
+            <NextUIProvider>
+                <section className={"w-full h-[calc(100vh-5rem)]"}>
+                    {children}
+                </section>
+            </NextUIProvider>
         </body>
         </html>
     );

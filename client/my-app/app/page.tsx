@@ -3,7 +3,6 @@
 import {SearchBox} from "@/components/explore/searchBox";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
-import {ContentFrame} from "@/components/explore/content-frame";
 import {Posts} from "@/components/explore/posts";
 import type {Home} from 'shared/models/home';
 import type {Category} from 'shared/models/category';
@@ -25,6 +24,7 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
+import ContentFrame from "@/components/explore/content-frame";
 
 const categories: Category[] = [
     {name: "all", label: "All", icon: <LayoutGrid height={24} width={24} strokeWidth={1.2}/>},
@@ -175,7 +175,7 @@ export default function Home() {
 
     return (
         <>
-            <div className={"flex flex-col space-y-6 justify-center py-14 m-auto"}>
+            <div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
                 <ContentFrame>
                     <SearchBox
                         priceRange={searchPriceRange}
