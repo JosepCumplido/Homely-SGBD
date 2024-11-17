@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form } from '@/components/ui/form';
 import type { Category } from 'shared/models/category';
 import type { FeatureType } from 'shared/models/featureType';
 import type { AmenityType } from 'shared/models/amenityType';
@@ -12,7 +11,6 @@ import {
     Castle,
     Fence,
     Gem,
-    LayoutGrid,
     Mountain,
     Sailboat,
     TentTree,
@@ -21,9 +19,9 @@ import {
     Waves,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ContentFrame } from '@/components/explore/content-frame';
 import {FeatureSelector} from "@/components/explore/searchFilters/featureSelector";
 import { PhotoUploader } from '@/components/createAdd/imageUploader';
+import DisplayGroup from "@/components/createAdd/displayGroup";
 
 const categories: Category[] = [
     { name: 'beach', label: 'Beach', icon: <TreePalm height={24} width={24} strokeWidth={1.2} /> },
@@ -72,24 +70,24 @@ const amenityTypes: AmenityType[] = [
 ];
 
 interface FormData {
-    title: string;
-    description: string;
-    price: string;
-    country: string;
     city: string;
-    availability: Date | null;
-    photos: File[];
+    country: string;
+    imagesUrls: string[];
+    pricePerNight: number;
+    features: string[];
+    amenities: string[];
+    categories: string[];
 }
 
 const CreateAddPage: React.FC = () => {
     const [formData, setFormData] = useState<FormData>({
-        title: '',
-        description: '',
-        price: '',
-        country: '',
         city: '',
-        availability: null,
-        photos: [],
+        country: '',
+        imagesUrls: [],
+        pricePerNight:0,
+        features: [],
+        amenities: [],
+        categories: [],
     });
 
     const [selectedCategoriesList, setSelectedCategoriesList] = useState<string[]>([]);
@@ -98,13 +96,36 @@ const CreateAddPage: React.FC = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: name === 'pricePerNight' ? parseFloat(value) : value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(formData, selectedFeaturesList, selectedAmenitiesList);
+        console.log('Submitting data:', formData);
+
+        try {
+            const response = await fetch('http://localhost:4000/home', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                alert('Ad created successfully!');
+                const result = await response.json();
+                console.log(result);
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error creating the ad:', error);
+            alert('Failed to create ad. Please try again later.');
+        }
     };
+
 
     const onCategoryClick = (category: string) => {
         setSelectedCategoriesList((prevCategories) =>
@@ -126,7 +147,8 @@ const CreateAddPage: React.FC = () => {
     };
 
     const handlePhotosChange = (photos: File[]) => {
-        setFormData((prev) => ({ ...prev, photos }));
+        const imageUrls = photos.map((photo) => URL.createObjectURL(photo));
+        setFormData((prev) => ({ ...prev, imagesUrls: imageUrls }));
     };
 
     const CategorySelector: React.FC<{
@@ -156,66 +178,67 @@ const CreateAddPage: React.FC = () => {
     );
 
     return (
-        <div className="flex flex-col space-y-6 justify-center py-14 m-auto">
-            <ContentFrame>
-                <h1>Create a new add!</h1>
-                <Form onSubmit={handleSubmit}>
-                    <Input type="number" name="price" placeholder="Price per night" value={formData.price} onChange={handleInputChange} />
-                    <Input type="text" name="country" placeholder="Country" value={formData.country} onChange={handleInputChange} />
-                    <Input type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} />
+        <div className="flex flex-col space-y-6 justify-center py-14 m-auto max-w-4xl">
+            <h1 className="text-2xl font-bold mb-4 text-center">Create a New Ad!</h1>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <Input
+                    type="number"
+                    name="pricePerNight"
+                    placeholder="Price per night"
+                    value={formData.pricePerNight}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    type="text"
+                    name="country"
+                    placeholder="Country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                />
 
-                    <CategorySelector
-                        selectedCategory={selectedCategoriesList}
-                        onCategoryChange={onCategoryClick}
-                    />
+                {/* Categories */}
+                <CategorySelector
+                    selectedCategory={selectedCategoriesList}
+                    onCategoryChange={onCategoryClick}
+                />
 
-                    {/* Selecció de features */}
-                    <div className="flex flex-col gap-8 pb-8">
-                        <p className="text-lg font-semibold leading-none tracking-tight">Property features</p>
-                        {featureTypes.map((featureType, index) => (
-                            <div key={index} className="flex flex-col gap-4">
-                                <p className="text-md font-semibold leading-none tracking-tight">{featureType.label}</p>
-                                <div className="flex flex-wrap gap-3">
-                                    {featureType.features.map((feature, index) => (
-                                        <FeatureSelector
-                                            key={index}
-                                            label={feature}
-                                            selected={selectedFeaturesList.includes(feature)}
-                                            onClick={() => handleFeatureClick(feature)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                {/* Features */}
+                <DisplayGroup
+                    title="Property Features"
+                    groups={featureTypes.map((type) => ({
+                        label: type.label, // Subtítol
+                        subItems: type.features, // Llista de característiques
+                    }))}
+                    selectedItems={selectedFeaturesList}
+                    onItemClick={handleFeatureClick}
+                />
 
-                    {/* Selecció d'amenities */}
-                    <div className="flex flex-col gap-8 pb-8">
-                        <p className="text-lg font-semibold leading-none tracking-tight">Property amenities</p>
-                        {amenityTypes.map((amenityType, index) => (
-                            <div key={index} className="flex flex-col gap-4">
-                                <p className="text-md font-semibold leading-none tracking-tight">{amenityType.label}</p>
-                                <div className="flex flex-wrap gap-3">
-                                    {amenityType.amenities.map((amenity, index) => (
-                                        <FeatureSelector
-                                            key={index}
-                                            label={amenity}
-                                            selected={selectedAmenitiesList.includes(amenity)}
-                                            onClick={() => handleAmenityClick(amenity)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                {/* Amenities */}
+                <DisplayGroup
+                    title="Property Amenities"
+                    groups={amenityTypes.map((type) => ({
+                        label: type.label, // Subtítol
+                        subItems: type.amenities, // Llista de amenities
+                    }))}
+                    selectedItems={selectedAmenitiesList}
+                    onItemClick={handleAmenityClick}
+                    layoutClass="grid grid-cols-2 md:grid-cols-3 gap-4"
+                />
 
-                    <PhotoUploader onPhotosChange={handlePhotosChange} />
+                <PhotoUploader onPhotosChange={handlePhotosChange} />
 
-                    <Button type="submit">Create Add</Button>
-                </Form>
-            </ContentFrame>
+                <Button type="submit">Create Ad</Button>
+            </form>
         </div>
     );
+
 };
 
 export default CreateAddPage;
