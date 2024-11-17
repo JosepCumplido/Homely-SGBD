@@ -14,33 +14,34 @@ const DisplayGroup: React.FC<DisplayGroupProps> = ({
                                                        groups,
                                                        selectedItems,
                                                        onItemClick,
-                                                       layoutClass = "grid grid-cols-2 gap-4",
+                                                       layoutClass = "flex flex-wrap gap-3", // Flexbox i espaiat entre elements
                                                    }) => (
-    <div className="flex flex-col gap-6">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <div className={layoutClass}>
-            {groups.map(({ label, subItems }) => (
-                <div key={label} className="flex flex-col gap-4">
-                    <h3 className="text-md font-semibold">{label}</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {subItems.map((item) => (
+    <div className="flex flex-col gap-8 pb-8">
+        <p className="text-lg font-semibold leading-none tracking-tight">{title}</p>
+        {groups.map(({ label, subItems }) => (
+            <div key={label} className="flex flex-col gap-4">
+                <p className="text-md font-semibold leading-none tracking-tight">{label}</p>
+                <div className={layoutClass}>
+                    {subItems.map((item) => {
+                        const selected = selectedItems.includes(item);
+                        return (
                             <div
                                 key={item}
                                 onClick={() => onItemClick(item)} // Selecció quan fa click
                                 className={clsx(
-                                    "p-4 border rounded-md cursor-pointer",
-                                    selectedItems.includes(item)
-                                        ? "bg-gray-300 font-semibold"
-                                        : "hover:bg-gray-100"
+                                    "px-5 py-2 rounded-full m-[1px] border border-solid border-gray-400 w-max cursor-pointer transition-all duration-200 ease-in-out",
+                                    selected
+                                        ? "border-gray-900 border-2 !m-0 font-semibold"
+                                        : "hover:border-gray-800"
                                 )}
                             >
-                                <span>{item}</span>
+                                <p className={clsx({ 'font-semibold': selected })}>{item}</p>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
-            ))}
-        </div>
+            </div>
+        ))}
     </div>
 );
 
