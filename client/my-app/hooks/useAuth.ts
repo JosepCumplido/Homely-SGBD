@@ -1,31 +1,32 @@
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+// src/hooks/useAuth.ts
+import { useState, useEffect } from "react";
+import jwt from "jsonwebtoken";
 
 export const useAuth = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        // Revisa el token en el localStorage cada vez que el componente se carga
-        const checkAuth = () => {
-            const token = localStorage.getItem("authToken");
-            setIsAuthenticated(!!token);  // Autenticado si el token existe
-        };
+        // Obtén el token de localStorage (si está disponible)
+        const token = localStorage.getItem("authToken");
 
-        checkAuth();
+        // Verifica si el token existe
+        if (token) {
+            try {
+                // Intenta decodificar el token
+                const decodedToken = jwt.decode(token);
 
-        // Agregar un listener para cambios en localStorage (opcional, útil para detectar cambios de otras pestañas)
-        window.addEventListener("storage", checkAuth);
+                // Si el token es válido y tiene los datos esperados, lo consideramos autenticado
+                if (decodedToken) {
+                    setIsAuthenticated(true);
+                }
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+                setIsAuthenticated(false);  // Si no se puede decodificar el token, no está autenticado
+            }
+        } else {
+            setIsAuthenticated(false);  // Si no hay token, no está autenticado
+        }
+    }, []);  // Solo se ejecuta cuando el componente se monta
 
-        // Cleanup el listener en desmontaje
-        return () => window.removeEventListener("storage", checkAuth);
-    }, []);
-
-    const logout = () => {
-        localStorage.removeItem("authToken");  // Eliminar el token
-        setIsAuthenticated(false);
-        router.push("/login");  // Redirigir al login
-    };
-
-    return { isAuthenticated, logout };
+    return { isAuthenticated };
 };

@@ -46,4 +46,49 @@ export class UserRepository {
             .query('SELECT * FROM [User] WHERE username = @username');
         return result.recordset[0] || null;  // Devuelve el primer usuario encontrado o null si no se encuentra
     }
+
+    async updateProfile(username: string, newUsername: string, email: string): Promise<User> {
+        // Ejecutamos la consulta SQL de actualización
+        const result = await this.db.request()
+            .input('username', username)
+            .input('newUsername', newUsername)
+            .input('email', email)
+            .query('UPDATE User SET username = @newUsername, email = @email WHERE username = @username');
+
+        // Comprobamos cuántas filas fueron afectadas
+        console.log('Rows affected by update:', result.rowsAffected);  // Muestra las filas afectadas por la actualización
+        if (result.rowsAffected[0] > 0) {
+            // Si se actualizó el usuario, lo buscamos de nuevo para obtener los datos actualizados
+            const updatedUser = await this.findByUsername(newUsername);
+            if (!updatedUser) {
+                // Si no se encontró el usuario actualizado, lanzamos un error
+                throw new Error("User not found after update");
+            }
+            return updatedUser;  // Retornamos el usuario actualizado
+        } else {
+            // Si no se actualizó ningún usuario, lanzamos un error
+            throw new Error("User update failed");
+        }
+    }
+
+    // Método para cambiar la contraseña del usuario
+    async updatePassword(username: string, newPassword: string): Promise<User> {
+        const result = await this.db.request()
+            .input('username', username)
+            .input('newPassword', newPassword)
+            .query('UPDATE User SET password = @newPassword WHERE username = @username');
+
+        if (result.rowsAffected[0] > 0) {
+            const updatedUser = await this.findByUsername(username);
+
+            // Verificar si `updatedUser` es `null` antes de devolverlo
+            if (!updatedUser) {
+                throw new Error("User not found after password update");
+            }
+
+            return updatedUser;  // Esto garantiza que siempre se devuelve un `User` válido
+        }
+
+        throw new Error("Password update failed");
+    }
 }
