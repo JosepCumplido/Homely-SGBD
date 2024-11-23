@@ -87,14 +87,24 @@ export class HomeRepositoryElastic {
         return await this.client.bulk({refresh: true, body});
     }
 
-    // filter by:
-    //  - price range
-    async searchHomes(page: number, size: number, city: string|null, country: string|null, priceRange: number[], score: number|null, featuresList: string[], amenitiesList: string[]) {
+    async searchHomes(page: number, size: number, city: string|null, country: string|null, guestsNumber: number|undefined, category: string|null, priceRange: number[], featuresList: string[], amenitiesList: string[]) {
         try {
             const filters = []
 
             if (city != null) filters.push({ term: { city } });
             if (country != null) filters.push({ term: { country } });
+
+            if (guestsNumber != undefined) {
+                filters.push({
+                    range: {
+                        maxGuests: {
+                            gte: guestsNumber,
+                        }
+                    }
+                });
+            }
+
+            if (category != "all" && category != null) filters.push({ term: { categories: category } });
 
             if (priceRange && priceRange.length === 2 && priceRange[0] <= priceRange[1]) {
                 filters.push({
@@ -106,10 +116,6 @@ export class HomeRepositoryElastic {
                     }
                 });
             }
-
-            console.log("Filters: " + JSON.stringify(filters))
-
-            if (score != null) filters.push({term: {score: score}});
 
             if (featuresList && featuresList.length > 0) {
                 featuresList.map((feature) => (
@@ -139,7 +145,7 @@ export class HomeRepositoryElastic {
 
             let homes: Home[] = []
             if(body as Home[]) homes = body as Home[]
-            console.log('Homes search result:', homes);
+            /*console.log('Homes search result:', homes);*/
 
             return new SearchResponse(page, size, homes.length, homes)
         } catch (error) {

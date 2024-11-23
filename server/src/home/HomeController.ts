@@ -3,6 +3,7 @@ import {Request, Response} from 'express';
 import {HomeRepository} from './HomeRepository';
 import {HomeRepositoryElastic} from "./HomeRepositoryElastic";
 import {Home} from "shared/models/home";
+import {Country} from "shared/models/country";
 import {SearchRequest, SearchResponse} from 'shared/data/searchRequest';
 
 export class HomeController {
@@ -106,8 +107,72 @@ export class HomeController {
     async bulkCreateHomes(req: Request, res: Response): Promise<any> {
         /*const homes: Home[] = req.body;*/
 
-        const cities = ["New York", "Barcelona", "Tokyo", "Berlin", "London", "Paris", "Rome", "Los Angeles", "Sydney", "Dubai"];
-        const countries = ["USA", "Spain", "Japan", "Germany", "UK", "France", "Italy", "Australia", "UAE"];
+        /*const cities = ["New York", "Barcelona", "Tokyo", "Berlin", "London", "Paris", "Rome", "Los Angeles", "Sydney", "Dubai"];
+        const countries = ["USA", "Spain", "Japan", "Germany", "UK", "France", "Italy", "Australia", "UAE"];*/
+
+        const europeanCountries: Country[] = [
+            {
+                name: "Spain",
+                cities: ["Madrid", "Barcelona", "Valencia", "Seville", "Bilbao"],
+            },
+            {
+                name: "France",
+                cities: ["Paris", "Lyon", "Marseille", "Toulouse", "Nice"],
+            },
+            {
+                name: "Germany",
+                cities: ["Berlin", "Hamburg", "Munich", "Frankfurt", "Cologne"],
+            },
+            {
+                name: "Italy",
+                cities: ["Rome", "Milan", "Naples", "Turin", "Florence"],
+            },
+            {
+                name: "United Kingdom",
+                cities: ["London", "Manchester", "Birmingham", "Liverpool", "Edinburgh"],
+            },
+            {
+                name: "Portugal",
+                cities: ["Lisbon", "Porto", "Braga", "Faro", "Coimbra"],
+            },
+            {
+                name: "Netherlands",
+                cities: ["Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven"],
+            },
+            {
+                name: "Belgium",
+                cities: ["Brussels", "Antwerp", "Ghent", "Bruges", "Leuven"],
+            },
+            {
+                name: "Sweden",
+                cities: ["Stockholm", "Gothenburg", "Malmö", "Uppsala", "Västerås"],
+            },
+            {
+                name: "Norway",
+                cities: ["Oslo", "Bergen", "Trondheim", "Stavanger", "Drammen"],
+            },
+            {
+                name: "Denmark",
+                cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg", "Esbjerg"],
+            },
+            {
+                name: "Austria",
+                cities: ["Vienna", "Salzburg", "Innsbruck", "Graz", "Linz"],
+            },
+            {
+                name: "Switzerland",
+                cities: ["Zurich", "Geneva", "Basel", "Bern", "Lausanne"],
+            },
+            {
+                name: "Poland",
+                cities: ["Warsaw", "Kraków", "Łódź", "Wrocław", "Gdańsk"],
+            },
+            {
+                name: "Greece",
+                cities: ["Athens", "Thessaloniki", "Patras", "Heraklion", "Larissa"],
+            },
+        ];
+        const categories = ["beach", "countryside", "city", "cabins", "boats", "castles", "skiing", "lake", "luxe", "mountain", "camping"]
 
         const featureTypes = [
             {
@@ -158,9 +223,15 @@ export class HomeController {
 
         // Funció per generar un objecte aleatori `Home`
         function generateRandomHome(id: number) {
+            const countryIndex = randomInt(0, europeanCountries.length - 1);
+            const country = europeanCountries[countryIndex];
+            const city = europeanCountries[countryIndex].cities[randomInt(0, europeanCountries[countryIndex].cities.length-1)];
+
             return {
-                city: cities[randomInt(0, cities.length - 1)],
-                country: countries[randomInt(0, countries.length - 1)],
+                city: city,
+                country: country.name,
+                categories: randomSelection(categories, randomInt(1, 3)),
+                maxGuests: randomInt(1, 16),
                 pricePerNight: randomInt(50, 500),
                 score: /*parseFloat((Math.random() * 5).toFixed(1)),*/ id,
                 features: featureTypes.flatMap(ft => randomSelection(ft.features, randomInt(1, ft.features.length))),
@@ -169,7 +240,7 @@ export class HomeController {
         }
 
         // Genera una llista de 50 objectes `Home` i imprimeix-la en format JSON
-        const homes = Array.from({length: 30}, (_, index) => generateRandomHome(index));
+        const homes = Array.from({length: 500}, (_, index) => generateRandomHome(index));
 
         if (!Array.isArray(homes) || homes.length === 0) {
             return res.status(400).send('Request body must be an array of homes');
@@ -182,6 +253,7 @@ export class HomeController {
             return res.status(500).send('Error creating homes in bulk');
         }
     }
+    // end create bulk homes
 
     async searchHomes(req: Request, res: Response): Promise<any> {
         try {
@@ -190,8 +262,9 @@ export class HomeController {
             const size: number|null = request.size
             const city: string | null = request.city
             const country: string | null = request.country
+            const guestsNumber: number | undefined = request.guestsNumber
+            const category: string | null = request.category
             const priceRange: number[] = request.priceRange
-            const score: number | null = request.score
             const featuresList: string[] = request.featuresList
             const amenitiesList: string[] = request.amenitiesList
 
@@ -200,14 +273,14 @@ export class HomeController {
             console.log("Size: " + _size)
             console.log("City: " + city)
             console.log("Country: " + country)
+            console.log("Category: " + category)
             console.log("PriceRange: " + priceRange)
-            console.log("Score: " + score)
             console.log("FeaturesList: " + featuresList)
 
             if (!Array.isArray(priceRange) || priceRange.length != 2) return res.status(400).send('Invalid price range: price range must be an array of two numbers.')
             if (priceRange[0] > priceRange[1]) return res.status(400).send('Invalid price range: starting price cannot be greater than ending price.')
 
-            return this.homeRepositoryElastic.searchHomes(page, _size, city, country, priceRange, score, featuresList, amenitiesList)
+            return this.homeRepositoryElastic.searchHomes(page, _size, city, country, guestsNumber, category, priceRange, featuresList, amenitiesList)
                 .then(response => res.status(200).json(response))
                 .catch(error => res.status(error.status).send(error.error))
 

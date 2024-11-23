@@ -76,17 +76,17 @@ const amenityTypes: AmenityType[] = [
 export default function Home() {
     // Search filters
     const [searchCity, setSearchCity] = useState<string | null>(null)
-    const [searchCountry, setSearchCountry] = useState<string | null>(null)
+    const [guestsNumber, setGuestsNumber] = useState<number | undefined>(undefined)
+    const [searchCategory, setSearchCategory] = useState<Category | null>(null)
     const [searchPriceRange, setSearchPriceRange] = useState<number[]>([20, 540])
-    const [searchScore, setSearchScore] = useState<number | null>(null)
+    /*const [searchScore, setSearchScore] = useState<number[]>([])*/
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
     const [selectedAmenitiesList, setSelectedAmenitiesList] = useState<string[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
-    const [filtersNumber, setFiltersNumber] = useState(0)
+    const [appliedFiltersNumber, setAppliedFiltersNumber] = useState(0)
 
     const [homes, setHomes] = useState<Home[]>([])
-    const [limit, setLimit] = useState(6);
+    const limit = 6
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -97,7 +97,8 @@ export default function Home() {
         // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
         const searchPage = isLoadMore ? page + 1 : 0;
 
-        const request = new SearchRequest(searchPage, limit, searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList)
+        console.log("Category " + (searchCategory?.name ?? null))
+        const request = new SearchRequest(searchPage, limit, searchCity, guestsNumber, searchCategory?.name ?? null, searchPriceRange, selectedFeaturesList, selectedAmenitiesList)
 
         try {
             const response = await fetch('http://localhost:4000/home/search', {
@@ -130,19 +131,31 @@ export default function Home() {
         } finally {
             setLoading(false)
         }
-    }, [page, searchCity, searchCountry, searchPriceRange, searchScore, selectedAmenitiesList, selectedFeaturesList]);
+    }, [page, searchCity, guestsNumber, searchCategory, searchPriceRange, selectedAmenitiesList, selectedFeaturesList]);
 
     // Funció per executar la cerca quan els filtres canvien
     useEffect(() => {
         // Si canvia algun filtre, torna a cercar des de la pàgina 0 sense `isLoadMore`
         searchHomes(false);
-    }, [searchCity, searchCountry, searchPriceRange, searchScore, selectedFeaturesList, selectedAmenitiesList]);
+    }, [searchCity, guestsNumber, searchCategory, searchPriceRange, selectedFeaturesList, selectedAmenitiesList]);
 
     // Funció per executar la cerca quan es vol mostrar mes contingut amb els mateixos filtres
     const infiniteScrollSearch = () => {
         console.log("Load more")
         searchHomes(true);
     }
+
+    const onCityChange = useCallback((city: string) => {
+        setSearchCity(city)
+    }, [])
+
+    const onGuestsNumberChange = useCallback((guests: number) => {
+        setGuestsNumber(guests)
+    }, [])
+
+    const onCategoryChange = useCallback((category: Category) => {
+        setSearchCategory(category)
+    }, [])
 
     // Modificar rang de preus filtres cerca
     const onPriceRangeChange = useCallback((range: number[]) => {
@@ -176,36 +189,41 @@ export default function Home() {
     return (
         <>
             <div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
-                <ContentFrame>
-                    <SearchBox
-                        priceRange={searchPriceRange}
-                        onPriceRangeChange={onPriceRangeChange}
-                        searchResults={searchResultsNumber}
-                        featureTypes={featureTypes}
-                        onFeatureClick={onFeatureClick}
-                        amenityTypes={amenityTypes}
-                        onAmenityClick={onAmenityClick}
-                        filtersNumber={filtersNumber}
-                        onClearAllFilters={onClearAllFilters}
-                    />
-                </ContentFrame>
+                <SearchBox
+                    city={searchCity}
+                    onCityChange={onCityChange}
+                    guests={guestsNumber}
+                    onGuestsChange={onGuestsNumberChange}
+                    priceRange={searchPriceRange}
+                    onPriceRangeChange={onPriceRangeChange}
+                    searchResults={searchResultsNumber}
+                    featureTypes={featureTypes}
+                    onFeatureClick={onFeatureClick}
+                    amenityTypes={amenityTypes}
+                    onAmenityClick={onAmenityClick}
+                    filtersNumber={appliedFiltersNumber}
+                    onClearAllFilters={onClearAllFilters}
+                />
                 <Separator orientation="horizontal"/>
-                <ContentFrame>
+                <div className={"max-h-[85vh] !mt-0 pb-24 overflow-y-scroll no-scrollbar"}>
                     <CategoryFilter
                         categories={categories}
-                        selectedCategory={selectedCategory}
-                        onCategoryChange={setSelectedCategory}
+                        selectedCategory={searchCategory}
+                        onCategoryChange={onCategoryChange}
                     />
-                    {
-                        homes && homes.length > 0 ? (
-                            <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
-                        ) : (
-                            <div className="text-center font-bold pt-10">
-                                No hi ha resultats per mostrar.
-                            </div>
-                        )
-                    }
-                </ContentFrame>
+                    <ContentFrame>
+                        {
+                            homes && homes.length > 0 ? (
+                                <Posts homes={homes} isLoading={loading} hasMore={hasMore}
+                                       loadMore={infiniteScrollSearch}/>
+                            ) : (
+                                <div className="text-center font-bold pt-10">
+                                    No hi ha resultats per mostrar.
+                                </div>
+                            )
+                        }
+                    </ContentFrame>
+                </div>
             </div>
         </>
     );

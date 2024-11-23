@@ -2,7 +2,7 @@
 
 import {DestinationSelector} from "@/components/explore/destinationSelector";
 import {DatePickerRange} from "@/components/explore/dateRangePicker";
-import {GuestsSelection} from "@/components/explore/guestsSelection";
+import {GuestsSelector} from "@/components/explore/guestsSelector";
 import {Separator} from "@/components/ui/separator";
 import {Button} from "@/components/ui/button";
 import * as React from "react";
@@ -11,7 +11,11 @@ import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
 import type {FeatureType} from "shared/models/featureType";
 import type {AmenityType} from "shared/models/amenityType";
 
-export function SearchBox({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
+export function SearchBox({city, onCityChange, guests, onGuestsChange, priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
+    city: string|null,
+    onCityChange: (city: string) => void,
+    guests:number|undefined,
+    onGuestsChange: (guests:number) => void,
     priceRange: number[],
     onPriceRangeChange: (range: number[]) => void,
     searchResults: number,
@@ -25,11 +29,11 @@ export function SearchBox({priceRange, onPriceRangeChange, searchResults, featur
 }) {
     return (
         <div className={"flex flex-row space-x-4 items-center h-[60px] justify-center"}>
-            <DestinationSelector/>
+            <DestinationSelector city={city} onCityChange={onCityChange}/>
             <Separator orientation="vertical"/>
             <DatePickerRange/>
             <Separator orientation="vertical"/>
-            <GuestsSelection/>
+            <GuestsSelector guests={guests} onGuestsChange={onGuestsChange}/>
             <Separator orientation="vertical"/>
             <Button className={"mt-auto py-[1.25rem]"}><MagnifyingGlassIcon/>Search</Button>
             <FiltersDialog

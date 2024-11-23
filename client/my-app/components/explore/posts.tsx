@@ -14,7 +14,7 @@ export function Posts({homes, isLoading, hasMore, loadMore}: {
     loadMore: () => void
 }) {
     return (
-        <div className={"flex flex-col overflow-y-scroll"}>
+        <div className={"flex flex-col gap-8 "}>
             <div className={"grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-6 py-6"}>
                 {homes.map((home, index) => (
                     <PostCard key={index} home={home}></PostCard>
