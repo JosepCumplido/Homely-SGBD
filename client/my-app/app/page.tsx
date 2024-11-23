@@ -180,10 +180,17 @@ export default function Home() {
         );
     }
 
+    useEffect(() => {
+        let totalFilters = selectedFeaturesList.length + selectedAmenitiesList.length
+        if(searchPriceRange[0] != 20 || searchPriceRange[1] != 540) totalFilters++
+        setAppliedFiltersNumber(totalFilters)
+    }, [searchPriceRange, selectedFeaturesList, selectedAmenitiesList]);
+
     const onClearAllFilters = () => {
         setSearchPriceRange([20, 540])
         setSelectedFeaturesList([])
         setSelectedAmenitiesList([])
+        setAppliedFiltersNumber(0)
     }
 
     return (
