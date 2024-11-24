@@ -58,32 +58,44 @@ const ProfilePage = () => {
         router.push('/profile/edit');
     };
 
+    const handleChats = () => {
+        router.push('/chats'); // Redirigeix a la pàgina de xats
+    };
+
     if (!userInfo) {
         return <div>Loading...</div>; // Muestra un loader mientras se carga la información
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
             {/* Avatar grande */}
-            <div className="mb-6">
+            <div>
                 <Avatar className="w-32 h-32">
-                    <AvatarImage src={avatarUrl || "default-avatar.png"} alt="User Avatar" />
+                    <AvatarImage src={avatarUrl || "default-avatar.png"} alt="User Avatar"/>
                     <AvatarFallback>{username ? username[0] : 'U'}</AvatarFallback>
                 </Avatar>
             </div>
 
-            <h1 className="text-3xl font-semibold mb-2">{userInfo.username}</h1>
-            <p className="text-lg text-gray-500 mb-4">{userInfo.email}</p>
+            {/* Username */}
+            <h1 className="text-3xl font-semibold">{userInfo.username}</h1>
 
-            {/* Botón de Editar Perfil */}
-            <Button variant="outline" onClick={handleEditProfile} className="w-40 mb-4">
-                Editar Perfil
-            </Button>
+            {/* Botones de acción */}
+            <div className="flex flex-col items-center space-y-4">
 
-            {/* Botón de Logout */}
-            <Button variant="outline" onClick={handleLogout} className="w-40">
-                Logout
-            </Button>
+                <Button variant="outline" onClick={handleChats} className="w-40">
+                    Xats
+                </Button>
+
+                {/* Botón de Editar Perfil */}
+                <Button variant="outline" onClick={handleEditProfile} className="w-40">
+                    Editar Perfil
+                </Button>
+
+                {/* Botón de Logout */}
+                <Button variant="outline" onClick={handleLogout} className="w-40">
+                    Logout
+                </Button>
+            </div>
         </div>
     );
 };

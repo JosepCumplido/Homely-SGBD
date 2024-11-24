@@ -47,26 +47,23 @@ export class UserRepository {
         return result.recordset[0] || null;  // Devuelve el primer usuario encontrado o null si no se encuentra
     }
 
-    async updateProfile(username: string, newUsername: string, email: string): Promise<User> {
-        // Ejecutamos la consulta SQL de actualización
+    async updateProfile(username: string, email: string): Promise<User> {
+        // Ejecutamos la consulta SQL para actualizar solo el email
         const result = await this.db.request()
             .input('username', username)
-            .input('newUsername', newUsername)
             .input('email', email)
-            .query('UPDATE [User] SET username = @newUsername, email = @email WHERE username = @username');
+            .query('UPDATE [User] SET email = @email WHERE username = @username');
 
-        // Comprobamos cuántas filas fueron afectadas
-        console.log('Rows affected by update:', result.rowsAffected);  // Muestra las filas afectadas por la actualización
+        console.log('Rows affected by update:', result.rowsAffected); // Log para depuración
+
         if (result.rowsAffected[0] > 0) {
             // Si se actualizó el usuario, lo buscamos de nuevo para obtener los datos actualizados
-            const updatedUser = await this.findByUsername(newUsername);
+            const updatedUser = await this.findByUsername(username);
             if (!updatedUser) {
-                // Si no se encontró el usuario actualizado, lanzamos un error
                 throw new Error("User not found after update");
             }
-            return updatedUser;  // Retornamos el usuario actualizado
+            return updatedUser;
         } else {
-            // Si no se actualizó ningún usuario, lanzamos un error
             throw new Error("User update failed");
         }
     }

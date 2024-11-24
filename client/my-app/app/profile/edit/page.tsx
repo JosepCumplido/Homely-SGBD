@@ -21,7 +21,6 @@ const EditProfilePage = () => {
     const [email, setEmail] = useState<string>('');       // Nuevo email
     const [currentPassword, setCurrentPassword] = useState<string>('');  // Contraseña actual
     const [newPassword, setNewPassword] = useState<string>('');  // Nueva contraseña
-    const [currentUsername, setCurrentUsername] = useState<string>(''); // Nombre de usuario actual
     const router = useRouter();
 
     // Decodificar el token y obtener el username actual desde el localStorage
@@ -34,7 +33,6 @@ const EditProfilePage = () => {
 
         try {
             const decodedToken = jwt.decode(token) as { username: string };
-            setCurrentUsername(decodedToken.username); // Establecer el currentUsername
             console.log("Decoded username:", decodedToken.username);
             fetchUserProfile(decodedToken.username);  // Usar el username del token para obtener el perfil
         } catch (error) {
@@ -62,24 +60,26 @@ const EditProfilePage = () => {
     const handleSaveChanges = async () => {
         if (!userInfo) return;
 
-        const response = await fetch(`http://localhost:4000/user/profile/${currentUsername}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                newUsername: username,         // El nuevo `username` deseado
-                email: email,                  // El email actualizado
-            }),
-        });
+        try {
+            const response = await fetch(`http://localhost:4000/user/profile/${userInfo.username}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email, // Actualizar solo el email
+                }),
+            });
 
-        if (response.ok) {
-            const result = await response.json();
-            alert('Perfil actualizado correctamente');
-            // Redirigir a otro lado si es necesario
-        } else {
-            const error = await response.json();
-            alert(error.error || 'Error al actualizar el perfil');
+            if (response.ok) {
+                alert('Perfil actualizado correctamente');
+                fetchUserProfile(userInfo.username); // Recargar datos
+            } else {
+                const error = await response.json();
+                alert(error.error || 'Error al actualizar el perfil');
+            }
+        } catch (error) {
+            console.error('Error saving profile changes:', error);
         }
     };
 
@@ -151,21 +151,23 @@ const EditProfilePage = () => {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            {/* Campo de Username (solo lectura) */}
                             <div className="space-y-1">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
                                     id="username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    value={userInfo.username}
+                                    disabled // Hacer que sea de solo lectura
                                 />
                             </div>
+                            {/* Campo de Email (editable) */}
                             <div className="space-y-1">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={userInfo.email}
+                                    onChange={(e) => setEmail(e.target.value)} // Solo este campo se actualiza
                                 />
                             </div>
                         </CardContent>

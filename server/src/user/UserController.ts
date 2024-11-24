@@ -63,22 +63,27 @@ export class UserController {
     }
 
     async getUserProfile(req: Request, res: Response): Promise<Response> {
-        const {username} = req.params;
+        const { username } = req.params;
 
         try {
             if (!username) {
-                return res.status(400).json({error: "Username is required"});
+                return res.status(400).json({ error: "Username is required" });
             }
 
             const user = await this.userRepository.findByUsername(username);
             if (!user) {
-                return res.status(404).json({error: "User not found"});
+                return res.status(404).json({ error: "User not found" });
             }
 
-            return res.json({avatarUrl: user.avatarUrl});
+            // Devuelve todos los datos relevantes
+            return res.json({
+                username: user.username,
+                email: user.email,
+                avatarUrl: user.avatarUrl, // Si necesitas esto
+            });
         } catch (error) {
             console.error("Error retrieving user:", error);
-            return res.status(500).json({error: "Error retrieving user"});
+            return res.status(500).json({ error: "Error retrieving user" });
         }
     }
 
@@ -114,35 +119,31 @@ export class UserController {
 
     // Función para actualizar el perfil de un usuario
     async updateProfile(req: Request, res: Response): Promise<Response> {
-        // Extraemos 'username' de los parámetros de la URL y 'newUsername' y 'email' del cuerpo de la solicitud
-        const {username} = req.params; // username viene de los parámetros de la URL
-        const {newUsername, email} = req.body; // newUsername y email vienen del cuerpo de la solicitud
+        const { username } = req.params; // `username` sigue viniendo de los parámetros de la URL
+        const { email } = req.body; // Solo permitimos actualizar el `email`
 
         try {
             // Verificar si el usuario con el username actual existe
             const user = await this.userRepository.findByUsername(username);
 
             if (!user) {
-                return res.status(404).json({error: "User not found"});
+                return res.status(404).json({ error: "User not found" });
             }
 
-            // Verificar si el nuevo username ya está en uso
-            const usernameExists = await this.userRepository.findByUsername(newUsername);
-
-            if (usernameExists) {
-                return res.status(400).json({error: "The new username is already taken"});
-            }
-
-            // Actualizar el perfil con el nuevo username y email
-            const updatedUser = await this.userRepository.updateProfile(username, newUsername, email);
+            // Actualizar solo el email en el perfil del usuario
+            const updatedUser = await this.userRepository.updateProfile(username, email);
 
             // Responder con éxito
-            return res.status(200).json({message: "Profile updated successfully", updatedUser});
+            return res.status(200).json({
+                message: "Profile updated successfully",
+                updatedUser
+            });
         } catch (error) {
-            console.error(error);  // Esto puede ser útil para ver detalles del error en consola
-            return res.status(500).json({error: "Error updating profile"});
+            console.error(error);  // Log para depuración
+            return res.status(500).json({ error: "Error updating profile" });
         }
     }
+
 
 
     async login(req: Request, res: Response): Promise<any> {
