@@ -53,7 +53,7 @@ export class UserRepository {
             .input('username', username)
             .input('newUsername', newUsername)
             .input('email', email)
-            .query('UPDATE User SET username = @newUsername, email = @email WHERE username = @username');
+            .query('UPDATE [User] SET username = @newUsername, email = @email WHERE username = @username');
 
         // Comprobamos cuántas filas fueron afectadas
         console.log('Rows affected by update:', result.rowsAffected);  // Muestra las filas afectadas por la actualización
@@ -71,22 +71,20 @@ export class UserRepository {
         }
     }
 
-    // Método para cambiar la contraseña del usuario
     async updatePassword(username: string, newPassword: string): Promise<User> {
         const result = await this.db.request()
             .input('username', username)
             .input('newPassword', newPassword)
-            .query('UPDATE User SET password = @newPassword WHERE username = @username');
+            .query('UPDATE [User] SET password = @newPassword WHERE username = @username');
 
         if (result.rowsAffected[0] > 0) {
             const updatedUser = await this.findByUsername(username);
 
-            // Verificar si `updatedUser` es `null` antes de devolverlo
             if (!updatedUser) {
                 throw new Error("User not found after password update");
             }
 
-            return updatedUser;  // Esto garantiza que siempre se devuelve un `User` válido
+            return updatedUser;
         }
 
         throw new Error("Password update failed");

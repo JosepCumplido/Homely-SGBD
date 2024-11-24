@@ -19,8 +19,8 @@ const EditProfilePage = () => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [username, setUsername] = useState<string>('');  // Nuevo nombre de usuario
     const [email, setEmail] = useState<string>('');       // Nuevo email
-    const [newPassword, setNewPassword] = useState<string>('');  // Nueva contraseña
     const [currentPassword, setCurrentPassword] = useState<string>('');  // Contraseña actual
+    const [newPassword, setNewPassword] = useState<string>('');  // Nueva contraseña
     const [currentUsername, setCurrentUsername] = useState<string>(''); // Nombre de usuario actual
     const router = useRouter();
 
@@ -60,9 +60,9 @@ const EditProfilePage = () => {
 
     // Función para guardar los cambios en el perfil
     const handleSaveChanges = async () => {
-        if (!userInfo) return; // Asegúrate de que el usuario está cargado
+        if (!userInfo) return;
 
-        const response = await fetch(`http://localhost:4000/user/profile/${currentUsername}`, {  // Cambié las comillas
+        const response = await fetch(`http://localhost:4000/user/profile/${currentUsername}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

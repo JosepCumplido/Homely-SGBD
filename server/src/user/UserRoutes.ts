@@ -17,17 +17,10 @@ export function userRoutes(db: ConnectionPool): Router {
   router.put('/user/:id', (req, res) => userController.updateUser(req, res));
   router.delete('/user/:id', (req, res) => userController.deleteUser(req, res));
   router.post('/login', (req, res) => userController.login(req, res));
-  router.get('/user/profile/:username', async (req, res) => {
-    await userController.getUserProfile(req, res);
-  });
 
-  router.put('/user/profile/:username', async (req, res) => {
-    await userController.updateProfile(req, res);  // Llamamos al controlador para manejar la lógica
-  });
+  router.get('/user/profile/:username', (req, res) => { userController.getUserProfile(req, res) });
+  router.put('/user/profile/:username', (req, res) => { userController.updateProfile(req, res) });
+  router.put('/user/profile/:username/change-password', (req, res) => { userController.changePassword(req, res) });
 
-  // Nueva ruta para cambiar la contraseña
-  router.put('/user/profile/:username/change-password', async (req, res) => {
-    await userController.changePassword(req, res);
-  });
   return router;
 }

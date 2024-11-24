@@ -1,6 +1,6 @@
 // src/controllers/user.controller.ts
-import { Request, Response } from 'express';
-import { UserRepository } from './UserRepository';
+import {Request, Response} from 'express';
+import {UserRepository} from './UserRepository';
 import {User} from "shared/models/user";
 import jwt from 'jsonwebtoken';
 
@@ -61,96 +61,96 @@ export class UserController {
             res.status(500).send('Error deleting user');
         }
     }
-    async getUserProfile(req: Request<{ username: string }>, res: Response): Promise<Response> {
-        const { username } = req.params;  // Usamos req.params para acceder al parámetro en la URL
+
+    async getUserProfile(req: Request, res: Response): Promise<Response> {
+        const {username} = req.params;
 
         try {
             if (!username) {
-                return res.status(400).json({ error: "Username is required" });
+                return res.status(400).json({error: "Username is required"});
             }
 
             const user = await this.userRepository.findByUsername(username);
             if (!user) {
-                return res.status(404).json({ error: "User not found" });
+                return res.status(404).json({error: "User not found"});
             }
 
-            return res.json({ avatarUrl: user.avatarUrl });
+            return res.json({avatarUrl: user.avatarUrl});
         } catch (error) {
             console.error("Error retrieving user:", error);
-            return res.status(500).json({ error: "Error retrieving user" });
+            return res.status(500).json({error: "Error retrieving user"});
         }
     }
 
     async changePassword(req: Request, res: Response): Promise<void> {
-        const { username } = req.params; // Ahora el username lo obtenemos desde la URL
-        const { currentPassword, newPassword } = req.body; // Contraseñas desde el body
+        const {username} = req.params;
+        const {currentPassword, newPassword} = req.body;
 
         try {
             if (!currentPassword || !newPassword) {
-                res.status(400).json({ error: "Both current and new passwords are required" });
+                res.status(400).json({error: "Both current and new passwords are required"});
                 return;
             }
 
             const user = await this.userRepository.findByUsername(username);
             if (!user) {
-                res.status(404).json({ error: "User not found" });
+                res.status(404).json({error: "User not found"});
                 return;
             }
 
             if (user.password !== currentPassword) {
-                res.status(401).json({ error: "Current password is incorrect" });
+                res.status(401).json({error: "Current password is incorrect"});
                 return;
             }
 
-            // Realiza la actualización de la contraseña en la base de datos
             await this.userRepository.updatePassword(username, newPassword);
 
-            res.status(200).json({ message: "Password changed successfully" });
+            res.status(200).json({message: "Password changed successfully"});
         } catch (error) {
             console.error("Error changing password:", error);
-            res.status(500).json({ error: "Server error" });
+            res.status(500).json({error: "Server error changing password"});
         }
     }
 
     // Función para actualizar el perfil de un usuario
     async updateProfile(req: Request, res: Response): Promise<Response> {
         // Extraemos 'username' de los parámetros de la URL y 'newUsername' y 'email' del cuerpo de la solicitud
-        const { username } = req.params; // username viene de los parámetros de la URL
-        const { newUsername, email } = req.body; // newUsername y email vienen del cuerpo de la solicitud
+        const {username} = req.params; // username viene de los parámetros de la URL
+        const {newUsername, email} = req.body; // newUsername y email vienen del cuerpo de la solicitud
 
         try {
             // Verificar si el usuario con el username actual existe
             const user = await this.userRepository.findByUsername(username);
 
             if (!user) {
-                return res.status(404).json({ error: "User not found" });
+                return res.status(404).json({error: "User not found"});
             }
 
             // Verificar si el nuevo username ya está en uso
             const usernameExists = await this.userRepository.findByUsername(newUsername);
 
             if (usernameExists) {
-                return res.status(400).json({ error: "The new username is already taken" });
+                return res.status(400).json({error: "The new username is already taken"});
             }
 
             // Actualizar el perfil con el nuevo username y email
             const updatedUser = await this.userRepository.updateProfile(username, newUsername, email);
 
             // Responder con éxito
-            return res.status(200).json({ message: "Profile updated successfully", updatedUser });
+            return res.status(200).json({message: "Profile updated successfully", updatedUser});
         } catch (error) {
             console.error(error);  // Esto puede ser útil para ver detalles del error en consola
-            return res.status(500).json({ error: "Error updating profile" });
+            return res.status(500).json({error: "Error updating profile"});
         }
     }
 
 
     async login(req: Request, res: Response): Promise<any> {
-        const { username, password } = req.body;
+        const {username, password} = req.body;
 
         // Asegúrate de que se proporcionan ambos campos
         if (!username || !password) {
-            return res.status(400).json({ message: 'Username and password are required' });
+            return res.status(400).json({message: 'Username and password are required'});
         }
 
         try {
@@ -159,21 +159,21 @@ export class UserController {
 
             // Verificar si el usuario existe
             if (!result) {
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({message: 'Invalid username or password'});
             }
 
             const user: User = result;
 
             // Comparar la contraseña ingresada con la almacenada
             if (password !== user.password) {
-                return res.status(401).json({ message: 'Invalid username or password' });
+                return res.status(401).json({message: 'Invalid username or password'});
             }
 
             // Si las credenciales son correctas, generar un token JWT
             const token = jwt.sign(
-                { username: user.username }, // Información que quieras incluir en el token
+                {username: user.username}, // Información que quieras incluir en el token
                 'your_secret_key', // Tu clave secreta para firmar el token (debería estar en una variable de entorno)
-                { expiresIn: '2h' } // Opcional: El tiempo de expiración del token (1 hora)
+                {expiresIn: '2h'} // Opcional: El tiempo de expiración del token (1 hora)
             );
 
             // Enviar el token al frontend
@@ -184,7 +184,7 @@ export class UserController {
 
         } catch (error) {
             console.error('Error al consultar la base de datos:', error);
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({message: 'Server error'});
         }
     }
 }
