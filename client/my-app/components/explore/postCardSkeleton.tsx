@@ -1,13 +1,19 @@
-import { Skeleton } from "@/components/ui/skeleton"
 
-export function PostsSkeleton() {
+import React from "react";
+import {HeartIcon as HeartSolid, StarIcon as StarSolid} from "@heroicons/react/24/solid";
+import {Skeleton} from "@/components/ui/skeleton";
+
+export function PostCardSkeleton() {
+
     return (
-        <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
+        <div className={"relative flex flex-col rounded-xl space-y-1 group"}>
+            <Skeleton className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1"></Skeleton>
+            <div className={"flex flex-row justify-between"}>
+                <Skeleton className={"w-2/3 h-5"}></Skeleton>
+                <Skeleton className={"space-x-1 w-1/6 h-5"}/>
             </div>
+            <Skeleton className={"w-1/2 h-5"}></Skeleton>
+
         </div>
     )
 }

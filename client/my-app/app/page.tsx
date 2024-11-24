@@ -1,5 +1,4 @@
 'use client'
-
 import {SearchBox} from "@/components/explore/searchBox";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {useAuth} from "@/hooks/useAuth";
@@ -31,7 +30,7 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
-import {PostsSkeleton} from "@/components/explore/postCardSkeleton";
+import {PostsSkeleton} from "@/components/explore/postsSkeleton";
 
 interface DecodedToken {
     username: string;
@@ -95,14 +94,7 @@ export default function Home() {
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
     const [appliedFiltersNumber, setAppliedFiltersNumber] = useState(0)
 
-    const [homes, setHomes] = useState<Home[]>([])
-    const limit = 6
-    const [page, setPage] = useState(0);
-    const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
-
     const [username, setUsername] = useState<string | null>(null); // Estado para almacenar el username
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
     useEffect(() => {
         // Obtener el token del localStorage
@@ -119,23 +111,20 @@ export default function Home() {
         }
     }, []);
 
-    useEffect(() => {
+   /* useEffect(() => {
         if (username) {
             console.log('Fetching avatar for:', username);  // Verifica que el username sea el esperado
             fetch(`http://localhost:4000/user/profile/${username}`)
                 .then((response) => response.json())
-                .then((data) => {
-                    setAvatarUrl(data.avatarUrl);
-                })
                 .catch((error) => {
                     console.error("Error fetching avatar URL:", error);
                 });
         } else {
             console.error('No username available');
         }
-    }, [username]);
+    }, [username]);*/
 
-    const searchHomes = useCallback(async (isLoadMore: boolean) => {
+    /*const searchHomes = useCallback(async (isLoadMore: boolean) => {
         setLoading(true);
 
         // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
@@ -187,7 +176,7 @@ export default function Home() {
     const infiniteScrollSearch = () => {
         console.log("Load more")
         searchHomes(true);
-    }
+    }*/
 
     const onCityChange = useCallback((city: string) => {
         setSearchCity(city)
@@ -224,6 +213,10 @@ export default function Home() {
         );
     }
 
+    const onSetSearchResultsNumber = (results: number) => {
+        setSearchResultsNumber(results)
+    }
+
     useEffect(() => {
         let totalFilters = selectedFeaturesList.length + selectedAmenitiesList.length
         if (searchPriceRange[0] != 20 || searchPriceRange[1] != 540) totalFilters++
@@ -238,37 +231,43 @@ export default function Home() {
     }
 
     return (
-        <>
-            <div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
-                <SearchBox
-                    city={searchCity}
-                    onCityChange={onCityChange}
-                    guests={guestsNumber}
-                    onGuestsChange={onGuestsNumberChange}
-                    priceRange={searchPriceRange}
-                    onPriceRangeChange={onPriceRangeChange}
-                    searchResults={searchResultsNumber}
-                    featureTypes={featureTypes}
-                    onFeatureClick={onFeatureClick}
-                    amenityTypes={amenityTypes}
-                    onAmenityClick={onAmenityClick}
-                    filtersNumber={appliedFiltersNumber}
-                    onClearAllFilters={onClearAllFilters}
+        <div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
+            <SearchBox
+                city={searchCity}
+                onCityChange={onCityChange}
+                guests={guestsNumber}
+                onGuestsChange={onGuestsNumberChange}
+                priceRange={searchPriceRange}
+                onPriceRangeChange={onPriceRangeChange}
+                searchResults={searchResultsNumber}
+                featureTypes={featureTypes}
+                onFeatureClick={onFeatureClick}
+                amenityTypes={amenityTypes}
+                onAmenityClick={onAmenityClick}
+                filtersNumber={appliedFiltersNumber}
+                onClearAllFilters={onClearAllFilters}
+            />
+            <Separator orientation="horizontal"/>
+            <div className={"max-h-[85vh] !mt-0 pb-24 overflow-y-scroll no-scrollbar"}>
+                <CategoryFilter
+                    categories={categories}
+                    selectedCategory={searchCategory}
+                    onCategoryChange={onCategoryChange}
                 />
-                <Separator orientation="horizontal"/>
-                <div className={"max-h-[85vh] !mt-0 pb-24 overflow-y-scroll no-scrollbar"}>
-                    <CategoryFilter
-                        categories={categories}
-                        selectedCategory={searchCategory}
-                        onCategoryChange={onCategoryChange}
-                    />
-                    <ContentFrame>
-                        <Suspense fallback={<PostsSkeleton/>}>
-                            <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
-                        </Suspense>
-                    </ContentFrame>
-                </div>
+                <ContentFrame>
+                    {/*<Suspense fallback={<PostsSkeleton/>}>*/}
+                        <Posts
+                            searchCity={searchCity}
+                            guestsNumber={guestsNumber}
+                            searchCategory={searchCategory}
+                            searchPriceRange={searchPriceRange}
+                            selectedFeaturesList={selectedFeaturesList}
+                            selectedAmenitiesList={selectedAmenitiesList}
+                            onSetSearchResultsNumber={onSetSearchResultsNumber}
+                        />
+                    {/*</Suspense>*/}
+                </ContentFrame>
             </div>
-        </>
+        </div>
     );
 }

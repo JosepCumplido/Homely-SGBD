@@ -13,11 +13,13 @@ export class SearchRequest {
     ) {}
 }
 
-export class SearchResponse {
+export class SearchResponse extends Response {
     constructor(
         public page: number,
         public size: number,
         public total: number,
         public homes: Home[]
-    ) {}
+    ) {
+        super();
+    }
 }
