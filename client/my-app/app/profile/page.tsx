@@ -59,7 +59,7 @@ const ProfilePage = () => {
     };
 
     const handleChats = () => {
-        router.push('/chats'); // Redirigeix a la pàgina de xats
+        router.push('/chat'); // Redirigeix a la pàgina de xats
     };
 
     if (!userInfo) {

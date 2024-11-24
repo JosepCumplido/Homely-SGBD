@@ -5,6 +5,7 @@ import config from './config/dbConfig'
 import {homeRoutes} from "./home/HomeRoutes";
 import {Client} from "@elastic/elasticsearch";
 import cors from 'cors';
+import {chatRoutes} from "./chat/ChatRoutes";
 
 const app = express();
 const port = 4000;
@@ -25,6 +26,7 @@ db.connect().then(() => {
     // Afegeix les rutes de l'usuari
     app.use('/', userRoutes(db));
     app.use('/home', homeRoutes(db, client));
+    app.use('/chat', chatRoutes(db));
 
     app.listen(port, () => {
         console.log(`Server running on port ${port}`);
