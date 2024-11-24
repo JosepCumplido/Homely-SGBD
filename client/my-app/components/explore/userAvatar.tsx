@@ -1,3 +1,4 @@
+"use client"
 import {Avatar, AvatarIcon} from "@nextui-org/react";
 import {
     DropdownMenu,
@@ -6,9 +7,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {useAuth} from "@/hooks/useAuth";
+import Link from "next/link";
 
-export function UserAvatar({userAvatarUrl}: {userAvatarUrl: string}) {
-    const isLoggedIn = true
+export function UserAvatar({userAvatarUrl}: { userAvatarUrl: string }) {
+    const {isAuthenticated} = useAuth();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
@@ -24,19 +28,23 @@ export function UserAvatar({userAvatarUrl}: {userAvatarUrl: string}) {
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator/>
-                {!isLoggedIn ? (
+                {!isAuthenticated ? (
                     <>
+                        <DropdownMenuLabel>Welcome!</DropdownMenuLabel>
+                        <DropdownMenuSeparator/>
                         <DropdownMenuItem>Log in</DropdownMenuItem>
                         <DropdownMenuItem>Sign up</DropdownMenuItem>
                     </>
                 ) : (
                     <>
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
+                        <DropdownMenuLabel>Hi, Josep!</DropdownMenuLabel>
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem><Link href="/profile">Profile</Link></DropdownMenuItem>
                         <DropdownMenuItem>Messages</DropdownMenuItem>
                         <DropdownMenuItem>Reservations</DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem>Logout</DropdownMenuItem>
                     </>
                 )}
             </DropdownMenuContent>

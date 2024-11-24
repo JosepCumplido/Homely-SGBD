@@ -1,9 +1,9 @@
 'use client'
 
 import {SearchBox} from "@/components/explore/searchBox";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
+import {useAuth} from "@/hooks/useAuth";
+import {useRouter} from "next/navigation";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
 import ContentFrame from "@/components/explore/content-frame"
@@ -16,7 +16,7 @@ import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import {SearchRequest} from 'shared/data/searchRequest';
-import React, {useCallback, useEffect, useState} from "react";
+import React, {Suspense, useCallback, useEffect, useState} from "react";
 import {
     Building2,
     CableCar,
@@ -31,6 +31,7 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
+import {PostsSkeleton} from "@/components/explore/postCardSkeleton";
 
 interface DecodedToken {
     username: string;
@@ -89,7 +90,6 @@ export default function Home() {
     const [guestsNumber, setGuestsNumber] = useState<number | undefined>(undefined)
     const [searchCategory, setSearchCategory] = useState<Category | null>(null)
     const [searchPriceRange, setSearchPriceRange] = useState<number[]>([20, 540])
-    /*const [searchScore, setSearchScore] = useState<number[]>([])*/
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
     const [selectedAmenitiesList, setSelectedAmenitiesList] = useState<string[]>([]);
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
@@ -101,16 +101,6 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
-    const { isAuthenticated } = useAuth();
-    const router = useRouter();
-
-    const handleProfileClick = () => {
-        if (isAuthenticated) {
-            router.push("/profile"); // Si está autenticado, redirige al perfil
-        } else {
-            router.push("/login"); // Si no está autenticado, redirige al login
-        }
-    };
     const [username, setUsername] = useState<string | null>(null); // Estado para almacenar el username
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
@@ -236,7 +226,7 @@ export default function Home() {
 
     useEffect(() => {
         let totalFilters = selectedFeaturesList.length + selectedAmenitiesList.length
-        if(searchPriceRange[0] != 20 || searchPriceRange[1] != 540) totalFilters++
+        if (searchPriceRange[0] != 20 || searchPriceRange[1] != 540) totalFilters++
         setAppliedFiltersNumber(totalFilters)
     }, [searchPriceRange, selectedFeaturesList, selectedAmenitiesList]);
 
@@ -265,11 +255,6 @@ export default function Home() {
                     filtersNumber={appliedFiltersNumber}
                     onClearAllFilters={onClearAllFilters}
                 />
-                <Avatar onClick={handleProfileClick} className="cursor-pointer hover:ring hover:ring-offset-2">
-                    <AvatarImage src={avatarUrl || "explore/avatar/post_1.png"} alt="User Profile" />
-                    <AvatarFallback>{username ? username[0] : 'U'}</AvatarFallback>
-                </Avatar>
-
                 <Separator orientation="horizontal"/>
                 <div className={"max-h-[85vh] !mt-0 pb-24 overflow-y-scroll no-scrollbar"}>
                     <CategoryFilter
@@ -278,16 +263,9 @@ export default function Home() {
                         onCategoryChange={onCategoryChange}
                     />
                     <ContentFrame>
-                        {
-                            homes && homes.length > 0 ? (
-                                <Posts homes={homes} isLoading={loading} hasMore={hasMore}
-                                       loadMore={infiniteScrollSearch}/>
-                            ) : (
-                                <div className="text-center font-bold pt-10">
-                                    No hi ha resultats per mostrar.
-                                </div>
-                            )
-                        }
+                        <Suspense fallback={<PostsSkeleton/>}>
+                            <Posts homes={homes} isLoading={loading} hasMore={hasMore} loadMore={infiniteScrollSearch}/>
+                        </Suspense>
                     </ContentFrame>
                 </div>
             </div>
