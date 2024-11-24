@@ -101,15 +101,23 @@ const CreateAddPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('Submitting data:', formData);
+
+        const updatedFormData = {
+            ...formData,
+            categories: selectedCategoriesList,
+            features: selectedFeaturesList,
+            amenities: selectedAmenitiesList,
+        };
+
+        console.log('Submitting data:', updatedFormData);
 
         try {
-            const response = await fetch('http://localhost:4000/home', {
+            const response = await fetch('http://localhost:4000/home/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(updatedFormData), // Envia l'objecte actualitzat
             });
 
             if (response.ok) {

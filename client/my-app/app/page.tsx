@@ -25,6 +25,7 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
+import Link from "next/link";
 
 const categories: Category[] = [
     {name: "all", label: "All", icon: <LayoutGrid height={24} width={24} strokeWidth={1.2}/>},
