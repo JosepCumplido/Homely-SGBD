@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
-import {ContentFrame} from "@/components/explore/content-frame";
+import ContentFrame from "@/components/explore/content-frame"
 import {Posts} from "@/components/explore/posts";
 import type {Home} from 'shared/models/home';
 
