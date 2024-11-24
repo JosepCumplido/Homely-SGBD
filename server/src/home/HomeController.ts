@@ -261,7 +261,6 @@ export class HomeController {
             const page: number = request.page
             const size: number|null = request.size
             const city: string | null = request.city
-            const country: string | null = request.country
             const guestsNumber: number | undefined = request.guestsNumber
             const category: string | null = request.category
             const priceRange: number[] = request.priceRange
@@ -272,7 +271,6 @@ export class HomeController {
             console.log("Page: " + page)
             console.log("Size: " + _size)
             console.log("City: " + city)
-            console.log("Country: " + country)
             console.log("Category: " + category)
             console.log("PriceRange: " + priceRange)
             console.log("FeaturesList: " + featuresList)
@@ -280,7 +278,7 @@ export class HomeController {
             if (!Array.isArray(priceRange) || priceRange.length != 2) return res.status(400).send('Invalid price range: price range must be an array of two numbers.')
             if (priceRange[0] > priceRange[1]) return res.status(400).send('Invalid price range: starting price cannot be greater than ending price.')
 
-            return this.homeRepositoryElastic.searchHomes(page, _size, city, country, guestsNumber, category, priceRange, featuresList, amenitiesList)
+            return this.homeRepositoryElastic.searchHomes(page, _size, city, guestsNumber, category, priceRange, featuresList, amenitiesList)
                 .then(response => res.status(200).json(response))
                 .catch(error => res.status(error.status).send(error.error))
 

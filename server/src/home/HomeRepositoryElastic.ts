@@ -87,12 +87,11 @@ export class HomeRepositoryElastic {
         return await this.client.bulk({refresh: true, body});
     }
 
-    async searchHomes(page: number, size: number, city: string|null, country: string|null, guestsNumber: number|undefined, category: string|null, priceRange: number[], featuresList: string[], amenitiesList: string[]) {
+    async searchHomes(page: number, size: number, city: string|null, guestsNumber: number|undefined, category: string|null, priceRange: number[], featuresList: string[], amenitiesList: string[]) {
         try {
             const filters = []
 
             if (city != null) filters.push({ term: { city } });
-            if (country != null) filters.push({ term: { country } });
 
             if (guestsNumber != undefined) {
                 filters.push({
