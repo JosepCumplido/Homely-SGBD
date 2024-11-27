@@ -62,7 +62,7 @@ export class UserController {
         }
     }
 
-    async getUserProfile(req: Request, res: Response): Promise<Response> {
+    async getUserByUsername(req: Request, res: Response): Promise<Response> {
         const { username } = req.params;
 
         try {
@@ -75,12 +75,7 @@ export class UserController {
                 return res.status(404).json({ error: "User not found" });
             }
 
-            // Devuelve todos los datos relevantes
-            return res.json({
-                username: user.username,
-                email: user.email,
-                avatarUrl: user.avatarUrl, // Si necesitas esto
-            });
+            return res.json(user)
         } catch (error) {
             console.error("Error retrieving user:", error);
             return res.status(500).json({ error: "Error retrieving user" });

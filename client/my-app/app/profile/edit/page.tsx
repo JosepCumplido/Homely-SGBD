@@ -1,27 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import jwt from 'jsonwebtoken'; // Asegúrate de tener 'jsonwebtoken' instalado
+import jwt from 'jsonwebtoken';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-
-interface UserInfo {
-    username: string;
-    email: string;
-    avatarUrl?: string; // La URL del avatar, si está disponible
-}
+import {router} from "next/client";
 
 const EditProfilePage = () => {
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+    /*const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [username, setUsername] = useState<string>('');  // Nuevo nombre de usuario
     const [email, setEmail] = useState<string>('');       // Nuevo email
     const [currentPassword, setCurrentPassword] = useState<string>('');  // Contraseña actual
     const [newPassword, setNewPassword] = useState<string>('');  // Nueva contraseña
-    const router = useRouter();
+    const router = useRouter();*/
 
     // Decodificar el token y obtener el username actual desde el localStorage
     useEffect(() => {

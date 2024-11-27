@@ -1,21 +1,16 @@
 'use client'
+import jwt from 'jsonwebtoken';
+import {useAuth} from '@/hooks/useAuth';
+import {useRouter} from 'next/navigation';
 import {SearchBox} from "@/components/explore/searchBox";
-import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
-import {useAuth} from "@/hooks/useAuth";
-import {useRouter} from "next/navigation";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
 import {Separator} from "@/components/ui/separator";
 import ContentFrame from "@/components/explore/content-frame"
 import {Posts} from "@/components/explore/posts";
-import type {Home} from 'shared/models/home';
-
-import jwt from 'jsonwebtoken';
-
 import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
-import {SearchRequest} from 'shared/data/searchRequest';
-import React, {Suspense, useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
     Building2,
     CableCar,
@@ -30,11 +25,7 @@ import {
     TreePine,
     Waves
 } from "lucide-react";
-import {PostsSkeleton} from "@/components/explore/postsSkeleton";
-
-interface DecodedToken {
-    username: string;
-}
+import {User} from "shared/models/user";
 
 const categories: Category[] = [
     {name: "all", label: "All", icon: <LayoutGrid height={24} width={24} strokeWidth={1.2}/>},
@@ -94,89 +85,34 @@ export default function Home() {
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
     const [appliedFiltersNumber, setAppliedFiltersNumber] = useState(0)
 
+    /*const [userInfo, setUserInfo] = useState<User | null>(null);
     const [username, setUsername] = useState<string | null>(null); // Estado para almacenar el username
 
+    const router = useRouter();
+    const {isAuthenticated} = useAuth();
     useEffect(() => {
-        // Obtener el token del localStorage
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem('authToken');
         if (token) {
             try {
-                // Decodificamos el token correctamente usando jwtDecode
-                const decodedToken = jwt.decode(token) as DecodedToken;  // Aquí usamos jwtDecode en lugar de jwt_decode
-                setUsername(decodedToken.username);  // Accedemos al campo username
-                console.log("Decoded username:", decodedToken.username);
+                const decodedToken = jwt.decode(token) as { username: string };
+                fetchUserProfile(decodedToken.username);
             } catch (error) {
-                console.error("Error al decodificar el token:", error);
+                console.error('Error al decodificar el token:', error);
             }
         }
-    }, []);
 
-   /* useEffect(() => {
-        if (username) {
-            console.log('Fetching avatar for:', username);  // Verifica que el username sea el esperado
-            fetch(`http://localhost:4000/user/profile/${username}`)
-                .then((response) => response.json())
-                .catch((error) => {
-                    console.error("Error fetching avatar URL:", error);
-                });
-        } else {
-            console.error('No username available');
-        }
-    }, [username]);*/
+    }, [isAuthenticated, router]); // Solo se ejecuta una vez al montar el componente
 
-    /*const searchHomes = useCallback(async (isLoadMore: boolean) => {
-        setLoading(true);
-
-        // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
-        const searchPage = isLoadMore ? page + 1 : 0;
-
-        console.log("Category " + (searchCategory?.name ?? null))
-        const request = new SearchRequest(searchPage, limit, searchCity, guestsNumber, searchCategory?.name ?? null, searchPriceRange, selectedFeaturesList, selectedAmenitiesList)
-
+    const fetchUserProfile = async (username: string) => {
         try {
-            const response = await fetch('http://localhost:4000/home/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(request)
-            });
-
-            if (!response.ok) new Error('Network response failed');
-
-            const searchResponse = await response.json()
-
-            if (isLoadMore) {
-                setHomes(prevHomes => [...prevHomes, ...searchResponse.homes])
-                setPage(prevPage => prevPage + 1);
-                console.log("Search page: " + searchPage)
-            } else {
-                setHomes(searchResponse.homes)
-                setPage(0);
-            }
-
-            setSearchResultsNumber(searchResponse.homes.length)
-            setHasMore(searchResponse.homes.length > 0)
-
+            const response = await fetch(`http://localhost:4000/userByUsername/${username}`);
+            if (!response.ok) throw new Error('Failed to fetch profile');
+            const data = await response.json();
+            setUserInfo(data);
         } catch (error) {
-            console.error("Error al cercar cases:", error);
-            setHasMore(false)
-        } finally {
-            setLoading(false)
+            console.error('Error fetching user profile:', error);
         }
-    }, [page, searchCity, guestsNumber, searchCategory, searchPriceRange, selectedAmenitiesList, selectedFeaturesList]);
-
-    // Funció per executar la cerca quan els filtres canvien
-    useEffect(() => {
-        // Si canvia algun filtre, torna a cercar des de la pàgina 0 sense `isLoadMore`
-        searchHomes(false);
-    }, [searchCity, guestsNumber, searchCategory, searchPriceRange, selectedFeaturesList, selectedAmenitiesList]);
-
-    // Funció per executar la cerca quan es vol mostrar mes contingut amb els mateixos filtres
-    const infiniteScrollSearch = () => {
-        console.log("Load more")
-        searchHomes(true);
-    }*/
+    };*/
 
     const onCityChange = useCallback((city: string) => {
         setSearchCity(city)

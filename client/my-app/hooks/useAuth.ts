@@ -28,5 +28,5 @@ export const useAuth = () => {
         }
     }, []);  // Solo se ejecuta cuando el componente se monta
 
-    return { isAuthenticated };
+    return { isAuthenticated, setIsAuthenticated };
 };

@@ -39,7 +39,6 @@ export function Posts({
 
         // Si és una crida per carregar més, incrementa la pàgina; en cas contrari, reinicia la pàgina a 0
         const searchPage = isLoadMore ? page + 1 : 0;
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         console.log("Category " + (searchCategory?.name ?? null))
         const request = new SearchRequest(searchPage, limit, searchCity, guestsNumber, searchCategory?.name ?? null, searchPriceRange, selectedFeaturesList, selectedAmenitiesList)
 
