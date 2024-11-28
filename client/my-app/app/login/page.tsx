@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import SessionManager from "@/lib/sessionManager";
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -39,10 +40,10 @@ const LoginPage = () => {
         },
     });
 
-    const onSubmit = async (data: { username: string; password: string }) => {
+    const login = async (data: { username: string; password: string }) => {
         try {
             const request = new LoginRequest(data.username, data.password);
-            const response = await fetch('http://localhost:4000/login', {
+            const response = await fetch('http://localhost:4000/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,14 +52,9 @@ const LoginPage = () => {
             });
 
             if (response.ok) {
-                // Suponiendo que la respuesta contiene el token
                 const { token } = await response.json();
-
-                // Guardar el token en localStorage
-                localStorage.setItem("authToken", token);
-
-                // Redirigir a la página principal después de un login exitoso
-                router.push("/");  // O redirigir a cualquier página protegida
+                SessionManager.saveToken(token)
+                router.push("/")
 
             } else {
                 const errorData = await response.json();
@@ -74,7 +70,7 @@ const LoginPage = () => {
         <div>
             <h1 className="text-2xl font-bold text-center mb-6">Homely</h1>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form onSubmit={form.handleSubmit(login)} className="space-y-8">
                     <FormField
                         control={form.control}
                         name="username"

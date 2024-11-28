@@ -1,7 +1,8 @@
+/*
 import { Client } from '@elastic/elasticsearch';
 
 const client = new Client({
-    node: 'http://localhost:9200', // Asegura't que és la teva URL d'Elasticsearch
+    node: 'http://localhost:9200'
 });
 
-export default client;
+export default client;*/

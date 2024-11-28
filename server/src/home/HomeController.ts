@@ -240,7 +240,7 @@ export class HomeController {
         }
 
         // Genera una llista de 50 objectes `Home` i imprimeix-la en format JSON
-        const homes = Array.from({length: 500}, (_, index) => generateRandomHome(index));
+        const homes = Array.from({length: 200}, (_, index) => generateRandomHome(index));
 
         if (!Array.isArray(homes) || homes.length === 0) {
             return res.status(400).send('Request body must be an array of homes');
@@ -250,7 +250,7 @@ export class HomeController {
             const response = await this.homeRepositoryElastic.populate(homes);
             return res.status(201).json(response);
         } catch (error) {
-            return res.status(500).send('Error creating homes in bulk');
+            return res.status(500).send('Error creating homes in bulk' + error);
         }
     }
     // end create bulk homes

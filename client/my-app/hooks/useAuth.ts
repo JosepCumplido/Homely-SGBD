@@ -1,32 +1,29 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from "react";
-import jwt from "jsonwebtoken";
+import SessionManager from "@/lib/sessionManager";
 
 export const useAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        // Obtén el token de localStorage (si está disponible)
-        const token = localStorage.getItem("authToken");
+        const token = SessionManager.getToken();
 
-        // Verifica si el token existe
         if (token) {
             try {
-                // Intenta decodificar el token
-                const decodedToken = jwt.decode(token);
+                const decodedToken = SessionManager.decodeToken(token);
 
-                // Si el token es válido y tiene los datos esperados, lo consideramos autenticado
                 if (decodedToken) {
+                    console.log("Decoded token: " + decodedToken);
                     setIsAuthenticated(true);
                 }
             } catch (error) {
                 console.error("Error al decodificar el token:", error);
-                setIsAuthenticated(false);  // Si no se puede decodificar el token, no está autenticado
+                setIsAuthenticated(false);
             }
         } else {
-            setIsAuthenticated(false);  // Si no hay token, no está autenticado
+            setIsAuthenticated(false);
         }
-    }, []);  // Solo se ejecuta cuando el componente se monta
+    }, []);
 
     return { isAuthenticated, setIsAuthenticated };
 };

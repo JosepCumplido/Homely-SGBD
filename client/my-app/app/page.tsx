@@ -85,35 +85,6 @@ export default function Home() {
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
     const [appliedFiltersNumber, setAppliedFiltersNumber] = useState(0)
 
-    /*const [userInfo, setUserInfo] = useState<User | null>(null);
-    const [username, setUsername] = useState<string | null>(null); // Estado para almacenar el username
-
-    const router = useRouter();
-    const {isAuthenticated} = useAuth();
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            try {
-                const decodedToken = jwt.decode(token) as { username: string };
-                fetchUserProfile(decodedToken.username);
-            } catch (error) {
-                console.error('Error al decodificar el token:', error);
-            }
-        }
-
-    }, [isAuthenticated, router]); // Solo se ejecuta una vez al montar el componente
-
-    const fetchUserProfile = async (username: string) => {
-        try {
-            const response = await fetch(`http://localhost:4000/userByUsername/${username}`);
-            if (!response.ok) throw new Error('Failed to fetch profile');
-            const data = await response.json();
-            setUserInfo(data);
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
-        }
-    };*/
-
     const onCityChange = useCallback((city: string) => {
         setSearchCity(city)
     }, [])

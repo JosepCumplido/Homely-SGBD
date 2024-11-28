@@ -1,4 +1,3 @@
-import client from '../config/elasticSearch';
 import {Home} from "shared/models/home";
 import {Client} from "@elastic/elasticsearch";
 import {SearchResponse} from "shared/data/searchRequest";

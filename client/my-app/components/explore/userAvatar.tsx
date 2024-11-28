@@ -1,6 +1,7 @@
 "use client"
+
 import {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {TokenPayload} from 'shared/models/tokenPayload'
 import {Avatar, AvatarIcon} from "@nextui-org/react";
 import {
     DropdownMenu,
@@ -9,42 +10,43 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import {useAuth} from "@/hooks/useAuth";
 import Link from "next/link";
 import {router} from "next/client";
-import jwt from "jsonwebtoken";
+import SessionManager from "@/lib/sessionManager";
+import {fetchUser} from "@/lib/data";
+import {User} from "shared/models/user";
+import {useAuth} from "@/hooks/useAuth";
 
 export function UserAvatar({userAvatarUrl}: { userAvatarUrl: string }) {
 
     const {isAuthenticated, setIsAuthenticated} = useAuth();
-    const [userName, setUserName] = useState<string>("")
-    const handleLogout = () => { localStorage.removeItem('authToken'); setIsAuthenticated(false) };
+    const [userName, setUserName] = useState<string|null>(null)
+    const handleLogout = () => { SessionManager.removeToken(); setIsAuthenticated(false) };
 
     useEffect(() => {
-        try {
-            const token = localStorage.getItem('authToken');
-            const decodedToken = jwt.decode(token) as { username: string };
-            console.log("Decoded username:", decodedToken.username);
-            fetchUser(decodedToken.username);  // Usar el username del token para obtener el perfil
-        } catch (error) {
-            setIsAuthenticated(false)
-            console.error("Error al decodificar el token:", error);
-        }
-    }, [isAuthenticated, router]);
+        const fetchData = async () => {
+            const token = SessionManager.getToken();
+            if (token !== null) {
+                try {
+                    const decodedToken: TokenPayload = SessionManager.decodeToken(token);
+                    const user: User | null = await fetchUser(decodedToken.username);
+                    if(user !== null) {
+                        setUserName(user.name)
+                        console.log(user.name)
+                        setIsAuthenticated(true)
+                    } else {
+                        await router.push("/login");
+                    }
+                } catch (error) {
+                    console.error('Error decoding the token or fetching the user:', error);
+                }
+            } else {
+                await router.push("/login");
+            }
+        };
 
-    // Función para obtener los datos del perfil del usuario
-    const fetchUser = async (username: string) => {
-        try {
-            const response = await fetch(`http://localhost:4000/userByUsername/${username}`);
-            if (!response.ok) throw new Error('Failed to fetch profile');
-            const data = await response.json();
-            console.log(data)
-            setIsAuthenticated(true)
-            setUserName(data.name)
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
-        }
-    };
+        fetchData();
+    }, [isAuthenticated]);
 
     return (
         <DropdownMenu>

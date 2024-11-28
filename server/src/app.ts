@@ -11,7 +11,7 @@ const port = 4000;
 
 // Configurar CORS
 app.use(cors({
-    origin: 'http://localhost:3000', // Permetre només el client
+    origin: 'http://localhost:3000', // Permetre connexions del client
 }));
 
 app.use(express.json());
@@ -23,7 +23,7 @@ db.connect().then(() => {
     console.log('Connected to SQL Server');
 
     // Afegeix les rutes de l'usuari
-    app.use('/', userRoutes(db));
+    app.use('/user', userRoutes(db));
     app.use('/home', homeRoutes(db, client));
 
     app.listen(port, () => {
