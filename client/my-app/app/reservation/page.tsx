@@ -7,14 +7,6 @@ import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
     Select,
@@ -27,10 +19,10 @@ import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 export default function BookingForm() {
-    const [paymentMethod, setPaymentMethod] = useState("full")
+    const [, setPaymentMethod] = useState("full")
 
     return (
-        <div className="container mx-auto p-4 max-w-3xl">
+        <div className="pb-24 h-full container mx-auto p-4 max-w-3xl min-h-screen overflow-y-scroll">
             <div className="mb-6">
                 <Link href="#" className="inline-flex items-center text-gray-600 hover:text-gray-900">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -84,7 +76,6 @@ export default function BookingForm() {
 
                     <form onSubmit={(e) => {
                         e.preventDefault()
-                        // Add your form submission logic here
                         console.log('Form submitted')
                     }}>
                         <div className="mb-6">
@@ -205,4 +196,3 @@ export default function BookingForm() {
         </div>
     )
 }
-

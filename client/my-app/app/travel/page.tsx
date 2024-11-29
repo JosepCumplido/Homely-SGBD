@@ -49,7 +49,7 @@ export default function TravelHistory() {
     ]
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="pb-24 h-full w-full p-4 min-h-screen overflow-y-scroll">
             <h1 className="text-3xl font-bold mb-4">Reserves i viatges</h1>
             <div className="flex justify-end mb-2">
                 <a href="#" className="text-blue-600 hover:underline">No trobes una reserva?</a>

@@ -22,5 +22,8 @@ export function userRoutes(db: ConnectionPool): Router {
   router.put('/user/profile/:username', (req, res) => { userController.updateProfile(req, res) });
   router.put('/user/profile/:username/change-password', (req, res) => { userController.changePassword(req, res) });
 
+  router.get('/user/travel/upcoming', (req, res) => { userController.getUpcomingTravel(req, res) });
+  router.get('/user/travel/past', (req, res) => { userController.getPastTravels(req, res) });
+
   return router;
 }
