@@ -9,8 +9,8 @@ export function DestinationSelector({city, onCityChange}: {
 }) {
 
     return (
-        <div className={"flex flex-col space-y-1"}>
-            <p>Select destination</p>
+        <div className={"flex flex-col"}>
+            <p className={"text-white text-xs"}>Select destination</p>
             <div>
                 <DropdownSearch selectedCity={city} onCityChange={onCityChange} />
             </div>

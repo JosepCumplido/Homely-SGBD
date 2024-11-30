@@ -31,8 +31,8 @@ export default function RootLayout({
 
     return (
         <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}>
-            <section className={"w-full h-20"}>
+        <body className={`${geistSans.variable} ${geistMono.variable} w-full h-full antialiased`}>
+            {/*<section className={"w-full h-20"}>
                 <ContentFrame className={"h-full flex flex-row justify-between items-center"}>
                     <h1 className={"text-2xl font-bold"}><Link href={"/"}>Homely</Link></h1>
                     <div className={"flex flex-row gap-6 items-center"}>
@@ -43,6 +43,11 @@ export default function RootLayout({
             </section>
             <NextUIProvider>
                 <section className={"w-full h-[calc(100vh-5rem)]"}>
+                    {children}
+                </section>
+            </NextUIProvider>*/}
+            <NextUIProvider>
+                <section className={"w-full h-full relative"}>
                     {children}
                 </section>
             </NextUIProvider>

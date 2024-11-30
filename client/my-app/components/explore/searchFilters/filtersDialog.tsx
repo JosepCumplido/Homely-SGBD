@@ -59,11 +59,15 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={"outline"} className={"!border-black mt-auto py-[1.25rem] relative"}>
+                <Button variant={"outline"}
+                        className={"!border-black mt-auto rounded-full h-[55px] w-[55px] absolute right-2.5 shadow-lg transition-transform duration-300 hover:scale-[1.01]"}>
+                    <MixerHorizontalIcon/>
+                </Button>
+                {/*<Button variant={"outline"} className={"!border-black mt-auto py-[1.25rem] relative"}>
                     <MixerHorizontalIcon/>
                     Filters
                     {filtersNumber > 0 && <FiltersNumberBadge filtersNumber={filtersNumber}/>}
-                </Button>
+                </Button>*/}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] max-h-[90vh] w-[700px] px-0 py-4 gap-0">
                 <DialogHeader className={"gap-0"}>

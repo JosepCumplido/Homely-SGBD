@@ -7,15 +7,30 @@ import {Separator} from "@/components/ui/separator";
 import {Button} from "@/components/ui/button";
 import * as React from "react";
 import {FiltersDialog} from "@/components/explore/searchFilters/filtersDialog";
-import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
+import {MagnifyingGlassIcon, MixerHorizontalIcon} from "@radix-ui/react-icons";
 import type {FeatureType} from "shared/models/featureType";
 import type {AmenityType} from "shared/models/amenityType";
+import DropdownSearch from "@/components/ui/dropdown-search";
 
-export function SearchBox({city, onCityChange, guests, onGuestsChange, priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
-    city: string|null,
+export function SearchBox({
+                              city,
+                              onCityChange,
+                              guests,
+                              onGuestsChange,
+                              priceRange,
+                              onPriceRangeChange,
+                              searchResults,
+                              featureTypes,
+                              onFeatureClick,
+                              amenityTypes,
+                              onAmenityClick,
+                              filtersNumber,
+                              onClearAllFilters
+                          }: {
+    city: string | null,
     onCityChange: (city: string) => void,
-    guests:number|undefined,
-    onGuestsChange: (guests:number) => void,
+    guests: number | undefined,
+    onGuestsChange: (guests: number) => void,
     priceRange: number[],
     onPriceRangeChange: (range: number[]) => void,
     searchResults: number,
@@ -28,14 +43,26 @@ export function SearchBox({city, onCityChange, guests, onGuestsChange, priceRang
 
 }) {
     return (
-        <div className={"flex flex-row space-x-4 items-center h-[60px] justify-center"}>
-            <DestinationSelector city={city} onCityChange={onCityChange}/>
-            <Separator orientation="vertical"/>
-            <DatePickerRange/>
-            <Separator orientation="vertical"/>
-            <GuestsSelector guests={guests} onGuestsChange={onGuestsChange}/>
-            <Separator orientation="vertical"/>
-            <Button className={"mt-auto py-[1.25rem]"}><MagnifyingGlassIcon/>Search</Button>
+        <div className={"h-[75px] w-[850px] rounded-full flex flex-row items-center bg-gray-900 absolute bottom-6 left-1/2 transform -translate-x-1/2 shadow-lg"}>
+            <div className={"flex flex-col space-y-1 w-[28%] px-10"}>
+                <p className={"text-white text-xs"}>Select destination</p>
+                <DropdownSearch selectedCity={city} onCityChange={onCityChange}/>
+            </div>
+
+            <Separator orientation="vertical" className={"h-3/4 rounded opacity-70"}/>
+
+            <div className={"flex flex-col space-y-1 w-[36%] px-10"}>
+                <p className={"text-white text-xs"}>Select stay</p>
+                <DatePickerRange/>
+            </div>
+
+            <Separator orientation="vertical" className={"h-3/4 rounded opacity-70"}/>
+
+            <div className={"flex flex-col space-y-1 px-10"}>
+                <p className={"text-white text-xs"}>Select guests</p>
+                <GuestsSelector guests={guests} onGuestsChange={onGuestsChange}/>
+            </div>
+
             <FiltersDialog
                 priceRange={priceRange}
                 onPriceRangeChange={onPriceRangeChange}

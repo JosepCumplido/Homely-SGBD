@@ -1,12 +1,12 @@
 // Dependencies: pnpm install lucide-react
 
 "use client";
-import { Country } from 'shared/models/country'
-import { Label } from "@/components/ui/label";
-import { Check, ChevronDown } from "lucide-react";
-import { Fragment, useState } from "react";
+import {Country} from 'shared/models/country'
+import {Label} from "@/components/ui/label";
+import {Check, ChevronDown} from "lucide-react";
+import {Fragment, useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     Command,
     CommandEmpty,
@@ -15,8 +15,8 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
 
 const europeanCountries = [
     {
@@ -89,67 +89,66 @@ export default function DropdownSearch({selectedCity, onCityChange}: {
     /*const [value, setValue] = useState<string>("");*/
 
     return (
-        <div className="space-y-2">
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        id="select-44"
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={open}
-                        className="w-full justify-between bg-background px-3 font-normal outline-offset-0 hover:bg-background focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
-                    >
-                        {selectedCity ? (
-                            <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate">{selectedCity}</span>
-              </span>
-                        ) : (
-                            <span className="text-muted-foreground">Select country</span>
-                        )}
-                        <ChevronDown
-                            size={16}
-                            strokeWidth={2}
-                            className="shrink-0 text-muted-foreground/80"
-                            aria-hidden="true"
-                        />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                    className="w-full min-w-[var(--radix-popper-anchor-width)] p-0"
-                    align="start"
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    id="select-44"
+                    variant="ghost"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full h-6 justify-between !bg-transparent !px-0 py-0 font-normal outline-offset-0 focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
                 >
-                    <Command>
-                        <CommandInput placeholder="Search country..." />
-                        <CommandList>
-                            <CommandEmpty>No country found.</CommandEmpty>
-                            {europeanCountries.map((country) => (
-                                <Fragment key={country.name}>
-                                    <CommandGroup heading={country.name}>
-                                        {country.cities.map((city) => (
-                                            <CommandItem
-                                                key={city}
-                                                value={city}
-                                                onSelect={(currentValue) => {
-                                                    onCityChange(currentValue);
-                                                    setOpen(false);
-                                                }}
-                                            >
-                                                {city}
-                                                <Check
-                                                    className={cn(
-                                                        "ml-auto",
-                                                        selectedCity === city ? "opacity-100" : "opacity-0",
-                                                    )}
-                                                />
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </Fragment>
-                            ))}
-                        </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
-        </div>
+                    {selectedCity ? (
+                        <span className="flex min-w-0 items-center gap-2">
+                            <span className="truncate text-white font-bold">{selectedCity}</span>
+                        </span>
+                    ) : (
+                        <span className="text-muted-foreground text-gray-500">Search destination</span>
+                    )}
+                    {/*<ChevronDown
+                        size={16}
+                        strokeWidth={2}
+                        className="shrink-0 text-muted-foreground/80"
+                        aria-hidden="true"
+                        color={"gray"}
+                    />*/}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent
+                className="w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+                align="start"
+            >
+                <Command>
+                    <CommandInput placeholder="Search destination"/>
+                    <CommandList>
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        {europeanCountries.map((country) => (
+                            <Fragment key={country.name}>
+                                <CommandGroup heading={country.name}>
+                                    {country.cities.map((city) => (
+                                        <CommandItem
+                                            key={city}
+                                            value={city}
+                                            onSelect={(currentValue) => {
+                                                onCityChange(currentValue);
+                                                setOpen(false);
+                                            }}
+                                        >
+                                            {city}
+                                            <Check
+                                                className={cn(
+                                                    "ml-auto",
+                                                    selectedCity === city ? "opacity-100" : "opacity-0",
+                                                )}
+                                            />
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Fragment>
+                        ))}
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }

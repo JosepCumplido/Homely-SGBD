@@ -56,7 +56,7 @@ export function UserAvatar({userAvatarUrl}: { userAvatarUrl: string }) {
                         src={userAvatarUrl}
                         icon={<AvatarIcon/>}
                         classNames={{
-                            base: "bg-gradient-to-br from-[#FFB457] to-[#FF705B]",
+                            base: "bg-gradient-to-br from-[#FFB457] to-[#FF705B] shadow-lg",
                             icon: "text-black/80",
                         }}
                     />

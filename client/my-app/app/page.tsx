@@ -1,4 +1,5 @@
 'use client'
+
 import jwt from 'jsonwebtoken';
 import {useAuth} from '@/hooks/useAuth';
 import {useRouter} from 'next/navigation';
@@ -26,20 +27,89 @@ import {
     Waves
 } from "lucide-react";
 import {User} from "shared/models/user";
+import {Button} from "@/components/ui/button";
+import {UserAvatar} from "@/components/explore/userAvatar";
+import Link from "next/link";
+import Image from "next/image";
+import {MixerHorizontalIcon} from "@radix-ui/react-icons";
 
+const iconRoute = "/explore/category-icons"
 const categories: Category[] = [
-    {name: "all", label: "All", icon: <LayoutGrid height={24} width={24} strokeWidth={1.2}/>},
-    {name: "beach", label: "Beach", icon: <TreePalm height={24} width={24} strokeWidth={1.2}/>},
-    {name: "countryside", label: "Countryside", icon: <Fence height={24} width={24} strokeWidth={1.2}/>},
-    {name: "city", label: "City", icon: <Building2 height={24} width={24} strokeWidth={1.2}/>},
-    {name: "cabins", label: "Cabins", icon: <TreePine height={24} width={24} strokeWidth={1.2}/>},
-    {name: "boats", label: "Boats", icon: <Sailboat height={24} width={24} strokeWidth={1.2}/>},
-    {name: "castles", label: "Castles", icon: <Castle height={24} width={24} strokeWidth={1.2}/>},
-    {name: "skiing", label: "Skiing", icon: <CableCar height={24} width={24} strokeWidth={1.2}/>},
-    {name: "lake", label: "Lake", icon: <Waves height={24} width={24} strokeWidth={1.2}/>},
-    {name: "luxe", label: "Luxe", icon: <Gem height={24} width={24} strokeWidth={1.2}/>},
-    {name: "mountain", label: "Mountain", icon: <Mountain height={24} width={24} strokeWidth={1.2}/>},
-    {name: "camping", label: "Camping", icon: <TentTree height={24} width={24} strokeWidth={1.2}/>}
+    {
+        name: "all",
+        label: "All",
+        icon: <Image src={`${iconRoute}/all.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "cabins",
+        label: "Cabins",
+        icon: <Image src={`${iconRoute}/cabins.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "design",
+        label: "Design",
+        icon: <Image src={`${iconRoute}/design.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "countryside",
+        label: "Countryside",
+        icon: <Image src={`${iconRoute}/countryside.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "luxe",
+        label: "Luxe",
+        icon: <Image src={`${iconRoute}/luxe.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "mansions",
+        label: "Mansions",
+        icon: <Image src={`${iconRoute}/mansions.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "city",
+        label: "City",
+        icon: <Image src={`${iconRoute}/city.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "treehouses",
+        label: "Treehouses",
+        icon: <Image src={`${iconRoute}/tree-houses.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "castles",
+        label: "Castles",
+        icon: <Image src={`${iconRoute}/castles.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "skiing",
+        label: "Skiing",
+        icon: <Image src={`${iconRoute}/sking.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "beach",
+        label: "Beach",
+        icon: <Image src={`${iconRoute}/beach.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "lake",
+        label: "Lake",
+        icon: <Image src={`${iconRoute}/lake.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "mountain",
+        label: "Mountain",
+        icon: <Image src={`${iconRoute}/mountain.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "boats",
+        label: "Boats",
+        icon: <Image src={`${iconRoute}/boats.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
+    {
+        name: "camping",
+        label: "Camping",
+        icon: <Image src={`${iconRoute}/camping.jpg`} height={24} width={24} alt={"Beach category icon"}/>
+    },
 ]
 
 const featureTypes: FeatureType[] = [
@@ -138,7 +208,69 @@ export default function Home() {
     }
 
     return (
-        <div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
+        <>
+            {/* header */}
+            <section
+                className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[90vw] left-1/2 -translate-x-1/2 z-10"}>
+                <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
+                <div className={"flex flex-row gap-6 items-center"}>
+                    <Button variant={"ghost"} className={"font-bold text-white"}>Your reservations</Button>
+                    <UserAvatar userAvatarUrl={""}/>
+                </div>
+            </section>
+
+            {/* banner */}
+            <section>
+                <div className={"relative"}>
+                    <Image
+                        src="/explore/background/background.jpg"
+                        width={1802}
+                        height={1200}
+                        alt={"Background image showing a big house"}
+                        quality={100}
+                        className={"h-[30vh] w-full"}
+                        style={{objectFit: 'cover'}}
+                    />
+                    {/* search params */}
+                    <SearchBox
+                        city={searchCity}
+                        onCityChange={onCityChange}
+                        guests={guestsNumber}
+                        onGuestsChange={onGuestsNumberChange}
+                        priceRange={searchPriceRange}
+                        onPriceRangeChange={onPriceRangeChange}
+                        searchResults={searchResultsNumber}
+                        featureTypes={featureTypes}
+                        onFeatureClick={onFeatureClick}
+                        amenityTypes={amenityTypes}
+                        onAmenityClick={onAmenityClick}
+                        filtersNumber={appliedFiltersNumber}
+                        onClearAllFilters={onClearAllFilters}
+                    />
+
+
+                </div>
+
+                <CategoryFilter
+                    categories={categories}
+                    selectedCategory={searchCategory}
+                    onCategoryChange={onCategoryChange}
+                />
+                <ContentFrame>
+                    <Posts
+                        searchCity={searchCity}
+                        guestsNumber={guestsNumber}
+                        searchCategory={searchCategory}
+                        searchPriceRange={searchPriceRange}
+                        selectedFeaturesList={selectedFeaturesList}
+                        selectedAmenitiesList={selectedAmenitiesList}
+                        onSetSearchResultsNumber={onSetSearchResultsNumber}
+                    />
+                </ContentFrame>
+            </section>
+        </>
+
+        /*<div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
             <SearchBox
                 city={searchCity}
                 onCityChange={onCityChange}
@@ -162,7 +294,6 @@ export default function Home() {
                     onCategoryChange={onCategoryChange}
                 />
                 <ContentFrame>
-                    {/*<Suspense fallback={<PostsSkeleton/>}>*/}
                         <Posts
                             searchCity={searchCity}
                             guestsNumber={guestsNumber}
@@ -172,9 +303,8 @@ export default function Home() {
                             selectedAmenitiesList={selectedAmenitiesList}
                             onSetSearchResultsNumber={onSetSearchResultsNumber}
                         />
-                    {/*</Suspense>*/}
                 </ContentFrame>
             </div>
-        </div>
+        </div>*/
     );
 }
