@@ -1,17 +1,22 @@
-import * as React from "react"
+import * as React from "react";
+import { Chat } from "shared/models/chat";
 
-import {Chat} from "shared/models/chat";
-
-export function ChatsList({chatsList, currentUsername, onSelectChat}: { chatsList: Chat[], currentUsername: string | null, onSelectChat: (chat: Chat) => void}) {
+export function ChatsList({ chatsList, currentUsername, onSelectChat }: { chatsList: Chat[], currentUsername: string | null, onSelectChat: (chat: Chat) => void }) {
 
     const handleChatClick = (chat: Chat) => {
-        onSelectChat(chat)
+        onSelectChat(chat);
     };
 
     return (
         <aside className="w-1/3 bg-gray-50 border-r">
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Tus Chats</h1>
+                <button
+                    onClick={() => window.location.href = "http://localhost:3000/profile"}
+                    className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
+                    Volver
+                </button>
             </div>
             <div className="overflow-y-auto h-[calc(100vh-73px)]">
                 {chatsList.length > 0 ? (
@@ -34,5 +39,5 @@ export function ChatsList({chatsList, currentUsername, onSelectChat}: { chatsLis
                 )}
             </div>
         </aside>
-    )
+    );
 }

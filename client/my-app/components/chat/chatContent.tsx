@@ -1,11 +1,10 @@
-import * as React from "react"
-
+import * as React from "react";
 import { Chat } from 'shared/models/chat';
 import { Message } from "shared/models/message";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import useUsername from "@/hooks/useUsername";
 
-export function ChatContent({chat}: {chat: Chat | null}) {
+export function ChatContent({ chat }: { chat: Chat | null }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const { loggedUsername } = useUsername();
@@ -14,9 +13,8 @@ export function ChatContent({chat}: {chat: Chat | null}) {
         const fetchMessages = async () => {
             try {
                 const response = await fetch(`http://localhost:4000/chat/${chat?.chatId}/messages`);
-                if (!response.ok) new Error('Error fetching messages');
+                if (!response.ok) throw new Error('Error fetching messages');
                 const data = await response.json();
-                console.log("Messages: " + data);
                 setMessages(data);
             } catch (error) {
                 console.error('Error fetching messages:', error);
@@ -24,7 +22,6 @@ export function ChatContent({chat}: {chat: Chat | null}) {
         };
 
         if (chat?.chatId) fetchMessages();
-
     }, [chat]);
 
     const sendMessage = async () => {
@@ -50,18 +47,29 @@ export function ChatContent({chat}: {chat: Chat | null}) {
         <main className="flex-1">
             <div className="flex flex-col h-full">
                 {/* Lista de mensajes */}
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {chat != null ? (
                         messages.map((message) => (
-                            <div key={message.messageId} className="mb-4">
-                                <p
-                                    className={`font-bold ${
-                                        message.senderUsername === loggedUsername ? 'text-blue-600' : ''
+                            <div
+                                key={message.messageId}
+                                className={`flex ${
+                                    message.senderUsername === loggedUsername ? 'justify-end' : 'justify-start'
+                                }`}
+                            >
+                                <div
+                                    className={`max-w-xs p-3 rounded-lg ${
+                                        message.senderUsername === loggedUsername
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-200 text-gray-900'
                                     }`}
                                 >
-                                    {message.senderUsername}
-                                </p>
-                                <p>{message.content}</p>
+                                    <p
+                                        className="text-xs font-bold mb-1"
+                                    >
+                                        {message.senderUsername}
+                                    </p>
+                                    <p>{message.content}</p>
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -94,6 +102,4 @@ export function ChatContent({chat}: {chat: Chat | null}) {
             </div>
         </main>
     );
-
-
 }
