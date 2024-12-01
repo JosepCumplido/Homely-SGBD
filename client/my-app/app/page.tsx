@@ -1,37 +1,17 @@
 'use client'
 
-import jwt from 'jsonwebtoken';
-import {useAuth} from '@/hooks/useAuth';
-import {useRouter} from 'next/navigation';
 import {SearchBox} from "@/components/explore/searchBox";
 import {CategoryFilter} from "@/components/explore/categoryFilter";
-import {Separator} from "@/components/ui/separator";
 import ContentFrame from "@/components/explore/content-frame"
 import {Posts} from "@/components/explore/posts";
 import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import React, {useCallback, useEffect, useState} from "react";
-import {
-    Building2,
-    CableCar,
-    Castle,
-    Fence,
-    Gem,
-    LayoutGrid,
-    Mountain,
-    Sailboat,
-    TentTree,
-    TreePalm,
-    TreePine,
-    Waves
-} from "lucide-react";
-import {User} from "shared/models/user";
 import {Button} from "@/components/ui/button";
 import {UserAvatar} from "@/components/explore/userAvatar";
 import Link from "next/link";
 import Image from "next/image";
-import {MixerHorizontalIcon} from "@radix-ui/react-icons";
 
 const iconRoute = "/explore/category-icons"
 const categories: Category[] = [
@@ -209,16 +189,6 @@ export default function Home() {
 
     return (
         <>
-            {/* header */}
-            <section
-                className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[90vw] left-1/2 -translate-x-1/2 z-10"}>
-                <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
-                <div className={"flex flex-row gap-6 items-center"}>
-                    <Button variant={"ghost"} className={"font-bold text-white"}>Your reservations</Button>
-                    <UserAvatar userAvatarUrl={""}/>
-                </div>
-            </section>
-
             {/* banner */}
             <section>
                 <div className={"relative"}>
@@ -247,8 +217,6 @@ export default function Home() {
                         filtersNumber={appliedFiltersNumber}
                         onClearAllFilters={onClearAllFilters}
                     />
-
-
                 </div>
 
                 <CategoryFilter

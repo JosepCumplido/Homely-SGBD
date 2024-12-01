@@ -22,16 +22,16 @@ export function PostCard({home}: { home: Home }) {
 
     return (
         /*<Link href={""}>*/
-            <div className={"relative flex flex-col rounded-xl space-y-1 group"}>
+            <div className={"relative flex flex-col rounded-lg space-y-1 group"}>
                 <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
-                    <Carousel className="relative rounded-2xl w-full h-full">
+                    <Carousel className="relative rounded-lg w-full h-full">
                         <CarouselContent className={"h-full"}>
                             {imagesUrls.map((image, index) => (
                                 <CarouselItem key={index} className={"h-full w-full"}>
                                     <Card className={"h-full"}>
                                         <CardContent className="flex items-center justify-center p-0 h-full">
                                             <Image src={image} alt={"Card image"} width={540} height={720}
-                                                   className={"object-cover w-full h-full"} priority/>
+                                                   className={"object-cover w-full h-full rounded-lg"} priority/>
                                         </CardContent>
                                     </Card>
                                 </CarouselItem>

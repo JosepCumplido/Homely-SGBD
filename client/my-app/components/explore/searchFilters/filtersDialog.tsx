@@ -16,7 +16,6 @@ import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import {FeatureSelector} from "@/components/explore/searchFilters/featureSelector";
 import {useState} from "react";
-import {FiltersNumberBadge} from "@/components/explore/searchFilters/filtersNumberBadge";
 
 export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
     priceRange: number[],

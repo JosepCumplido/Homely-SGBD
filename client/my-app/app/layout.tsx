@@ -2,10 +2,10 @@ import type {Metadata} from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {NextUIProvider} from "@nextui-org/react";
-import ContentFrame from "@/components/explore/content-frame";
 import {UserAvatar} from "@/components/explore/userAvatar";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
+import React from "react";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -31,27 +31,21 @@ export default function RootLayout({
 
     return (
         <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} w-full h-full antialiased`}>
-            {/*<section className={"w-full h-20"}>
-                <ContentFrame className={"h-full flex flex-row justify-between items-center"}>
-                    <h1 className={"text-2xl font-bold"}><Link href={"/"}>Homely</Link></h1>
-                    <div className={"flex flex-row gap-6 items-center"}>
-                        <Button variant={"ghost"} className={"font-bold"}>Your reservations</Button>
-                        <UserAvatar userAvatarUrl={""}/>
-                    </div>
-                </ContentFrame>
+        <NextUIProvider>
+            <body className={`${geistSans.variable} ${geistMono.variable} w-full h-full relative antialiased`}>
+            {/* header */}
+            <section
+                className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[90vw] left-1/2 -translate-x-1/2 z-10"}>
+                <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
+                <div className={"flex flex-row gap-6 items-center"}>
+                    <Button variant={"ghost"} className={"font-bold text-white"}>Your reservations</Button>
+                    <UserAvatar userAvatarUrl={""}/>
+                </div>
             </section>
-            <NextUIProvider>
-                <section className={"w-full h-[calc(100vh-5rem)]"}>
-                    {children}
-                </section>
-            </NextUIProvider>*/}
-            <NextUIProvider>
-                <section className={"w-full h-full relative"}>
-                    {children}
-                </section>
-            </NextUIProvider>
-        </body>
+            {/* body */}
+            {children}
+            </body>
+        </NextUIProvider>
         </html>
     );
 }
