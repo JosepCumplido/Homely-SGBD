@@ -21,7 +21,7 @@ import { useState } from "react";
 import SessionManager from "@/lib/sessionManager";
 
 const formSchema = z.object({
-    username: z.string().min(2, {
+    loggedUsername: z.string().min(2, {
         message: "Username must be at least 2 characters.",
     }).max(50, { message: "username cannot exceed 50 characters." }),
 
@@ -35,14 +35,14 @@ const LoginPage = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            loggedUsername: "",
             password: "",
         },
     });
 
-    const login = async (data: { username: string; password: string }) => {
+    const login = async (data: { loggedUsername: string; password: string }) => {
         try {
-            const request = new LoginRequest(data.username, data.password);
+            const request = new LoginRequest(data.loggedUsername, data.password);
             const response = await fetch('http://localhost:4000/user/login', {
                 method: 'POST',
                 headers: {
@@ -73,7 +73,7 @@ const LoginPage = () => {
                 <form onSubmit={form.handleSubmit(login)} className="space-y-8">
                     <FormField
                         control={form.control}
-                        name="username"
+                        name="loggedUsername"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Username</FormLabel>

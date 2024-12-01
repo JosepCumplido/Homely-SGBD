@@ -139,6 +139,7 @@ export class UserController {
 
 
     async login(req: Request, res: Response): Promise<any> {
+        console.log("login")
         const {username, password} = req.body;
 
         if (!username || !password) {
