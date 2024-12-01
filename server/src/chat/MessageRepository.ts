@@ -11,7 +11,7 @@ export class MessageRepository {
     async findMessagesByChatId(chatId: number) {
         const result = await this.db.request()
             .input('chatId', chatId)
-            .query('SELECT * FROM messages WHERE chatId = @chatId ORDER BY createdAt ASC');
+            .query('SELECT * FROM Message WHERE chatId = @chatId ORDER BY createdAt ASC');
         return result.recordset;
     }
 
@@ -21,7 +21,7 @@ export class MessageRepository {
             .input('chatId', chatId)
             .input('senderUsername', senderUsername)
             .input('content', content)
-            .query('INSERT INTO messages (chatId, senderUsername, content, createdAt) OUTPUT INSERTED.* VALUES (@chatId, @senderUsername, @content, GETDATE())');
+            .query('INSERT INTO Message (chatId, senderUsername, content, createdAt) OUTPUT INSERTED.* VALUES (@chatId, @senderUsername, @content, GETDATE())');
         return result.recordset[0];
     }
 }

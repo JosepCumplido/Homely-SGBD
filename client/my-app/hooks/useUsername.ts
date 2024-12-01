@@ -25,7 +25,7 @@ const useUsername = () => {
         }
     }, []); // Este hook solo se ejecuta una vez cuando el componente se monta
 
-    return { username };
+    return { loggedUsername: username };
 };
 
 export default useUsername;

@@ -31,10 +31,11 @@ export class ChatController {
     async getMessagesByChatId(req: Request, res: Response): Promise<void> {
         try {
             const chatId = Number(req.params.chatId);
+            console.log("Chat id: " + chatId)
             const messages = await this.messageRepository.findMessagesByChatId(chatId);
             res.json(messages);
         } catch (err) {
-            res.status(500).send('Error retrieving messages');
+            res.status(500).send(err + 'Error retrieving messages');
         }
     }
 

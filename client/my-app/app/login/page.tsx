@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 const formSchema = z.object({
-    username: z.string().min(2, {
+    loggedUsername: z.string().min(2, {
         message: "Username must be at least 2 characters.",
     }).max(50, { message: "username cannot exceed 50 characters." }),
 
@@ -34,13 +34,14 @@ const LoginPage = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            loggedUsername: "",
             password: "",
         },
     });
 
     const onSubmit = async (data: { username: string; password: string }) => {
         try {
+            console.log("submit")
             const request = new LoginRequest(data.username, data.password);
             const response = await fetch('http://localhost:4000/login', {
                 method: 'POST',
