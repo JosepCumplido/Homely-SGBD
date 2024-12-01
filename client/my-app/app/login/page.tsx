@@ -39,10 +39,10 @@ const LoginPage = () => {
         },
     });
 
-    const onSubmit = async (data: { username: string; password: string }) => {
+    const onSubmit = async (data: { loggedUsername: string; password: string }) => {
         try {
             console.log("submit")
-            const request = new LoginRequest(data.username, data.password);
+            const request = new LoginRequest(data.loggedUsername, data.password);
             const response = await fetch('http://localhost:4000/login', {
                 method: 'POST',
                 headers: {
@@ -78,7 +78,7 @@ const LoginPage = () => {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
-                        name="username"
+                        name="loggedUsername"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Username</FormLabel>
