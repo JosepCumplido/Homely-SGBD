@@ -8,9 +8,6 @@ import type {Category} from 'shared/models/category';
 import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import React, {useCallback, useEffect, useState} from "react";
-import {Button} from "@/components/ui/button";
-import {UserAvatar} from "@/components/explore/userAvatar";
-import Link from "next/link";
 import Image from "next/image";
 
 const iconRoute = "/explore/category-icons"

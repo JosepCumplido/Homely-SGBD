@@ -17,8 +17,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import SessionManager from "@/lib/sessionManager";
+import React, {useEffect, useState} from "react";
+import {useAuth} from "@/context/authContext";
 
 const formSchema = z.object({
     loggedUsername: z.string().min(2, {
@@ -29,8 +29,15 @@ const formSchema = z.object({
 });
 
 const LoginPage = () => {
+    const { login, isAuthenticated } = useAuth();
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        if (isAuthenticated && typeof window !== "undefined") {
+            router.push("/");
+        }
+    }, [isAuthenticated, router]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -40,7 +47,9 @@ const LoginPage = () => {
         },
     });
 
-    const login = async (data: { loggedUsername: string; password: string }) => {
+    const handleSubmit = async (data: { loggedUsername: string; password: string }) => {
+        setErrorMessage("");
+
         try {
             const request = new LoginRequest(data.loggedUsername, data.password);
             const response = await fetch('http://localhost:4000/user/login', {
@@ -52,8 +61,8 @@ const LoginPage = () => {
             });
 
             if (response.ok) {
-                const { token } = await response.json();
-                SessionManager.saveToken(token)
+                const result = await response.json();
+                login(result.token)
                 router.push("/")
 
             } else {
@@ -70,7 +79,7 @@ const LoginPage = () => {
         <div>
             <h1 className="text-2xl font-bold text-center mb-6">Homely</h1>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(login)} className="space-y-8">
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
                         name="loggedUsername"

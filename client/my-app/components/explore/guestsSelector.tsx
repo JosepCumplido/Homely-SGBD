@@ -13,18 +13,22 @@ export function GuestsSelector({guests, onGuestsChange}: {
                 <Group
                     className="relative inline-flex h-9 w-full items-center whitespace-nowrap rounded-lg text-sm shadow-sm shadow-black/5 transition-shadow">
                     <Button
+                        aria-label="Decrease hosts"
                         slot="decrement"
                         className="-ms-px flex aspect-square h-6 items-center justify-center rounded-full border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        <Minus size={16} strokeWidth={2} aria-hidden="true"/>
+                        <Minus size={16} strokeWidth={2} aria-label="Decrease hosts"/>
                     </Button>
-                    <Input placeholder={"Add guests"}
-                           className="w-24 grow text-center bg-transparent tabular-nums text-white focus:outline-none"/>
+                    <Input
+                        aria-label="Guests input"
+                        placeholder="Add guests"
+                        className="w-24 grow text-center bg-transparent tabular-nums text-white focus:outline-none"/>
                     <Button
+                        aria-label="Increase hosts"
                         slot="increment"
                         className="-me-px flex aspect-square h-6 items-center justify-center rounded-full border border-input bg-background text-sm text-muted-foreground/80 transition-shadow hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        <Plus size={16} strokeWidth={2} aria-hidden="true"/>
+                        <Plus size={16} strokeWidth={2} aria-label="Increase hosts"/>
                     </Button>
                 </Group>
             </div>

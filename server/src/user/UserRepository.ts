@@ -44,7 +44,7 @@ export class UserRepository {
         const result = await this.db.request()
             .input('username', username)
             .query('SELECT * FROM [User] WHERE username = @username');
-        return result.recordset[0] || null;  // Devuelve el primer usuario encontrado o null si no se encuentra
+        return result.recordset[0] || null;
     }
 
     async updateProfile(username: string, email: string): Promise<User> {

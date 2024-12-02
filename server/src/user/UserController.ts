@@ -136,8 +136,6 @@ export class UserController {
         }
     }
 
-
-
     async login(req: Request, res: Response): Promise<any> {
         console.log("login")
         const {username, password} = req.body;
@@ -158,7 +156,7 @@ export class UserController {
                 return res.status(401).json({message: 'Invalid username or password'});
             }
 
-            const token = jwt.sign({id: user.id, username: user.username},'your_secret_key',{expiresIn: '10000h'} );
+            const token = jwt.sign({user: user}, 'your_secret_key', {expiresIn: '10000h'} );
 
             res.status(200).json({
                 message: 'Login successful',

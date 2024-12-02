@@ -1,9 +1,15 @@
 import React from "react";
+import {AuthProvider} from "@/context/authContext";
+import AuthGuard from "@/components/auth/authGuard";
 
-const LoginLayout = ({ children }: { children: React.ReactNode }) => {
+const LoginLayout = ({children}: { children: React.ReactNode }) => {
     return (
         <>
-            {children}
+            <AuthProvider>
+                <AuthGuard>
+                    {children}
+                </AuthGuard>
+            </AuthProvider>
         </>
     );
 };

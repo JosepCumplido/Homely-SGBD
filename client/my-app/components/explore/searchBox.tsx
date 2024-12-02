@@ -59,7 +59,7 @@ export function SearchBox({
             <Separator orientation="vertical" className={"h-3/4 rounded opacity-70"}/>
 
             <div className={"flex flex-col space-y-1 px-10"}>
-                <p className={"text-white text-xs"}>Select guests</p>
+                <label className={"text-white text-xs"}>Select guests</label>
                 <GuestsSelector guests={guests} onGuestsChange={onGuestsChange}/>
             </div>
 

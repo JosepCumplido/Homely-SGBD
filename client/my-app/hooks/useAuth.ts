@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import SessionManager from "@/lib/sessionManager";
 
-export const useAuth = () => {
+/*export const useAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
@@ -26,4 +26,4 @@ export const useAuth = () => {
     }, []);
 
     return { isAuthenticated, setIsAuthenticated };
-};
+};*/

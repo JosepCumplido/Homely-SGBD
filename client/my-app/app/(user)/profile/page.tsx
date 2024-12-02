@@ -2,7 +2,6 @@
 
 import {useState, useEffect, ChangeEvent} from 'react';
 import {useRouter} from 'next/navigation';
-import {useAuth} from '@/hooks/useAuth';
 import {Button} from "@/components/ui/button"
 import {Textarea} from "@/components/ui/textarea"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -15,13 +14,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
 import PasswordInput from "@/components/ui/password-input";
-import {fetchUser} from "@/lib/data";
 import {User} from "shared/models/user";
-import {TokenPayload} from 'shared/models/tokenPayload'
-import SessionManager from "@/lib/sessionManager";
+import {AuthProvider, useAuth} from "@/context/authContext";
+import AuthGuard from '@/components/auth/authGuard';
 
 const defaultUser: User = {
     id: 0,
@@ -34,7 +32,9 @@ const defaultUser: User = {
 };
 
 const ProfilePage = () => {
-    const {isAuthenticated} = useAuth(); // Hook que verifica si el usuario está autenticado
+    const {user, isAuthenticated} = useAuth();
+    const router = useRouter();
+
     const [userInfo, setUserInfo] = useState<User | null>(null);
     const [newUser, setNewUser] = useState<User>(defaultUser);
 
@@ -45,7 +45,7 @@ const ProfilePage = () => {
     }, [userInfo]);
 
     const handleUserChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         setNewUser((prev) => ({
             ...prev,
@@ -53,8 +53,13 @@ const ProfilePage = () => {
         }));
     };
 
-    const router = useRouter();
     useEffect(() => {
+        if (isAuthenticated) {
+            router.push("/");
+        }
+    }, [isAuthenticated, router]);
+
+    /*useEffect(() => {
         const fetchData = async () => {
             const token = SessionManager.getToken();
             if (token !== null) {
@@ -71,7 +76,7 @@ const ProfilePage = () => {
         };
 
         fetchData();
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, router]);*/
 
     return (
         <div className="w-[50vw] m-auto flex-1 lg:max-w-2xl overflow-y-scroll h-full pb-10 px-4">
@@ -99,17 +104,20 @@ const ProfilePage = () => {
                 <div className={"flex flex-row gap-6"}>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="name">Name</Label>
-                        <Input type="text" id="name" name="name" value={newUser.name ?? ""} onChange={handleUserChange}/>
+                        <Input type="text" id="name" name="name" value={newUser.name ?? ""}
+                               onChange={handleUserChange}/>
                     </div>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="surname">Surname</Label>
-                        <Input type="text" id="surname" name="surname" value={newUser.surname ?? ""} onChange={handleUserChange}/>
+                        <Input type="text" id="surname" name="surname" value={newUser.surname ?? ""}
+                               onChange={handleUserChange}/>
                     </div>
                 </div>
 
                 <div className="space-y-2 w-full">
                     <Label htmlFor="email">Email</Label>
-                    <Input type="email" id="email" name="email" value={newUser.email ?? ""} onChange={handleUserChange}/>
+                    <Input type="email" id="email" name="email" value={newUser.email ?? ""}
+                           onChange={handleUserChange}/>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="bio">Bio</Label>

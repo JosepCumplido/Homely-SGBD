@@ -1,4 +1,5 @@
+import {User} from "./user";
+
 export type TokenPayload = {
-    id: string;
-    username: string,
+    user: User
 }
