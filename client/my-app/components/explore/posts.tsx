@@ -13,10 +13,10 @@ export function Posts({homes, isLoading, hasMore, loadMore}: {
 }) {
     return (
         homes && homes.length > 0 ? (
-            <div className={"flex flex-col gap-8 "}>
-                <div className={"grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-6 py-6"}>
+            <div className={"flex flex-col gap-8"}>
+                <div className={"grid grid-cols-1 sm:grid-cols-5 lg:grid-cols-5 gap-6 py-6"}>
                     {homes.map((home, index) => (
-                        <PostCard key={index} home={home}></PostCard>
+                        <PostCard key={index} home={home}/>
                     ))}
                 </div>
                 {hasMore && <Button

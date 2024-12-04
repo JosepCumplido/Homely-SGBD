@@ -36,7 +36,7 @@ export default function RootLayout({
                 <ContentFrame className={"h-full flex flex-row justify-between items-center"}>
                     <h1 className={"text-2xl font-bold"}><Link href={"/"}>Homely</Link></h1>
                     <div className={"flex flex-row gap-6 items-center"}>
-                        <Link href={"/travel"} className={"font-bold hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}>Your reservations</Link>
+                        <Link href={"/travel"} className={"font-bold hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}>Your reservations</Link>
                         <UserAvatar userAvatarUrl={""}/>
                     </div>
                 </ContentFrame>

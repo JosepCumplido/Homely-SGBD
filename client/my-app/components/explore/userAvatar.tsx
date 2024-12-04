@@ -27,7 +27,7 @@ export function UserAvatar({userAvatarUrl}: { userAvatarUrl: string }) {
                     />
                 </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className={"test"}>
                 {!isAuthenticated ? (
                     <>
                         <DropdownMenuLabel>Welcome!</DropdownMenuLabel>

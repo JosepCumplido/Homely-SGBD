@@ -1,97 +1,62 @@
-import Image from 'next/image'
-import {Card, CardContent, CardHeader} from "@/components/ui/card"
-import {Separator} from "@/components/ui/separator"
+import {TravelCard} from '@/components/travel/travelCard'
+import {TravelHistoryList} from "@/components/travel/travelHistoryList";
+import {Reservation} from "shared/models/reservation"
+import Link from "next/link";
+import {ArrowBack} from "@mui/icons-material";
 
-export default function TravelHistory() {
-    // TODO type reserva
-    const upcomingTravel = {
-        city: "Lisboa",
-        country: "Portugal",
-        fromDate: "20 de nov.",
-        toDate: "23 de nov.",
-        cityImageUrl: "/images/lisboa.webp",
-        numberOfNights: 3, // TODO calcul
-        pricePerNight: 100,
-    }
-
-    const pastTravels = [
+export default function TravelHistory2() {
+    const travelHistoryList: Reservation[] = [
         {
-            destination: "Paris",
-            dates: "10 de oct. - 15 de oct.",
-            imageUrl: "/images/paris.webp"
+            city: "Lisboa",
+            country: "Portugal",
+            fromDate: new Date('2024-12-21'),
+            toDate: new Date('2024-12-07'),
+            imageUrl: "post_1_2.webp",
+            pricePerNight: 100,
+            numberOfGuests: 4,
         },
         {
-            destination: "Roma",
-            dates: "5 de sep. - 10 de sep.",
-            imageUrl: "/images/roma.webp"
+            city: "Lisboa",
+            country: "Portugal",
+            fromDate: new Date('2025-01-02'),
+            toDate: new Date('2024-12-07'),
+            imageUrl: "post_1_1.webp",
+            pricePerNight: 100,
+            numberOfGuests: 2,
         },
         {
-            destination: "Londres",
-            dates: "1 de ago. - 7 de ago.",
-            imageUrl: "/images/londres.webp"
-        }
+            city: "Lisboa",
+            country: "Portugal",
+            fromDate: new Date('2025-03-14'),
+            toDate: new Date('2024-12-07'),
+            imageUrl: "post_1_3.webp",
+            pricePerNight: 100,
+            numberOfGuests: 3,
+        },
+
     ]
 
     return (
-        <div className="px-[5vw] m-auto pb-24 w-full h-full overflow-y-scroll">
-            <h1 className="text-3xl font-bold mb-4">Reserves i viatges</h1>
-            <div className="flex justify-end mb-2">
-                <p className="text-blue-600 hover:underline cursor-pointer">No trobes una reserva?</p>
+        <div className="flex flex-row w-full h-full">
+            <div className={"flex-1 p-20 space-y-8 relative"}>
+                <h2 className={"font-bold text-2xl w-1/2 m-auto relative"}>Upcoming reservation
+                    <Link href={"/"} className={"absolute -top-16 -left-4 font-normal transition-all duration-200 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}><ArrowBack/> Back to explore</Link>
+                </h2>
+                <div className={"w-full relative"}>
+                    <TravelCard upcomingReservation={travelHistoryList[0]}/>
+                </div>
             </div>
-
-            <Card className="mb-8">
-                <CardHeader className="p-0">
-                    <div className="relative h-64 w-full">
-                        <Image
-                            src={upcomingTravel.cityImageUrl}
-                            alt={upcomingTravel.city}
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-t-lg"
-                        />
-                        <div className="absolute bottom-0 left-0 p-4 bg-black bg-opacity-50 text-white w-full">
-                            <h2 className="text-3xl font-bold">{upcomingTravel.city}, {upcomingTravel.country}</h2>
-                            <p>{upcomingTravel.fromDate} - {upcomingTravel.toDate}</p>
-                        </div>
+            <div className={"flex-1 p-24"}>
+                <div className={"space-y-12 overflow-y-auto h-full w-10/12"}>
+                    <div className="space-y-8">
+                        <h2 className={"font-bold text-2xl"}>Upcoming reservations</h2>
+                        <TravelHistoryList travelHistoryList={travelHistoryList}/>
                     </div>
-                </CardHeader>
-                {/*<CardContent>
-                    <div className="flex items-center justify-between py-4">
-                        <div className="flex items-center">
-                            <div>
-                            </div>
-                        </div>
-                        <p className="font-bold">${upcomingTravel.pricePerNight*upcomingTravel.numberOfNights}</p>
+                    <div className="space-y-8">
+                        <h2 className={"font-bold text-2xl"}>Where you've been</h2>
+                        <TravelHistoryList travelHistoryList={travelHistoryList}/>
                     </div>
-                    <p className="text-green-600 mt-4">Confirmada · 1 passatger</p>
-                </CardContent>*/}
-            </Card>
-
-            <h2 className="text-2xl font-bold mb-4">Viatges anteriors</h2>
-            <div className="h-full w-full rounded-md border mb-4">
-                {pastTravels.map((travel, index) => (
-                    <div key={index}>
-                        <Card className="mb-4">
-                            <CardHeader className="p-0">
-                                <div className="relative h-48 w-full">
-                                    <Image
-                                        src={travel.imageUrl}
-                                        alt={travel.destination}
-                                        layout="fill"
-                                        objectFit="cover"
-                                        className="rounded-t-lg"
-                                    />
-                                    <div
-                                        className="absolute bottom-0 left-0 p-4 bg-black bg-opacity-50 text-white w-full">
-                                        <h3 className="text-2xl font-bold">{travel.destination}</h3>
-                                        <p>{travel.dates}</p>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                        </Card>
-                        {index < pastTravels.length - 1 && <Separator className="my-4"/>}
-                    </div>
-                ))}
+                </div>
             </div>
         </div>
     )
