@@ -1,121 +1,91 @@
-'use client';
-
-import {useState, useEffect, ChangeEvent} from 'react';
-import {useRouter} from 'next/navigation';
-import {Button} from "@/components/ui/button"
-import {Textarea} from "@/components/ui/textarea"
+'use client'
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import React, {ChangeEvent, useEffect, useState} from "react";
+import {z} from "zod";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
+    DialogDescription, DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
+    DialogTrigger
+} from "@/components/ui/dialog";
 import PasswordInput from "@/components/ui/password-input";
 import {User} from "shared/models/user";
 import {useAuth} from "@/context/authContext";
+import {useRouter} from "next/navigation";
 
-const defaultUser: User = {
-    id: 0,
-    username: '',
-    email: '',
+type SignupForm = {
+    name: string,
+    surname: string,
+    username: string,
+    email: string,
+    password: string,
+    repeatPassword: string,
+}
+
+const initialSignupForm: SignupForm =  {
     name: '',
     surname: '',
+    username: '',
+    email: '',
     password: '',
-    avatarUrl: '',
+    repeatPassword: '',
 };
 
-const ProfilePage = () => {
+const SignupPage = () => {
+
     const {user, isAuthenticated} = useAuth();
     const router = useRouter();
 
-    const [userInfo, setUserInfo] = useState<User | null>(null);
-    const [newUser, setNewUser] = useState<User>(defaultUser);
-
-    useEffect(() => {
-        if (userInfo !== null) {
-            setNewUser(userInfo);
-        }
-    }, [userInfo]);
+    const [signupForm, setSignupForm] = useState<SignupForm>(initialSignupForm);
 
     const handleUserChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
 
-        setNewUser((prev) => ({
+        setSignupForm((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (isAuthenticated) {
             router.push("/");
         }
     }, [isAuthenticated, router]);
 
-    /*useEffect(() => {
-        const fetchData = async () => {
-            const token = SessionManager.getToken();
-            if (token !== null) {
-                try {
-                    const decodedToken: TokenPayload = SessionManager.decodeToken(token);
-                    const user = await fetchUser(decodedToken.username);
-                    setUserInfo(user);
-                } catch (error) {
-                    console.error('Error decoding the token or fetching the user:', error);
-                }
-            } else {
-                router.push("/login");
-            }
-        };
-
-        fetchData();
-    }, [isAuthenticated, router]);*/
-
     return (
-        <div className="w-[50vw] m-auto flex-1 lg:max-w-2xl overflow-y-scroll h-full pb-10 px-4">
+        <div>
+            <h1 className="text-2xl font-bold text-center mb-6">Homely</h1>
             <form className="space-y-8">
-                <div>
-                    <h3 className="text-lg font-medium">Hi, Josep!</h3>
-                    <p className="text-sm text-muted-foreground">
-                        This is how others will see you on the site.
-                    </p>
-                </div>
-                <div className={"flex flex-row gap-16 w-full"}>
-                    <div className={"flex flex-col space-y-2"}>
-                        <Avatar className="w-28 h-28">
-                            <AvatarImage src={userInfo?.avatarUrl || "default-avatar.png"} alt="User Avatar"/>
-                            <AvatarFallback>{userInfo?.username ? userInfo.username[0].toUpperCase() : 'U'}</AvatarFallback>
-                        </Avatar>
-                        <Button variant={"ghost"}>Upload image</Button>
-                    </div>
-                    <div className="space-y-2 w-full">
-                        <Label htmlFor="username">Username</Label>
-                        <Input disabled id="username" defaultValue={userInfo?.username ?? ""}/>
-                    </div>
-                </div>
-
                 <div className={"flex flex-row gap-6"}>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="name">Name</Label>
-                        <Input type="text" id="name" name="name" value={newUser.name ?? ""}
+                        <Input type="text" id="name" name="name" value={signupForm.name}
                                onChange={handleUserChange}/>
                     </div>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="surname">Surname</Label>
-                        <Input type="text" id="surname" name="surname" value={newUser.surname ?? ""}
+                        <Input type="text" id="surname" name="surname" value={signupForm.surname ?? ""}
                                onChange={handleUserChange}/>
                     </div>
                 </div>
 
                 <div className="space-y-2 w-full">
+                    <Label htmlFor="username">Username</Label>
+                    <Input type="username" id="username" name="username" value={signupForm.username ?? ""}
+                           onChange={handleUserChange}/>
+                </div>
+
+                <div className="space-y-2 w-full">
                     <Label htmlFor="email">Email</Label>
-                    <Input type="email" id="email" name="email" value={newUser.email ?? ""}
+                    <Input type="email" id="email" name="email" value={signupForm.email ?? ""}
                            onChange={handleUserChange}/>
                 </div>
                 <div className="space-y-2">
@@ -162,4 +132,4 @@ const ProfilePage = () => {
     )
 };
 
-export default ProfilePage;
+export default SignupPage;
