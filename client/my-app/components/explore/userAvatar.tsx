@@ -32,8 +32,8 @@ export function UserAvatar({userAvatarUrl}: { userAvatarUrl: string }) {
                     <>
                         <DropdownMenuLabel>Welcome!</DropdownMenuLabel>
                         <DropdownMenuSeparator/>
+                        <DropdownMenuItem className={"font-medium"}>Sign up</DropdownMenuItem>
                         <DropdownMenuItem>Log in</DropdownMenuItem>
-                        <DropdownMenuItem>Sign up</DropdownMenuItem>
                     </>
                 ) : (
                     <>
