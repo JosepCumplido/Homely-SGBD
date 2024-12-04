@@ -42,8 +42,8 @@ function MainLayout({children}: { children: React.ReactNode }) {
         <>
             {/* header */}
             <section
-                className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[90vw] left-1/2 -translate-x-1/2 z-10"}>
-                <h1 className={"text-2xl font-bold text-black"}><Link href={"/"}>Homely</Link></h1>
+                className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[95vw] left-1/2 -translate-x-1/2 z-10"}>
+                <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
                 {/*<div className={"flex flex-row gap-6 items-center"}>
             <Button variant={"ghost"} className={"font-bold text-black"}>Your reservations</Button>
             <UserAvatar

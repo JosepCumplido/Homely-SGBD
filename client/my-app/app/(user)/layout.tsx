@@ -44,7 +44,7 @@ function MainLayout({children}: { children: React.ReactNode }) {
                 className={"h-6 flex flex-row justify-between items-center py-8 w-[90vw] m-auto"}>
                 <h1 className={"text-2xl font-bold text-black"}><Link href={"/"}>Homely</Link></h1>
                 <div className={"flex flex-row gap-6 items-center"}>
-                    <Button variant={"ghost"} className={"font-bold text-black"}>Your reservations</Button>
+                    <Link href={"/travel"} className={"font-bold hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}>Your reservations</Link>
                     <UserAvatar
                         user={user}
                         onLogout={logout}

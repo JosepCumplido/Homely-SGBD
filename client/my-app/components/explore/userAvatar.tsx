@@ -51,7 +51,7 @@ export function UserAvatar({ user, onLogout, isAuthenticated}: {
                         <DropdownMenuLabel>Welcome!</DropdownMenuLabel>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem>
-                            <Link href="/signup" className={"font-medium"}>Sign up</Link>
+                            <Link href="/signup" className={"font-bold"}>Sign up</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                             <Link href="/login">Log in</Link>
