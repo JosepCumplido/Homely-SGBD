@@ -86,4 +86,27 @@ export class UserRepository {
 
         throw new Error("Password update failed");
     }
+
+    async getUpcomingTravel(): Promise<any> {
+        const query = `
+        SELECT TOP 1 * 
+        FROM [Travel]
+        WHERE status = 'upcoming'
+        ORDER BY start_date ASC
+    `;
+        const result = await this.db.request().query(query);
+        return result.recordset[0] || null;
+    }
+
+    async getPastTravels(): Promise<any[]> {
+        const query = `
+        SELECT * 
+        FROM [Travel]
+        WHERE status = 'past'
+        ORDER BY end_date DESC
+    `;
+        const result = await this.db.request().query(query);
+        return result.recordset;
+    }
+
 }

@@ -51,10 +51,10 @@ export function UserAvatar({ user, onLogout, isAuthenticated}: {
                         <DropdownMenuLabel>Welcome!</DropdownMenuLabel>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem>
-                            <Link href="/login">Log in</Link>
+                            <Link href="/signup" className={"font-medium"}>Sign up</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href="/login">Sign up</Link>
+                            <Link href="/login">Log in</Link>
                         </DropdownMenuItem>
                     </>
                 ) : (
@@ -73,5 +73,6 @@ export function UserAvatar({ user, onLogout, isAuthenticated}: {
                 )}
             </DropdownMenuContent>
         </DropdownMenu>
+
     );
 }

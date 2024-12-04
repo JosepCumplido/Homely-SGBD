@@ -168,4 +168,33 @@ export class UserController {
             res.status(500).json({message: 'Server error'});
         }
     }
+
+    async getUpcomingTravel(req: Request, res: Response): Promise<Response> {
+        try {
+            // Obtener el próximo viaje desde el repositorio
+            const upcomingTravel = await this.userRepository.getUpcomingTravel();
+
+            if (!upcomingTravel) {
+                return res.status(404).json({ message: "No upcoming travel found" });
+            }
+
+            return res.status(200).json(upcomingTravel);
+        } catch (error) {
+            console.error("Error fetching upcoming travel:", error);
+            return res.status(500).json({ error: "Error fetching upcoming travel" });
+        }
+    }
+
+    async getPastTravels(req: Request, res: Response): Promise<Response> {
+        try {
+            // Obtener los viajes pasados desde el repositorio
+            const pastTravels = await this.userRepository.getPastTravels();
+
+            return res.status(200).json(pastTravels);
+        } catch (error) {
+            console.error("Error fetching past travels:", error);
+            return res.status(500).json({ error: "Error fetching past travels" });
+        }
+    }
+
 }
