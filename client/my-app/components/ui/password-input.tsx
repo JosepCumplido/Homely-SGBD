@@ -2,10 +2,10 @@
 
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Check, Eye, EyeOff, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Check, Eye, EyeOff, X} from "lucide-react";
+import {useMemo, useState} from "react";
 
 export default function PasswordInput() {
     const [password, setPassword] = useState("");
@@ -15,10 +15,10 @@ export default function PasswordInput() {
 
     const checkStrength = (pass: string) => {
         const requirements = [
-            { regex: /.{6,}/, text: "At least 6 characters" },
-            { regex: /[0-9]/, text: "At least 1 number" },
-            /*{ regex: /[a-z]/, text: "At least 1 lowercase letter" },
-            { regex: /[A-Z]/, text: "At least 1 uppercase letter" },*/
+            {regex: /[a-zA-Z]/, text: "At least 1 letter"},
+            {regex: /[0-9]/, text: "At least 1 number"},
+            {regex: /.{6,}/, text: "At least 6 characters"},
+            /*{ regex: /[A-Z]/, text: "At least 1 uppercase letter" },*/
         ];
 
         return requirements.map((req) => ({
@@ -35,33 +35,34 @@ export default function PasswordInput() {
 
     const getStrengthColor = (score: number) => {
         if (score === 0) return "bg-border";
-        /*if (score <= 1) return "bg-red-500";*/
-        if (score <= 1) return "bg-orange-500";
-        /*if (score === 3) return "bg-amber-500";*/
+        if (score <= 1) return "bg-red-500";
+        /*if (score <= 2) return "bg-orange-500";*/
+        if (score === 2) return "bg-amber-500";
         return "bg-emerald-500";
     };
 
     const getStrengthText = (score: number) => {
         if (score === 0) return "Enter a password";
-        if (score <= 2) return "Weak password";
-        if (score === 3) return "Medium password";
-        return "Strong password";
+        if (score <= 1) return "Weak password";
+        if (score === 2) return "Medium password";
+        if (score == 3) return "Strong password";
     };
 
     return (
         <div>
             {/* Password input field with toggle visibility button */}
             <div className="space-y-2">
-                <Label htmlFor="input-51">Create new password</Label>
+                <Label htmlFor="password">Create new password</Label>
                 <div className="relative">
                     <Input
-                        id="input-51"
+                        id="password"
+                        name="password"
                         className="pe-9"
-                        placeholder="Password"
+                        placeholder="Strong password"
                         type={isVisible ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        aria-invalid={strengthScore < 4}
+                        aria-invalid={strengthScore < 3}
                         aria-describedby="password-strength"
                     />
                     <button
@@ -73,9 +74,9 @@ export default function PasswordInput() {
                         aria-controls="password"
                     >
                         {isVisible ? (
-                            <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
+                            <EyeOff size={16} strokeWidth={2} aria-hidden="true"/>
                         ) : (
-                            <Eye size={16} strokeWidth={2} aria-hidden="true" />
+                            <Eye size={16} strokeWidth={2} aria-hidden="true"/>
                         )}
                     </button>
                 </div>
@@ -92,7 +93,7 @@ export default function PasswordInput() {
             >
                 <div
                     className={`h-full ${getStrengthColor(strengthScore)} transition-all duration-500 ease-out`}
-                    style={{ width: `${(strengthScore / 2) * 100}%` }}
+                    style={{width: `${(strengthScore / 3) * 100}%`}}
                 ></div>
             </div>
 
@@ -106,9 +107,9 @@ export default function PasswordInput() {
                 {strength.map((req, index) => (
                     <li key={index} className="flex items-center gap-2">
                         {req.met ? (
-                            <Check size={16} className="text-emerald-500" aria-hidden="true" />
+                            <Check size={16} className="text-emerald-500" aria-hidden="true"/>
                         ) : (
-                            <X size={16} className="text-muted-foreground/80" aria-hidden="true" />
+                            <X size={16} className="text-muted-foreground/80" aria-hidden="true"/>
                         )}
                         <span className={`text-xs ${req.met ? "text-emerald-600" : "text-muted-foreground"}`}>
               {req.text}

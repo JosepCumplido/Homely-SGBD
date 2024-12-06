@@ -63,22 +63,22 @@ export class UserController {
     }
 
     async getUserByUsername(req: Request, res: Response): Promise<Response> {
-        const { username } = req.params;
+        const {username} = req.params;
 
         try {
             if (!username) {
-                return res.status(400).json({ error: "Username is required" });
+                return res.status(400).json({error: "Username is required"});
             }
 
             const user = await this.userRepository.findByUsername(username);
             if (!user) {
-                return res.status(404).json({ error: "User not found" });
+                return res.status(404).json({error: "User not found"});
             }
 
             return res.json(user)
         } catch (error) {
             console.error("Error retrieving user:", error);
-            return res.status(500).json({ error: "Error retrieving user" });
+            return res.status(500).json({error: "Error retrieving user"});
         }
     }
 
@@ -114,14 +114,14 @@ export class UserController {
 
     // Función para actualizar el perfil de un usuario
     async updateProfile(req: Request, res: Response): Promise<Response> {
-        const { username } = req.params;
-        const { email } = req.body;
+        const {username} = req.params;
+        const {email} = req.body;
 
         try {
             const user = await this.userRepository.findByUsername(username);
 
             if (!user) {
-                return res.status(404).json({ error: "User not found" });
+                return res.status(404).json({error: "User not found"});
             }
 
             const updatedUser = await this.userRepository.updateProfile(username, email);
@@ -132,7 +132,7 @@ export class UserController {
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: "Error updating profile" });
+            return res.status(500).json({error: "Error updating profile"});
         }
     }
 
@@ -156,10 +156,54 @@ export class UserController {
                 return res.status(401).json({message: 'Invalid username or password'});
             }
 
-            const token = jwt.sign({user: user}, 'your_secret_key', {expiresIn: '10000h'} );
+            const token = jwt.sign({user: user}, 'your_secret_key', {expiresIn: '10000h'});
 
             res.status(200).json({
                 message: 'Login successful',
+                token: token,
+            });
+
+        } catch (error) {
+            console.error('Error al consultar la base de datos:', error);
+            res.status(500).json({message: 'Server error'});
+        }
+    }
+
+    async signup(req: Request, res: Response): Promise<any> {
+        console.log("signup")
+        const {username, email, password} = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({message: 'Username and password are required'});
+        }
+
+        try {
+            const userByUsername: User | null = await this.userRepository.findByUsername(username);
+            if (userByUsername) {
+                return res.status(401).json({message: 'Username already in use.'});
+            }
+
+            const userByEmail: User | null = await this.userRepository.findByEmail(email);
+            if (userByEmail) {
+                return res.status(401).json({message: 'Email already in use.'});
+            }
+
+            const user: User = {
+                id: null,
+                username: req.body.username,
+                email: req.body.email,
+                name: req.body.name,
+                surname: req.body.surname,
+                password: req.body.password,
+                avatarUrl: ""
+            }
+
+            await this.userRepository.create(user)
+
+            const token = jwt.sign({user: user}, 'your_secret_key', {expiresIn: '10000h'});
+
+            res.status(200).json({
+                message: 'Signup successful',
                 token: token,
             });
 
@@ -175,13 +219,13 @@ export class UserController {
             const upcomingTravel = await this.userRepository.getUpcomingTravel();
 
             if (!upcomingTravel) {
-                return res.status(404).json({ message: "No upcoming travel found" });
+                return res.status(404).json({message: "No upcoming travel found"});
             }
 
             return res.status(200).json(upcomingTravel);
         } catch (error) {
             console.error("Error fetching upcoming travel:", error);
-            return res.status(500).json({ error: "Error fetching upcoming travel" });
+            return res.status(500).json({error: "Error fetching upcoming travel"});
         }
     }
 
@@ -193,7 +237,7 @@ export class UserController {
             return res.status(200).json(pastTravels);
         } catch (error) {
             console.error("Error fetching past travels:", error);
-            return res.status(500).json({ error: "Error fetching past travels" });
+            return res.status(500).json({error: "Error fetching past travels"});
         }
     }
 

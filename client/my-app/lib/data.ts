@@ -1,6 +1,7 @@
 import {SearchRequest, SearchResponse} from "shared/data/searchRequest";
 import {User} from "shared/models/user";
 
+/*
 export async function fetchPosts(request: SearchRequest): Promise<SearchResponse> {
     const response = await fetch('http://localhost:4000/home/search', {
         method: 'POST',
@@ -23,4 +24,4 @@ export async function fetchUser(username: string): Promise<User | null> {
         console.error('Error fetching user profile:', error);
         return null
     }
-}
+}*/

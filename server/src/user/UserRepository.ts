@@ -24,7 +24,12 @@ export class UserRepository {
     async create(user: User): Promise<void> {
         await this.db.request()
             .input('name', user.name)
-            .query(`INSERT INTO [User] (name) VALUES (@name)`);
+            .input('surname', user.surname)
+            .input('username', user.username)
+            .input('email', user.email)
+            .input('password', user.password)
+            .input('avatarUrl', user.avatarUrl)
+            .query(`INSERT INTO [User] (name, surname, username, email, password, avatarUrl) VALUES (@name, @surname, @username, @email, @password, @avatarUrl)`);
     }
 
     async update(user: User): Promise<void> {
@@ -44,6 +49,13 @@ export class UserRepository {
         const result = await this.db.request()
             .input('username', username)
             .query('SELECT * FROM [User] WHERE username = @username');
+        return result.recordset[0] || null;
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        const result = await this.db.request()
+            .input('email', email)
+            .query('SELECT * FROM [User] WHERE email = @email');
         return result.recordset[0] || null;
     }
 

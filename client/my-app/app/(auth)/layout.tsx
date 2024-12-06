@@ -35,27 +35,16 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
 }
 
 function MainLayout({children}: { children: React.ReactNode }) {
-    const {user, logout, isAuthenticated} = useAuth();
-    console.log("layout login")
-
     return (
         <>
             {/* header */}
             <section
                 className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[95vw] left-1/2 -translate-x-1/2 z-10"}>
                 <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
-                {/*<div className={"flex flex-row gap-6 items-center"}>
-            <Button variant={"ghost"} className={"font-bold text-black"}>Your reservations</Button>
-            <UserAvatar
-                user={user}
-                onLogout={logout}
-                isAuthenticated={isAuthenticated}
-            />
-          </div>*/}
             </section>
             {/* body */}
-            <main className={"flex flex-row items-center h-[100vh]"}>
-                <section className={"flex-1 h-full"}>
+            <main className={"flex flex-row items-center h-[100vh] overflow-y-hidden"}>
+                <section className={"flex-none w-1/2 h-full"}>
                     <Image
                         src="/explore/background/background.jpg"
                         width={1802}
@@ -66,7 +55,7 @@ function MainLayout({children}: { children: React.ReactNode }) {
                         style={{objectFit: 'cover'}}
                     />
                 </section>
-                <section className={"flex-1 p-20"}>
+                <section className={"flex-none w-1/2 p-56"}>
                     {children}
                 </section>
             </main>

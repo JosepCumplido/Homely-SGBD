@@ -33,7 +33,6 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
 
     return (
         <div className="flex h-screen">
-            {/* Panel Izquierdo: Lista de Chats */}
             <aside className="w-1/3 bg-gray-50 border-r">
                 <div className="p-4 border-b">
                     <h1 className="text-2xl font-bold">Tus Chats</h1>
@@ -60,7 +59,6 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
                 </div>
             </aside>
 
-            {/* Panel Derecho: Contenido del chat */}
             <main className="flex-1">{children}</main>
         </div>
     );

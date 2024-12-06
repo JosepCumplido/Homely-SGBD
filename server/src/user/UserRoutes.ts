@@ -18,12 +18,13 @@ export function userRoutes(db: ConnectionPool): Router {
   router.put('/:id', authenticate, (req, res) => userController.updateUser(req, res));
   router.delete('/:id', authenticate, (req, res) => userController.deleteUser(req, res));
   router.post('/login', (req, res) => userController.login(req, res));
+  router.post('/signup', (req, res) => userController.signup(req, res));
 
   router.put('/profile/:username', authenticate, (req, res) => { userController.updateProfile(req, res) });
   router.put('/profile/:username/change-password', authenticate, (req, res) => { userController.changePassword(req, res) });
 
-  router.get('/user/travel/upcoming', (req, res) => { userController.getUpcomingTravel(req, res) });
-  router.get('/user/travel/past', (req, res) => { userController.getPastTravels(req, res) });
+  router.get('/travel/upcoming', (req, res) => { userController.getUpcomingTravel(req, res) });
+  router.get('/travel/past', (req, res) => { userController.getPastTravels(req, res) });
 
   return router;
 }

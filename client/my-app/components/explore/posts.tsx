@@ -7,7 +7,6 @@ import {ReloadIcon} from "@radix-ui/react-icons";
 import React, {useCallback, useEffect, useState} from "react";
 import {SearchRequest} from "shared/data/searchRequest";
 import {Category} from "shared/models/category";
-import {fetchPosts} from "@/lib/data";
 import {PostsSkeleton} from "@/components/explore/postsSkeleton";
 
 export function Posts({
@@ -32,7 +31,7 @@ export function Posts({
     const [isLoading, setIsLoading] = useState(true);
     const [hasMore, setHasMore] = useState(true);
 
-    const limit = 6
+    const limit = 10
 
     const searchHomes = useCallback(async (isLoadMore: boolean = false) => {
         setIsLoading(true);
