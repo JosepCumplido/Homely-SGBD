@@ -56,7 +56,19 @@ export class HomeRepository {
                 .query('SELECT * FROM [Home] WHERE id = @id');
 
             if (result.recordset.length > 0) {
-                return result.recordset[0] as Home;
+                const home = result.recordset[0];
+
+                // Parsejar JSON per a imagesUrls si és una cadena
+                const parseJson = (field: string | null): string[] =>
+                    field ? JSON.parse(field) : [];
+
+                return {
+                    ...home,
+                    imagesUrls: parseJson(home.imagesUrls),
+                    features: home.features ? home.features.split(',') : [],
+                    amenities: home.amenities ? home.amenities.split(',') : [],
+                    categories: home.categories ? home.categories.split(',') : [],
+                } as Home;
             } else {
                 return null;
             }
@@ -65,4 +77,7 @@ export class HomeRepository {
             throw new Error('Error retrieving home');
         }
     }
+
+
+
 }
