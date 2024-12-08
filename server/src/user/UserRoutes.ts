@@ -15,7 +15,7 @@ export function userRoutes(db: ConnectionPool): Router {
   router.get('/', authenticate, (req, res) => userController.getAllUsers(req, res));
   router.get('/:id', authenticate, (req, res) => userController.getUserById(req, res));
   router.post('/', authenticate, (req, res) => userController.createUser(req, res));
-  router.put('/:id', authenticate, (req, res) => userController.updateUser(req, res));
+  router.put('/:username', authenticate, (req, res) => userController.updateUser(req, res));
   router.delete('/:id', authenticate, (req, res) => userController.deleteUser(req, res));
   router.post('/login', (req, res) => userController.login(req, res));
   router.post('/signup', (req, res) => userController.signup(req, res));

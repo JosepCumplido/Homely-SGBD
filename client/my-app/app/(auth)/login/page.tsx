@@ -17,7 +17,7 @@ const LoginSchema = z.object({
 type LoginFormData = z.infer<typeof LoginSchema>;
 
 const LoginPage = () => {
-    const {login, isAuthenticated} = useAuth();
+    const {saveToken, isAuthenticated} = useAuth();
     const router = useRouter();
 
     const [message, setMessage] = useState('');
@@ -52,13 +52,12 @@ const LoginPage = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                login(result.token)
+                saveToken(result.token)
                 setMessage('Login successful!');
             } else {
                 const errorData = await response.json();
-                setMessage(errorData.error || 'Login failed.');
+                setErrors(errorData.error || 'Login failed.');
             }
-
         } catch (e) {
             setMessage('Something went wrong. Please try again later.');
         }

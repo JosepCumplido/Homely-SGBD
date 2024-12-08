@@ -1,9 +1,8 @@
 'use client';
 
-import {useState, useEffect, ChangeEvent} from 'react';
+import React, {useState, useEffect, ChangeEvent, useCallback} from 'react';
 import {useRouter} from 'next/navigation';
 import {Button} from "@/components/ui/button"
-import {Textarea} from "@/components/ui/textarea"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
     Dialog,
@@ -19,69 +18,111 @@ import {Label} from "@/components/ui/label"
 import PasswordInput from "@/components/ui/password-input";
 import {User} from "shared/models/user";
 import {useAuth} from "@/context/authContext";
+import {z} from "zod";
+import {UpdateProfileRequest, UpdateProfileResponse} from 'shared/data/udpateProfileRequest';
+import SuccessAlert from "@/components/originui/successSooner";
+import SuccessSooner from "@/components/originui/successSooner";
+import { useToast } from "@/hooks/use-toast"
 
-const defaultUser: User = {
-    id: 0,
-    username: '',
-    email: '',
-    name: '',
-    surname: '',
-    password: '',
-    avatarUrl: '',
-};
+
+const ProfileSchema = z.object({
+    name: z.string(),
+    surname: z.string(),
+    email: z.string(),
+    currentPassword: z.string(),
+    password: z.string(),
+})
+
+type ProfileFormData = z.infer<typeof ProfileSchema>;
 
 const ProfilePage = () => {
-    const {user, isAuthenticated} = useAuth();
+    const {token, user, login, isAuthenticated} = useAuth();
     const router = useRouter();
+    console.log(`User: ${JSON.stringify(user)}`)
 
-    const [userInfo, setUserInfo] = useState<User | null>(null);
-    const [newUser, setNewUser] = useState<User>(defaultUser);
+    const { toast } = useToast()
+    const [message, setMessage] = useState('');
+    const [errors, setErrors] = useState<Partial<Record<keyof ProfileFormData, string[]>>>({});
 
-    useEffect(() => {
-        if (userInfo !== null) {
-            setNewUser(userInfo);
-        }
-    }, [userInfo]);
-
-    const handleUserChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-
-        setNewUser((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         if (!isAuthenticated) {
-            router.push("/");
+            router.push("/login");
         }
     }, [isAuthenticated, router]);
 
-    /*useEffect(() => {
-        const fetchData = async () => {
-            const token = SessionManager.getToken();
-            if (token !== null) {
-                try {
-                    const decodedToken: TokenPayload = SessionManager.decodeToken(token);
-                    const user = await fetchUser(decodedToken.username);
-                    setUserInfo(user);
-                } catch (error) {
-                    console.error('Error decoding the token or fetching the user:', error);
-                }
-            } else {
-                router.push("/login");
-            }
-        };
+    const onCurrentPasswordChange = useCallback((currentPassword: string) => {
+        setCurrentPassword(currentPassword);
+    }, [])
 
-        fetchData();
-    }, [isAuthenticated, router]);*/
+    const onPasswordChange = useCallback((password: string) => {
+        setPassword(password);
+    }, [])
+
+    const handleModifyProfile = async (formData: any) => {
+        const data = Object.fromEntries(formData) as ProfileFormData;
+
+        setErrors({});
+        try {
+            if (user != null) {
+                /*console.log(`User password: ${user.password}`)
+                console.log(`Current password: ${data.currentPassword}`)
+                console.log(`New password: ${data.password}`)*/
+
+                if (data.password !== "" && data.currentPassword !== user.password) {
+                    console.log("passwords don't match")
+                    throw new Error("passwords don't match");
+                }
+
+                const request = new UpdateProfileRequest(user.username, data.name, data.surname, data.email, data.password)
+                const response = await fetch(`http://localhost:4000/user/${user.username}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(request),
+                });
+
+                if (response.ok) {
+                    const result: UpdateProfileResponse = await response.json();
+                    setMessage('Profile updated successfully.');
+
+                    if (data.password !== "") login(user.username, data.password)
+                    else login(user.username, user.password)
+
+                    toast({
+                        title: "Scheduled: Catch up",
+                        description: "Friday, February 10, 2023 at 5:57 PM",
+                    })
+                } else {
+                    const errorData = await response.json();
+                    setErrors(errorData.error || 'Could not update profile');
+                }
+            }
+        } catch (e) {
+            console.log(`Error: ${e}`)
+            setMessage('Something went wrong. Please try again later.');
+        }
+    }
 
     return (
         <div className="w-[50vw] m-auto flex-1 lg:max-w-2xl overflow-y-scroll h-full pb-10 px-4">
-            <form className="space-y-8">
+            <form
+                id="form"
+                className="space-y-8"
+                onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    formData.append("currentPassword", currentPassword);
+                    formData.append("password", password);
+                    handleModifyProfile(formData);
+                }}
+            >
                 <div>
-                    <h3 className="text-lg font-medium">Hi, Josep!</h3>
+                    <h3 className="text-lg font-medium">Hi, {user?.name}!</h3>
                     <p className="text-sm text-muted-foreground">
                         This is how others will see you on the site.
                     </p>
@@ -89,48 +130,35 @@ const ProfilePage = () => {
                 <div className={"flex flex-row gap-16 w-full"}>
                     <div className={"flex flex-col space-y-2"}>
                         <Avatar className="w-28 h-28">
-                            <AvatarImage src={userInfo?.avatarUrl || "default-avatar.png"} alt="User Avatar"/>
-                            <AvatarFallback>{userInfo?.username ? userInfo.username[0].toUpperCase() : 'U'}</AvatarFallback>
+                            <AvatarImage src={user?.avatarUrl || "default-avatar.png"} alt="User Avatar"/>
+                            <AvatarFallback>{user?.username ? user.username[0].toUpperCase() : 'U'}</AvatarFallback>
                         </Avatar>
                         <Button variant={"ghost"}>Upload image</Button>
                     </div>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="username">Username</Label>
-                        <Input disabled id="username" defaultValue={userInfo?.username ?? ""}/>
+                        <Input disabled type="text" id="username" name="username" defaultValue={user?.username}/>
                     </div>
                 </div>
 
                 <div className={"flex flex-row gap-6"}>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="name">Name</Label>
-                        <Input type="text" id="name" name="name" value={newUser.name ?? ""}
-                               onChange={handleUserChange}/>
+                        <Input type="text" id="name" name="name" defaultValue={user?.name}/>
                     </div>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="surname">Surname</Label>
-                        <Input type="text" id="surname" name="surname" value={newUser.surname ?? ""}
-                               onChange={handleUserChange}/>
+                        <Input type="text" id="surname" name="surname" defaultValue={user?.surname}/>
                     </div>
                 </div>
 
                 <div className="space-y-2 w-full">
                     <Label htmlFor="email">Email</Label>
-                    <Input type="email" id="email" name="email" value={newUser.email ?? ""}
-                           onChange={handleUserChange}/>
+                    <Input type="email" id="email" name="email" defaultValue={user?.email}/>
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                        id="bio"
-                        defaultValue="Hi!"
-                        className="resize-none"
-                    />
-                    <p className="text-sm text-muted-foreground">
-                        You can @mention other users and organizations to link to them.
-                    </p>
-                </div>
+
                 <div className={"flex flex-row gap-4"}>
-                    <Button type="submit">Save changes</Button>
+                    <Button type="submit" form={"form"}>Save changes</Button>
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button variant="outline">Change password</Button>
@@ -139,20 +167,20 @@ const ProfilePage = () => {
                             <DialogHeader>
                                 <DialogTitle>Create new password</DialogTitle>
                                 <DialogDescription>
-                                    Input new password. Click save when you&#39;re done.
+                                    Type new password. Click save when you&#39;re done.
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="space-y-2 w-full">
-                                    <Label htmlFor="password">Current password</Label>
-                                    <Input id="password" placeholder={"Your current password"}/>
+                                    <Label htmlFor="currentPassword">Current password</Label>
+                                    <Input id="currentPassword" name="currentPassword" placeholder={"Your current password"} onChange={(e) => onCurrentPasswordChange(e.target.value)}/>
                                 </div>
                                 <div className="space-y-2 w-full">
-                                    <PasswordInput/>
+                                    <PasswordInput onPasswordChange={onPasswordChange}/>
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button type="submit">Change password</Button>
+                                <Button type="submit" form="form">Change password</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

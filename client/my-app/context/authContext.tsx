@@ -3,11 +3,14 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import SessionManager from "@/lib/sessionManager";
 import {User} from "shared/models/user";
+import {LoginRequest} from "shared/data/loginRequest";
 
 interface AuthContextType {
+    token: string | null;
     user: User | null;
-    login: (token: string) => void;
+    login: (username: string, password: string) => void;
     logout: () => void;
+    saveToken: (token: string) => void;
     isAuthenticated: boolean;
 }
 
@@ -26,7 +29,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    const login = (token: string) => {
+    const login = async (username: string, password: string) => {
+        try {
+            console.log("Logging in...")
+            const request = new LoginRequest(username, password);
+            const response = await fetch('http://localhost:4000/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(request),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Login ok")
+                saveToken(result.token)
+            } else {
+                const errorData = await response.json();
+                new Error(errorData)
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const saveToken = (token: string) => {
         SessionManager.saveToken(token)
         const decodedToken = SessionManager.decodeToken(token);
         setToken(token)
@@ -42,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isAuthenticated: boolean = SessionManager.getToken() !== null;
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+        <AuthContext.Provider value={{ token, user, login, logout, saveToken, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );

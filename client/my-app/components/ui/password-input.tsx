@@ -7,7 +7,7 @@ import {Label} from "@/components/ui/label";
 import {Check, Eye, EyeOff, X} from "lucide-react";
 import {useMemo, useState} from "react";
 
-export default function PasswordInput() {
+export default function PasswordInput({onPasswordChange}: { onPasswordChange: (password: string) => void }) {
     const [password, setPassword] = useState("");
     const [isVisible, setIsVisible] = useState<boolean>(false);
 
@@ -61,7 +61,10 @@ export default function PasswordInput() {
                         placeholder="Strong password"
                         type={isVisible ? "text" : "password"}
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            onPasswordChange(e.target.value)
+                        }}
                         aria-invalid={strengthScore < 3}
                         aria-describedby="password-strength"
                     />

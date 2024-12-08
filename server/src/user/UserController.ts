@@ -46,9 +46,10 @@ export class UserController {
     async updateUser(req: Request, res: Response): Promise<void> {
         try {
             const updatedUser = req.body;
-            await this.userRepository.update(updatedUser);
-            res.send('User updated');
+            const user = await this.userRepository.update(updatedUser);
+            res.status(201).send(user);
         } catch (err) {
+            console.log(err);
             res.status(500).send('Error updating user');
         }
     }
@@ -112,7 +113,6 @@ export class UserController {
         }
     }
 
-    // Función para actualizar el perfil de un usuario
     async updateProfile(req: Request, res: Response): Promise<Response> {
         const {username} = req.params;
         const {email} = req.body;

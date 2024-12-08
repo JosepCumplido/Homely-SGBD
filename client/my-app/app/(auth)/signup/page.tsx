@@ -1,22 +1,10 @@
 'use client'
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {z} from "zod";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Label} from "@/components/ui/label";
-import {Textarea} from "@/components/ui/textarea";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription, DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
 import PasswordInput from "@/components/ui/password-input";
-import {User} from "shared/models/user";
 import {useAuth} from "@/context/authContext";
 import {useRouter} from "next/navigation";
 import {SignupRequest} from "shared/data/signupRequest";
@@ -32,17 +20,22 @@ const SignupSchema = z.object({
 type SignupFormData = z.infer<typeof SignupSchema>;
 
 const SignupPage = () => {
-    const {login, isAuthenticated} = useAuth();
+    const {saveToken, isAuthenticated} = useAuth();
     const router = useRouter();
 
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState<Partial<Record<keyof SignupFormData, string[]>>>({});
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         if (isAuthenticated && typeof window !== "undefined") {
             router.push("/");
         }
     }, [isAuthenticated, router]);
+
+    const onPasswordChange = useCallback((password: string) => {
+        setPassword(password);
+    }, [])
 
     const handleSignup = async (formData: any) => {
         const data = Object.fromEntries(formData) as SignupFormData;
@@ -70,7 +63,7 @@ const SignupPage = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                login(result.token)
+                saveToken(result.token)
                 setMessage('Signup successful!');
             } else {
                 const errorData = await response.json();
@@ -94,6 +87,7 @@ const SignupPage = () => {
                 onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
                     e.preventDefault();
                     const formData = new FormData(e.currentTarget);
+                    formData.append("password", password);
                     handleSignup(formData);
                 }}
             >
@@ -122,7 +116,7 @@ const SignupPage = () => {
                     {errors.email && <p className="text-red-500">{errors.email[0]}</p>}
                 </div>
 
-                <PasswordInput/>
+                <PasswordInput onPasswordChange={onPasswordChange}/>
                 {message && <p className="text-green-500">{message}</p>}
 
                 <Button type="submit" className={"!mt-8 w-full"}>Create account</Button>

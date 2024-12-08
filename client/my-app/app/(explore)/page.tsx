@@ -221,7 +221,7 @@ export default function Home() {
                     selectedCategory={searchCategory}
                     onCategoryChange={onCategoryChange}
                 />
-                <ContentFrame>
+                <ContentFrame className={"mb-16"}>
                     <Posts
                         searchCity={searchCity}
                         guestsNumber={guestsNumber}
@@ -234,42 +234,5 @@ export default function Home() {
                 </ContentFrame>
             </section>
         </>
-
-        /*<div className={"flex flex-col space-y-6 justify-center py-4 m-auto"}>
-            <SearchBox
-                city={searchCity}
-                onCityChange={onCityChange}
-                guests={guestsNumber}
-                onGuestsChange={onGuestsNumberChange}
-                priceRange={searchPriceRange}
-                onPriceRangeChange={onPriceRangeChange}
-                searchResults={searchResultsNumber}
-                featureTypes={featureTypes}
-                onFeatureClick={onFeatureClick}
-                amenityTypes={amenityTypes}
-                onAmenityClick={onAmenityClick}
-                filtersNumber={appliedFiltersNumber}
-                onClearAllFilters={onClearAllFilters}
-            />
-            <Separator orientation="horizontal"/>
-            <div className={"max-h-[85vh] !mt-0 pb-24 overflow-y-scroll no-scrollbar"}>
-                <CategoryFilter
-                    categories={categories}
-                    selectedCategory={searchCategory}
-                    onCategoryChange={onCategoryChange}
-                />
-                <ContentFrame>
-                        <Posts
-                            searchCity={searchCity}
-                            guestsNumber={guestsNumber}
-                            searchCategory={searchCategory}
-                            searchPriceRange={searchPriceRange}
-                            selectedFeaturesList={selectedFeaturesList}
-                            selectedAmenitiesList={selectedAmenitiesList}
-                            onSetSearchResultsNumber={onSetSearchResultsNumber}
-                        />
-                </ContentFrame>
-            </div>
-        </div>*/
     );
 }

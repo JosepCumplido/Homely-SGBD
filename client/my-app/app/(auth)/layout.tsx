@@ -54,6 +54,7 @@ function MainLayout({children}: { children: React.ReactNode }) {
                         className={"h-full w-full"}
                         style={{objectFit: 'cover'}}
                     />
+                    <h2 className={"text-8xl font-black text-white"}>Find your next dream house</h2>
                 </section>
                 <section className={"flex-none w-1/2 p-56"}>
                     {children}

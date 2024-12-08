@@ -7,7 +7,6 @@ export const authenticate = (req: any, res: any, next: any) => {
 
     jwt.verify(token.split(" ")[1], 'your_secret_key', (err: any, decoded: any) => {
         if (err) return res.status(401).json({ error: 'Unauthorized' });
-
         req.user = decoded;
         next();
     });

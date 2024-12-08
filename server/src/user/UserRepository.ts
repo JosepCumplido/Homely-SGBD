@@ -32,11 +32,15 @@ export class UserRepository {
             .query(`INSERT INTO [User] (name, surname, username, email, password, avatarUrl) VALUES (@name, @surname, @username, @email, @password, @avatarUrl)`);
     }
 
-    async update(user: User): Promise<void> {
-        await this.db.request()
-            .input('id', user.id)
+    async update(user: User): Promise<User> {
+        const result = await this.db.request()
+            .input('username', user.username)
             .input('name', user.name)
-            .query(`UPDATE [User] SET name = @name WHERE id = @id`);
+            .input('surname', user.surname)
+            .input('email', user.email)
+            .input('password', user.password)
+            .query(`UPDATE [User] SET name = @name, surname = @surname, email = @email, password = @password OUTPUT inserted.* WHERE username = @username`);
+        return result.recordset[0] || null;
     }
 
     async delete(id: number): Promise<void> {
