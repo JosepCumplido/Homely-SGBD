@@ -1,8 +1,11 @@
 import * as React from "react";
-import { Chat } from 'shared/models/chat';
-import { Message } from "shared/models/message";
 import { useEffect, useState } from "react";
+import { Chat } from "shared/models/chat";
+import { Message } from "shared/models/message";
+import { io } from "socket.io-client";
 import useUsername from "@/hooks/useUsername";
+
+const socket = io("http://localhost:4000"); // Conecta al servidor
 
 export function ChatContent({ chat }: { chat: Chat | null }) {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -10,9 +13,32 @@ export function ChatContent({ chat }: { chat: Chat | null }) {
     const { loggedUsername } = useUsername();
 
     useEffect(() => {
+        // Unirse a un chat específico
+        if (chat?.chatId) {
+            socket.emit("joinChat", chat.chatId);
+
+            // Escuchar nuevos mensajes
+            socket.on("newMessage", (message: Message) => {
+                setMessages((prevMessages) => [...prevMessages, message]);
+            });
+        }
+
+        // Limpieza al desmontar el componente
+        return () => {
+            if (chat?.chatId) {
+                socket.emit("leaveChat", chat.chatId);
+                socket.off("newMessage");
+            }
+        };
+    }, [chat]);
+
+    useEffect(() => {
+        // Cargar mensajes del chat desde el servidor
         const fetchMessages = async () => {
+            if (!chat?.chatId) return;
+
             try {
-                const response = await fetch(`http://localhost:4000/chat/${chat?.chatId}/messages`);
+                const response = await fetch(`http://localhost:4000/chat/${chat.chatId}/messages`);
                 if (!response.ok) throw new Error('Error fetching messages');
                 const data = await response.json();
                 setMessages(data);
@@ -21,26 +47,20 @@ export function ChatContent({ chat }: { chat: Chat | null }) {
             }
         };
 
-        if (chat?.chatId) fetchMessages();
+        fetchMessages();
     }, [chat]);
 
     const sendMessage = async () => {
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !chat?.chatId) return;
 
-        try {
-            await fetch(`http://localhost:4000/chat/${chat?.chatId}/messages`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: newMessage, senderUsername: loggedUsername }),
-            });
+        // Enviar mensaje a través de WebSocket
+        socket.emit("sendMessage", {
+            chatId: chat.chatId,
+            senderUsername: loggedUsername,
+            content: newMessage,
+        });
 
-            setNewMessage('');
-            const response = await fetch(`http://localhost:4000/chat/${chat?.chatId}/messages`);
-            const data = await response.json();
-            setMessages(data);
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
+        setNewMessage(''); // Limpiar el campo de entrada
     };
 
     return (
@@ -63,11 +83,7 @@ export function ChatContent({ chat }: { chat: Chat | null }) {
                                             : 'bg-gray-200 text-gray-900'
                                     }`}
                                 >
-                                    <p
-                                        className="text-xs font-bold mb-1"
-                                    >
-                                        {message.senderUsername}
-                                    </p>
+                                    <p className="text-xs font-bold mb-1">{message.senderUsername}</p>
                                     <p>{message.content}</p>
                                 </div>
                             </div>
