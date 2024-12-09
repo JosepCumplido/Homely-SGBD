@@ -3,6 +3,7 @@ import {Request, Response} from 'express';
 import {UserRepository} from './UserRepository';
 import {User} from "shared/models/user";
 import jwt from 'jsonwebtoken';
+import e from "cors";
 
 export class UserController {
     private userRepository: UserRepository;
@@ -189,32 +190,23 @@ export class UserController {
         }
     }
 
-    async getUpcomingTravel(req: Request, res: Response): Promise<Response> {
+    async getAllTravels(req: Request, res: Response): Promise<void> {
+        const { userId } = req.query;
+
+
+        if (!userId) {
+            res.status(400).send('User ID is required');
+            return;
+        }
+
         try {
-            // Obtener el próximo viaje desde el repositorio
-            const upcomingTravel = await this.userRepository.getUpcomingTravel();
-
-            if (!upcomingTravel) {
-                return res.status(404).json({ message: "No upcoming travel found" });
-            }
-
-            return res.status(200).json(upcomingTravel);
-        } catch (error) {
-            console.error("Error fetching upcoming travel:", error);
-            return res.status(500).json({ error: "Error fetching upcoming travel" });
+            const travels = await this.userRepository.getAllTravels(userId); // Podría fallar porque userId es undefined
+            res.json(travels);
+        } catch (err) {
+            console.error("Error retrieving travels:", err);
+            res.status(500).send('Error retrieving travels');
         }
     }
 
-    async getPastTravels(req: Request, res: Response): Promise<Response> {
-        try {
-            // Obtener los viajes pasados desde el repositorio
-            const pastTravels = await this.userRepository.getPastTravels();
-
-            return res.status(200).json(pastTravels);
-        } catch (error) {
-            console.error("Error fetching past travels:", error);
-            return res.status(500).json({ error: "Error fetching past travels" });
-        }
-    }
 
 }
