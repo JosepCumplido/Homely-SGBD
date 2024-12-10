@@ -5,9 +5,11 @@ import { TravelHistoryList } from "@/components/travel/travelHistoryList";
 import { Reservation } from "shared/models/reservation";
 import Link from "next/link";
 import { ArrowBack } from "@mui/icons-material";
+import {useAuth} from "@/hooks/useAuth";
 
 export default function TravelHistory2() {
-    // Estados para almacenar los datos del backend
+    const { user } = useAuth(); // Hook que verifica si el usuario está autenticado
+
     const [upcomingReservation, setUpcomingReservation] = useState<Reservation | null>(null);
     const [pastReservations, setPastReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -17,20 +19,19 @@ export default function TravelHistory2() {
     useEffect(() => {
         const fetchTravelHistory = async () => {
             try {
-                const userId = '1';
                 setLoading(true);
-                const response = await fetch(`/api/user/travel/getAllTravels?userId=${userId}`);
+                const response = await fetch(`/user/reservations/${username}`);
                 const data = await response.json();
 
                 const currentDate = new Date();
 
                 const upcoming = data.filter((travel: Reservation) => {
-                    const startDate = new Date(travel.start_date);
+                    const startDate = new Date(travel.fromDate);
                     return !isNaN(startDate.getTime()) && startDate >= currentDate;
                 });
 
                 const past = data.filter((travel: Reservation) => {
-                    const endDate = new Date(travel.end_date);
+                    const endDate = new Date(travel.toDate);
                     return !isNaN(endDate.getTime()) && endDate < currentDate;
                 });
 

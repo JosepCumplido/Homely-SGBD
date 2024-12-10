@@ -1,7 +1,8 @@
-
-import { ConnectionPool } from 'mssql';
+import {ConnectionPool} from 'mssql';
 import {User} from 'shared/models/user';
+import {ReservationsResponse} from 'shared/data/reservationsRequest'
 import * as QueryString from "node:querystring";
+import {Reservation} from "shared/models/reservation";
 
 export class UserRepository {
     private db: ConnectionPool;
@@ -25,14 +26,17 @@ export class UserRepository {
     async create(user: User): Promise<void> {
         await this.db.request()
             .input('name', user.name)
-            .query(`INSERT INTO [User] (name) VALUES (@name)`);
+            .query(`INSERT INTO [User] (name)
+                    VALUES (@name)`);
     }
 
     async update(user: User): Promise<void> {
         await this.db.request()
             .input('id', user.id)
             .input('name', user.name)
-            .query(`UPDATE [User] SET name = @name WHERE id = @id`);
+            .query(`UPDATE [User]
+                    SET name = @name
+                    WHERE id = @id`);
     }
 
     async delete(id: number): Promise<void> {
@@ -88,59 +92,25 @@ export class UserRepository {
         throw new Error("Password update failed");
     }
 
-    async getAllTravels(userId: string): Promise<{
-        upcomingTravel: any;
-        pastTravels: any[];
-    }> {
+    async getReservations(username: string): Promise<Reservation[]> {
         try {
-            // Query upcoming travels
-            const upcomingResult = await this.db.request()
-                .input('userId', userId) // Filtrar por userId
-                .query(`
-                    SELECT TOP 1 r.*, p.name AS property_name, u.name AS user_name
-                    FROM Reservations r
-                             JOIN Properties p ON r.property_id = p.id
-                             JOIN Users u ON r.user_id = u.id
-                    WHERE r.start_date >= GETDATE() AND r.user_id = @userId
-                    ORDER BY r.start_date ASC
-                `);
+            const query = `
+                SELECT *
+                FROM dbo.Reservations
+                WHERE username = @username
+                ORDER BY start_date
+            `;
 
-            const upcomingTravel = upcomingResult.recordset[0] ? {
-                ...upcomingResult.recordset[0],
-                start_date: new Date(upcomingResult.recordset[0].start_date),
-                end_date: new Date(upcomingResult.recordset[0].end_date),
-            } : null;
+            const result = await this.db.request()
+                .input('username', username)
+                .query(query);
 
-            // Query past travels
-            const pastResult = await this.db.request()
-                .input('userId', userId) // Filtrar por userId
-                .query(`
-                SELECT r.*, p.name AS property_name, u.name AS user_name
-                FROM Reservations r
-                JOIN Properties p ON r.property_id = p.id
-                JOIN Users u ON r.user_id = u.id
-                WHERE r.end_date < GETDATE() AND r.user_id = @userId
-                ORDER BY r.end_date DESC
-            `);
-
-            const pastTravels = pastResult.recordset.map((travel: any) => ({
-                ...travel,
-                start_date: new Date(travel.start_date),
-                end_date: new Date(travel.end_date),
-            }));
-
-            return {
-                upcomingTravel,
-                pastTravels,
-            };
+            return result.recordset
         } catch (err) {
             console.error("Error retrieving travels:", err);
             throw new Error("Database error retrieving travels");
         }
     }
-
-
-
 
 
 }

@@ -25,6 +25,7 @@ db.connect().then(() => {
     // Afegeix les rutes de l'usuari
     app.use('/', userRoutes(db));
     app.use('/home', homeRoutes(db, client));
+    app.use('/user', userRoutes(db));
 
     app.listen(port, () => {
         console.log(`Server running on port ${port}`);

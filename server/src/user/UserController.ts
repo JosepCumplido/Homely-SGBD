@@ -4,6 +4,8 @@ import {UserRepository} from './UserRepository';
 import {User} from "shared/models/user";
 import jwt from 'jsonwebtoken';
 import e from "cors";
+import {ReservationsResponse} from "shared/data/reservationsRequest";
+import {Reservation} from "shared/models/reservation";
 
 export class UserController {
     private userRepository: UserRepository;
@@ -190,35 +192,42 @@ export class UserController {
         }
     }
 
-    async getAllTravels(req: Request, res: Response): Promise<void> {
-        const { userId } = req.query;
+    async getAllReservations(req: Request, res: Response): Promise<void> {
+        const { username } = req.params;
 
-        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
-            res.status(400).json({ error: "Invalid or missing User ID in query parameters." });
+        if (!username) {
+            res.status(400).json({ error: "Invalid or missing username in query parameters." });
             return;
         }
 
-        console.log("Received userId:", userId);
+        console.log("Received username:", username);
 
         try {
-            const travels = await this.userRepository.getAllTravels(userId);
+            const result: Reservation[] = await this.userRepository.getReservations(username);
+            const today = new Date();
+            const upcomingReservations: Reservation[] = [];
+            const pastReservations: Reservation[] = [];
 
-            if (!travels || (travels.upcomingTravel === null && travels.pastTravels.length === 0)) {
-                res.status(404).json({ message: "No travels found for the given user." });
-                return;
-            }
+            result.forEach(reservation => {
+                const endDate = new Date(reservation.toDate);
+                if (endDate >= today) {
+                    upcomingReservations.push(reservation);
+                } else {
+                    pastReservations.push(reservation);
+                }
+            });
 
-            res.status(200).json(travels);
+            res.status(200).json(new ReservationsResponse(upcomingReservations, pastReservations));
         } catch (err: unknown) {
             if (err instanceof Error) {
-                console.error("Error retrieving travels for userId:", userId, "Error:", err.message);
+                console.error("Error retrieving travels for username:", username, "Error:", err.message);
 
                 res.status(500).json({
                     error: "Error retrieving travels",
                     details: err.message,
                 });
             } else {
-                console.error("Unknown error retrieving travels for userId:", userId, "Error:", err);
+                console.error("Unknown error retrieving travels for username:", username, "Error:", err);
 
                 res.status(500).json({
                     error: "An unknown error occurred while retrieving travels",
