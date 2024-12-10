@@ -3,6 +3,9 @@ import {Request, Response} from 'express';
 import {UserRepository} from './UserRepository';
 import {User} from "shared/models/user";
 import jwt from 'jsonwebtoken';
+import e from "cors";
+import {ReservationsResponse} from "shared/data/reservationsRequest";
+import {Reservation} from "shared/models/reservation";
 
 export class UserController {
     private userRepository: UserRepository;
@@ -213,32 +216,48 @@ export class UserController {
         }
     }
 
-    async getUpcomingTravel(req: Request, res: Response): Promise<Response> {
-        try {
-            // Obtener el próximo viaje desde el repositorio
-            const upcomingTravel = await this.userRepository.getUpcomingTravel();
+    async getAllReservations(req: Request, res: Response): Promise<void> {
+        const { username } = req.params;
 
-            if (!upcomingTravel) {
-                return res.status(404).json({message: "No upcoming travel found"});
+        if (!username) {
+            res.status(400).json({ error: "Invalid or missing username in query parameters." });
+            return;
+        }
+
+        console.log("Received username:", username);
+
+        try {
+            const result: Reservation[] = await this.userRepository.getReservations(username);
+            const today = new Date();
+            const upcomingReservations: Reservation[] = [];
+            const pastReservations: Reservation[] = [];
+
+            result.forEach(reservation => {
+                const endDate = new Date(reservation.toDate);
+                if (endDate >= today) {
+                    upcomingReservations.push(reservation);
+                } else {
+                    pastReservations.push(reservation);
+                }
+            });
+
+            res.status(200).json(new ReservationsResponse(upcomingReservations, pastReservations));
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error("Error retrieving travels for username:", username, "Error:", err.message);
+
+                res.status(500).json({
+                    error: "Error retrieving travels",
+                    details: err.message,
+                });
+            } else {
+                console.error("Unknown error retrieving travels for username:", username, "Error:", err);
+
+                res.status(500).json({
+                    error: "An unknown error occurred while retrieving travels",
+                    details: String(err),
+                });
             }
-
-            return res.status(200).json(upcomingTravel);
-        } catch (error) {
-            console.error("Error fetching upcoming travel:", error);
-            return res.status(500).json({error: "Error fetching upcoming travel"});
         }
     }
-
-    async getPastTravels(req: Request, res: Response): Promise<Response> {
-        try {
-            // Obtener los viajes pasados desde el repositorio
-            const pastTravels = await this.userRepository.getPastTravels();
-
-            return res.status(200).json(pastTravels);
-        } catch (error) {
-            console.error("Error fetching past travels:", error);
-            return res.status(500).json({error: "Error fetching past travels"});
-        }
-    }
-
 }

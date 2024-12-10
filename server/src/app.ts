@@ -27,6 +27,7 @@ db.connect().then(() => {
     app.use('/user', userRoutes(db));
     app.use('/home', homeRoutes(db, client));
     app.use('/chat', chatRoutes(db));
+    app.use('/user', userRoutes(db));
 
     app.listen(port, () => {
         console.log(`Server running on port ${port}`);

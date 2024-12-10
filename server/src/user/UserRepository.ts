@@ -1,6 +1,8 @@
-
-import { ConnectionPool } from 'mssql';
+import {ConnectionPool} from 'mssql';
 import {User} from 'shared/models/user';
+import {ReservationsResponse} from 'shared/data/reservationsRequest'
+import * as QueryString from "node:querystring";
+import {Reservation} from "shared/models/reservation";
 
 export class UserRepository {
     private db: ConnectionPool;
@@ -103,26 +105,23 @@ export class UserRepository {
         throw new Error("Password update failed");
     }
 
-    async getUpcomingTravel(): Promise<any> {
-        const query = `
-        SELECT TOP 1 * 
-        FROM [Travel]
-        WHERE status = 'upcoming'
-        ORDER BY start_date ASC
-    `;
-        const result = await this.db.request().query(query);
-        return result.recordset[0] || null;
-    }
+    async getReservations(username: string): Promise<Reservation[]> {
+        try {
+            const query = `
+                SELECT *
+                FROM dbo.Reservations
+                WHERE username = @username
+                ORDER BY start_date
+            `;
 
-    async getPastTravels(): Promise<any[]> {
-        const query = `
-        SELECT * 
-        FROM [Travel]
-        WHERE status = 'past'
-        ORDER BY end_date DESC
-    `;
-        const result = await this.db.request().query(query);
-        return result.recordset;
-    }
+            const result = await this.db.request()
+                .input('username', username)
+                .query(query);
 
+            return result.recordset
+        } catch (err) {
+            console.error("Error retrieving travels:", err);
+            throw new Error("Database error retrieving travels");
+        }
+    }
 }
