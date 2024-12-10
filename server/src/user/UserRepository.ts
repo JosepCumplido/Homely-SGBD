@@ -88,22 +88,23 @@ export class UserRepository {
         throw new Error("Password update failed");
     }
 
-    async getAllTravels(userId: string | string[] | QueryString.ParsedQs | QueryString.ParsedQs[]): Promise<{
+    async getAllTravels(userId: string): Promise<{
         upcomingTravel: any;
         pastTravels: any[];
     }> {
         try {
             // Query upcoming travels
             const upcomingResult = await this.db.request()
+                .input('userId', userId) // Filtrar por userId
                 .query(`
                     SELECT TOP 1 r.*, p.name AS property_name, u.name AS user_name
                     FROM Reservations r
                              JOIN Properties p ON r.property_id = p.id
                              JOIN Users u ON r.user_id = u.id
-                    WHERE r.start_date >= GETDATE()
+                    WHERE r.start_date >= GETDATE() AND r.user_id = @userId
                     ORDER BY r.start_date ASC
                 `);
-            // Convertir start_date a Date antes de enviarlo al frontend
+
             const upcomingTravel = upcomingResult.recordset[0] ? {
                 ...upcomingResult.recordset[0],
                 start_date: new Date(upcomingResult.recordset[0].start_date),
@@ -112,15 +113,16 @@ export class UserRepository {
 
             // Query past travels
             const pastResult = await this.db.request()
+                .input('userId', userId) // Filtrar por userId
                 .query(`
-                    SELECT r.*, p.name AS property_name, u.name AS user_name
-                    FROM Reservations r
-                             JOIN Properties p ON r.property_id = p.id
-                             JOIN Users u ON r.user_id = u.id
-                    WHERE r.end_date < GETDATE()
-                    ORDER BY r.end_date DESC
-                `);
-            // Convertir las fechas de todos los viajes pasados
+                SELECT r.*, p.name AS property_name, u.name AS user_name
+                FROM Reservations r
+                JOIN Properties p ON r.property_id = p.id
+                JOIN Users u ON r.user_id = u.id
+                WHERE r.end_date < GETDATE() AND r.user_id = @userId
+                ORDER BY r.end_date DESC
+            `);
+
             const pastTravels = pastResult.recordset.map((travel: any) => ({
                 ...travel,
                 start_date: new Date(travel.start_date),
@@ -136,6 +138,7 @@ export class UserRepository {
             throw new Error("Database error retrieving travels");
         }
     }
+
 
 
 

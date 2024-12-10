@@ -17,27 +17,25 @@ export default function TravelHistory2() {
     useEffect(() => {
         const fetchTravelHistory = async () => {
             try {
+                const userId = '1';
                 setLoading(true);
-                const response = await fetch('/api/user/travel/getAllTravels'); // Cambia la ruta si es necesario
+                const response = await fetch(`/api/user/travel/getAllTravels?userId=${userId}`);
                 const data = await response.json();
 
-                // Convierte las fechas en objetos Date
                 const currentDate = new Date();
 
-                // Filtrar los viajes futuros y pasados
                 const upcoming = data.filter((travel: Reservation) => {
-                    const startDate = new Date(travel.start_date); // Convertir start_date en Date
-                    return !isNaN(startDate.getTime()) && startDate >= currentDate; // Compara con la fecha actual
+                    const startDate = new Date(travel.start_date);
+                    return !isNaN(startDate.getTime()) && startDate >= currentDate;
                 });
 
                 const past = data.filter((travel: Reservation) => {
-                    const endDate = new Date(travel.end_date); // Convertir end_date en Date
-                    return !isNaN(endDate.getTime()) && endDate < currentDate; // Compara con la fecha actual
+                    const endDate = new Date(travel.end_date);
+                    return !isNaN(endDate.getTime()) && endDate < currentDate;
                 });
 
-                // Organizar los datos recibidos
-                setUpcomingReservation(upcoming.length > 0 ? upcoming[0] : null); // Tomar el primer viaje próximo
-                setPastReservations(past); // Todos los viajes pasados
+                setUpcomingReservation(upcoming.length > 0 ? upcoming[0] : null);
+                setPastReservations(past);
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching travel data:", err);
@@ -48,6 +46,7 @@ export default function TravelHistory2() {
 
         fetchTravelHistory();
     }, []);
+
 
     // Renderizar en caso de error o carga
     if (loading) {

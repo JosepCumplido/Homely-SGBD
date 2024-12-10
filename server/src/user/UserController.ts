@@ -193,20 +193,41 @@ export class UserController {
     async getAllTravels(req: Request, res: Response): Promise<void> {
         const { userId } = req.query;
 
-
-        if (!userId) {
-            res.status(400).send('User ID is required');
+        if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+            res.status(400).json({ error: "Invalid or missing User ID in query parameters." });
             return;
         }
 
+        console.log("Received userId:", userId);
+
         try {
-            const travels = await this.userRepository.getAllTravels(userId); // Podría fallar porque userId es undefined
-            res.json(travels);
-        } catch (err) {
-            console.error("Error retrieving travels:", err);
-            res.status(500).send('Error retrieving travels');
+            const travels = await this.userRepository.getAllTravels(userId);
+
+            if (!travels || (travels.upcomingTravel === null && travels.pastTravels.length === 0)) {
+                res.status(404).json({ message: "No travels found for the given user." });
+                return;
+            }
+
+            res.status(200).json(travels);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error("Error retrieving travels for userId:", userId, "Error:", err.message);
+
+                res.status(500).json({
+                    error: "Error retrieving travels",
+                    details: err.message,
+                });
+            } else {
+                console.error("Unknown error retrieving travels for userId:", userId, "Error:", err);
+
+                res.status(500).json({
+                    error: "An unknown error occurred while retrieving travels",
+                    details: String(err),
+                });
+            }
         }
     }
+
 
 
 }
