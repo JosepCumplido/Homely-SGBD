@@ -19,7 +19,7 @@ import {
     Waves,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import {FeatureSelector} from "@/components/explore/searchFilters/featureSelector";
+import { FeatureSelector } from "@/components/explore/searchFilters/featureSelector";
 import { PhotoUploader } from '@/components/createAdd/imageUploader';
 import DisplayGroup from "@/components/createAdd/displayGroup";
 
@@ -84,7 +84,7 @@ const CreateAddPage: React.FC = () => {
         city: '',
         country: '',
         imagesUrls: [],
-        pricePerNight:0,
+        pricePerNight: '',
         features: [],
         amenities: [],
         categories: [],
@@ -99,29 +99,42 @@ const CreateAddPage: React.FC = () => {
         setFormData((prev) => ({ ...prev, [name]: name === 'pricePerNight' ? parseFloat(value) : value }));
     };
 
+    const [uploading, setUploading] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        setUploading(true); // Marquem que s'està pujant les imatges i creant l'anunci
+
+        // Enviar primer les imatges a l'API
+        const uploadedImageUrls = await Promise.all(formData.imagesUrls.map(async (file) => {
+            const formDataImage = new FormData();
+            formDataImage.append('file', file); // Enviem el fitxer original
+            const response = await fetch('/api/upload', { method: 'POST', body: formDataImage });
+            const result = await response.json();
+            // Assuming the backend returns a URL for each image
+            return result.url;
+        }));
+
+        // Després de pujar les imatges, enviem la crida per crear l'anunci
         const updatedFormData = {
             ...formData,
+            imagesUrls: uploadedImageUrls, // Incloem les URLs de les imatges pujades
             categories: selectedCategoriesList,
             features: selectedFeaturesList,
             amenities: selectedAmenitiesList,
         };
 
-        console.log('Submitting data:', updatedFormData);
-
         try {
-            const response = await fetch('http://localhost:4000/home/', {
-                method: 'POST',
+            const response = await fetch("http://localhost:4000/home/", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(updatedFormData), // Envia l'objecte actualitzat
+                body: JSON.stringify(updatedFormData),
             });
 
             if (response.ok) {
-                alert('Ad created successfully!');
+                alert("Ad created successfully!");
                 const result = await response.json();
                 console.log(result);
             } else {
@@ -129,35 +142,18 @@ const CreateAddPage: React.FC = () => {
                 alert(`Error: ${error.message}`);
             }
         } catch (error) {
-            console.error('Error creating the ad:', error);
-            alert('Failed to create ad. Please try again later.');
+            console.error("Error creating the ad:", error);
+            alert("Failed to create ad. Please try again later.");
+        } finally {
+            setUploading(false); // Desactivem l'estat d'uploading quan hagi acabat
         }
     };
 
 
-    const onCategoryClick = (category: string) => {
-        setSelectedCategoriesList((prevCategories) =>
-            prevCategories.includes(category)
-                ? prevCategories.filter((item) => item !== category) // Remove if already selected
-                : [...prevCategories, category] // Add if not selected
-        );
-    }
-    const handleFeatureClick = (feature: string) => {
-        setSelectedFeaturesList((prevSelected) =>
-            prevSelected.includes(feature) ? prevSelected.filter((item) => item !== feature) : [...prevSelected, feature]
-        );
-    };
-
-    const handleAmenityClick = (amenity: string) => {
-        setSelectedAmenitiesList((prevSelected) =>
-            prevSelected.includes(amenity) ? prevSelected.filter((item) => item !== amenity) : [...prevSelected, amenity]
-        );
-    };
-
     const handlePhotosChange = (photos: File[]) => {
-        const imageUrls = photos.map((photo) => URL.createObjectURL(photo));
-        setFormData((prev) => ({ ...prev, imagesUrls: imageUrls }));
+        setFormData((prev) => ({ ...prev, imagesUrls: photos }));
     };
+
 
     const CategorySelector: React.FC<{
         selectedCategory: string[];
@@ -189,6 +185,7 @@ const CreateAddPage: React.FC = () => {
         <div className="flex flex-col space-y-6 justify-center py-14 m-auto max-w-4xl">
             <h1 className="text-2xl font-bold mb-4 text-center">Create a New Ad!</h1>
             <form onSubmit={handleSubmit} className="space-y-6">
+                <p className="text-lg font-semibold leading-none tracking-tight">Main Information</p>
                 <Input
                     type="number"
                     name="pricePerNight"
@@ -211,42 +208,41 @@ const CreateAddPage: React.FC = () => {
                     onChange={handleInputChange}
                 />
 
+                <p className="text-lg font-semibold leading-none tracking-tight">Select Categories</p>
                 {/* Categories */}
                 <CategorySelector
                     selectedCategory={selectedCategoriesList}
-                    onCategoryChange={onCategoryClick}
+                    onCategoryChange={(category) => setSelectedCategoriesList(prev => prev.includes(category) ? prev.filter(item => item !== category) : [...prev, category])}
                 />
 
                 {/* Features */}
                 <DisplayGroup
                     title="Property Features"
                     groups={featureTypes.map((type) => ({
-                        label: type.label, // Subtítol
-                        subItems: type.features, // Llista de característiques
+                        label: type.label,
+                        subItems: type.features,
                     }))}
                     selectedItems={selectedFeaturesList}
-                    onItemClick={handleFeatureClick}
+                    onItemClick={(feature) => setSelectedFeaturesList(prev => prev.includes(feature) ? prev.filter(item => item !== feature) : [...prev, feature])}
                 />
 
                 {/* Amenities */}
                 <DisplayGroup
                     title="Property Amenities"
                     groups={amenityTypes.map((type) => ({
-                        label: type.label, // Subtítol
-                        subItems: type.amenities, // Llista de amenities
+                        label: type.label,
+                        subItems: type.amenities,
                     }))}
                     selectedItems={selectedAmenitiesList}
-                    onItemClick={handleAmenityClick}
-                    layoutClass="grid grid-cols-2 md:grid-cols-3 gap-4"
+                    onItemClick={(amenity) => setSelectedAmenitiesList(prev => prev.includes(amenity) ? prev.filter(item => item !== amenity) : [...prev, amenity])}
                 />
 
-                <PhotoUploader onPhotosChange={handlePhotosChange} />
+                <PhotoUploader onPhotosChange={handlePhotosChange}/>
 
                 <Button type="submit">Create Ad</Button>
             </form>
         </div>
     );
-
 };
 
 export default CreateAddPage;

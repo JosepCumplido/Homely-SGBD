@@ -22,6 +22,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onPhotosChange, ma
 
     return (
         <div className="flex flex-col gap-4">
+            <p className="text-lg font-semibold leading-none tracking-tight">Add Images</p>
             <div
                 {...getRootProps()}
                 className="border-dashed border-2 border-gray-400 rounded-md p-4 text-center cursor-pointer hover:border-gray-600"
