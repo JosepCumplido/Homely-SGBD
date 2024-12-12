@@ -5,23 +5,15 @@ import { Input } from '@/components/ui/input';
 import type { Category } from 'shared/models/category';
 import type { FeatureType } from 'shared/models/featureType';
 import type { AmenityType } from 'shared/models/amenityType';
-import {
-    Building2,
-    CableCar,
-    Castle,
-    Fence,
-    Gem,
-    Mountain,
-    Sailboat,
-    TentTree,
-    TreePalm,
-    TreePine,
-    Waves,
-} from 'lucide-react';
+import { Building2, CableCar, Castle, Fence, Gem, Mountain, Sailboat, TentTree, TreePalm, TreePine, Waves } from 'lucide-react';
 import { clsx } from 'clsx';
-import { FeatureSelector } from "@/components/explore/searchFilters/featureSelector";
 import { PhotoUploader } from '@/components/createAdd/imageUploader';
 import DisplayGroup from "@/components/createAdd/displayGroup";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { useRouter } from 'next/navigation';
+
+
 
 const categories: Category[] = [
     { name: 'beach', label: 'Beach', icon: <TreePalm height={24} width={24} strokeWidth={1.2} /> },
@@ -90,6 +82,8 @@ const CreateAddPage: React.FC = () => {
         categories: [],
     });
 
+    const router = useRouter();
+
     const [selectedCategoriesList, setSelectedCategoriesList] = useState<string[]>([]);
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
     const [selectedAmenitiesList, setSelectedAmenitiesList] = useState<string[]>([]);
@@ -146,6 +140,7 @@ const CreateAddPage: React.FC = () => {
             alert("Failed to create ad. Please try again later.");
         } finally {
             setUploading(false); // Desactivem l'estat d'uploading quan hagi acabat
+            router.push('/');
         }
     };
 
@@ -159,90 +154,117 @@ const CreateAddPage: React.FC = () => {
         selectedCategory: string[];
         onCategoryChange: (category: string) => void;
     }> = ({ selectedCategory, onCategoryChange }) => (
-        <div className="flex flex-row gap-8 items-center w-full overflow-x-scroll no-scrollbar lg:justify-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {categories.map((category) => (
                 <div
                     key={category.name}
                     onClick={() => onCategoryChange(category.name)}
                     className={clsx(
+                        'flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all',
                         {
-                            'border-b-2 border-gray-600 font-semibold': selectedCategory.includes(category.name),
-                            'hover:border-gray-200 hover:font-semibold': !selectedCategory.includes(category.name),
-                        },
-                        'flex flex-col gap-2 items-center justify-center border-b-2 border-transparent pb-1.5 cursor-pointer'
+                            'bg-primary text-primary-foreground': selectedCategory.includes(category.name),
+                            'bg-secondary hover:bg-secondary/80': !selectedCategory.includes(category.name),
+                        }
                     )}
                 >
                     {category.icon}
-                    <div title={category.label} className="text-sm text-center before-content">
-                        {category.label}
-                    </div>
+                    <div className="text-sm text-center mt-2">{category.label}</div>
                 </div>
             ))}
         </div>
     );
 
     return (
-        <div className="flex flex-col space-y-6 justify-center py-14 m-auto max-w-4xl">
-            <h1 className="text-2xl font-bold mb-4 text-center">Create a New Ad!</h1>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <p className="text-lg font-semibold leading-none tracking-tight">Main Information</p>
-                <Input
-                    type="number"
-                    name="pricePerNight"
-                    placeholder="Price per night"
-                    value={formData.pricePerNight}
-                    onChange={handleInputChange}
-                />
-                <Input
-                    type="text"
-                    name="country"
-                    placeholder="Country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                />
-                <Input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                />
+        <div className="container mx-auto py-10">
+            <Card className="w-full max-w-4xl mx-auto">
+                <CardHeader>
+                    <CardTitle className="text-3xl font-bold text-center">Create a New Accommodation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Main Information</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input
+                                    type="number"
+                                    name="pricePerNight"
+                                    placeholder="Price per night"
+                                    value={formData.pricePerNight}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    type="text"
+                                    name="country"
+                                    placeholder="Country"
+                                    value={formData.country}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    type="text"
+                                    name="city"
+                                    placeholder="City"
+                                    value={formData.city}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        </div>
 
-                <p className="text-lg font-semibold leading-none tracking-tight">Select Categories</p>
-                {/* Categories */}
-                <CategorySelector
-                    selectedCategory={selectedCategoriesList}
-                    onCategoryChange={(category) => setSelectedCategoriesList(prev => prev.includes(category) ? prev.filter(item => item !== category) : [...prev, category])}
-                />
+                        <Separator />
 
-                {/* Features */}
-                <DisplayGroup
-                    title="Property Features"
-                    groups={featureTypes.map((type) => ({
-                        label: type.label,
-                        subItems: type.features,
-                    }))}
-                    selectedItems={selectedFeaturesList}
-                    onItemClick={(feature) => setSelectedFeaturesList(prev => prev.includes(feature) ? prev.filter(item => item !== feature) : [...prev, feature])}
-                />
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Categories</h2>
+                            <CategorySelector
+                                selectedCategory={selectedCategoriesList}
+                                onCategoryChange={(category) => setSelectedCategoriesList(prev => prev.includes(category) ? prev.filter(item => item !== category) : [...prev, category])}
+                            />
+                        </div>
 
-                {/* Amenities */}
-                <DisplayGroup
-                    title="Property Amenities"
-                    groups={amenityTypes.map((type) => ({
-                        label: type.label,
-                        subItems: type.amenities,
-                    }))}
-                    selectedItems={selectedAmenitiesList}
-                    onItemClick={(amenity) => setSelectedAmenitiesList(prev => prev.includes(amenity) ? prev.filter(item => item !== amenity) : [...prev, amenity])}
-                />
+                        <Separator />
 
-                <PhotoUploader onPhotosChange={handlePhotosChange}/>
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Property Features</h2>
+                            <DisplayGroup
+                                groups={featureTypes.map((type) => ({
+                                    label: type.label,
+                                    subItems: type.features,
+                                }))}
+                                selectedItems={selectedFeaturesList}
+                                onItemClick={(feature) => setSelectedFeaturesList(prev => prev.includes(feature) ? prev.filter(item => item !== feature) : [...prev, feature])}
+                            />
+                        </div>
 
-                <Button type="submit">Create Ad</Button>
-            </form>
+                        <Separator />
+
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Property Amenities</h2>
+                            <DisplayGroup
+                                groups={amenityTypes.map((type) => ({
+                                    label: type.label,
+                                    subItems: type.amenities,
+                                }))}
+                                selectedItems={selectedAmenitiesList}
+                                onItemClick={(amenity) => setSelectedAmenitiesList(prev => prev.includes(amenity) ? prev.filter(item => item !== amenity) : [...prev, amenity])}
+                            />
+                        </div>
+
+                        <Separator />
+
+                        <div>
+                            <h2 className="text-xl font-semibold mb-4">Photos</h2>
+                            <PhotoUploader onPhotosChange={handlePhotosChange} />
+                        </div>
+
+                        <div className="flex justify-center">
+                            <Button type="submit" className="w-full md:w-auto" disabled={uploading}>
+                                {uploading ? 'Creating Ad...' : 'Create Ad'}
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 };
 
 export default CreateAddPage;
+

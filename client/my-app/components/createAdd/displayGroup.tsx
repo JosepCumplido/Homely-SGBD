@@ -1,48 +1,51 @@
 import React from 'react';
-import { clsx } from 'clsx';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface DisplayGroupProps {
-    title: string;
-    groups: { label: string; subItems: string[] }[]; // Subitems per mostrar
-    selectedItems: string[]; // Quins elements estan seleccionats
-    onItemClick: (item: string) => void; // Funció per gestionar la selecció
-    layoutClass?: string; // Personalització del layout
+    title?: string;
+    groups: {
+        label: string;
+        subItems: string[];
+    }[];
+    selectedItems: string[];
+    onItemClick: (item: string) => void;
 }
 
 const DisplayGroup: React.FC<DisplayGroupProps> = ({
-                                                       title,
                                                        groups,
                                                        selectedItems,
                                                        onItemClick,
-                                                       layoutClass = "flex flex-wrap gap-3", // Flexbox i espaiat entre elements
-                                                   }) => (
-    <div className="flex flex-col gap-8 pb-8">
-        <p className="text-lg font-semibold leading-none tracking-tight">{title}</p>
-        {groups.map(({ label, subItems }) => (
-            <div key={label} className="flex flex-col gap-4">
-                <p className="text-md font-semibold leading-none tracking-tight">{label}</p>
-                <div className={layoutClass}>
-                    {subItems.map((item) => {
-                        const selected = selectedItems.includes(item);
-                        return (
-                            <div
-                                key={item}
-                                onClick={() => onItemClick(item)} // Selecció quan fa click
-                                className={clsx(
-                                    "px-5 py-2 rounded-full m-[1px] border border-solid border-gray-400 w-max cursor-pointer transition-all duration-200 ease-in-out",
-                                    selected
-                                        ? "border-gray-900 border-2 !m-0 font-semibold"
-                                        : "hover:border-gray-800"
-                                )}
-                            >
-                                <p className={clsx({ 'font-semibold': selected })}>{item}</p>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        ))}
-    </div>
-);
+                                                   }) => {
+    return (
+        <Accordion type="single" collapsible className="w-full">
+            {groups.map((group, index) => (
+                <AccordionItem value={`item-${index}`} key={index}>
+                    <AccordionTrigger>{group.label}</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                            {group.subItems.map((item) => (
+                                <div key={item} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={item}
+                                        checked={selectedItems.includes(item)}
+                                        onCheckedChange={() => onItemClick(item)}
+                                    />
+                                    <label
+                                        htmlFor={item}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        {item}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            ))}
+        </Accordion>
+    );
+};
 
 export default DisplayGroup;
+
