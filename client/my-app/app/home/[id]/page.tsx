@@ -64,7 +64,11 @@ export default async function HomePage({ params }: { params: { id: string } }) {
             <div className="mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h1 className="text-3xl font-bold">{home.city}, {home.country}</h1>
-                    <RatingStars score={home.score} />
+                    {home.score !== null ? (
+                        <RatingStars score={home.score} />
+                    ) : (
+                        <span className="text-muted-foreground">No reviews yet</span>
+                    )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {parsedCategories && parsedCategories.length > 0 ? (
