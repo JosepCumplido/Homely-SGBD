@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useEffect, ChangeEvent, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useRouter} from 'next/navigation';
 import {Button} from "@/components/ui/button"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";

@@ -3,15 +3,20 @@ import {Request, Response} from 'express';
 import {UserRepository} from './UserRepository';
 import {User} from "shared/models/user";
 import jwt from 'jsonwebtoken';
-import e from "cors";
 import {ReservationsResponse} from "shared/data/reservationsRequest";
-import {Reservation} from "shared/models/reservation";
+import {Reservation, ReservationDAO} from "shared/models/reservation";
+import {HomeRepositoryElastic} from "../home/HomeRepositoryElastic";
+import {Home} from "shared/models/home";
+import {differenceInDays} from "date-fns";
+import {HomeRepository} from "../home/HomeRepository";
 
 export class UserController {
     private userRepository: UserRepository;
+    private homeRepository: HomeRepository;
 
-    constructor(userRepository: UserRepository) {
+    constructor(userRepository: UserRepository, homeRepository: HomeRepository) {
         this.userRepository = userRepository;
+        this.homeRepository = homeRepository;
     }
 
     async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -227,20 +232,37 @@ export class UserController {
         console.log("Received username:", username);
 
         try {
-            const result: Reservation[] = await this.userRepository.getReservations(username);
+            const result: ReservationDAO[] = await this.userRepository.getReservations(username);
             const today = new Date();
             const upcomingReservations: Reservation[] = [];
             const pastReservations: Reservation[] = [];
 
-            result.forEach(reservation => {
-                const endDate = new Date(reservation.toDate);
-                if (endDate >= today) {
-                    upcomingReservations.push(reservation);
-                } else {
-                    pastReservations.push(reservation);
-                }
-            });
+            console.log(`Result ${JSON.stringify(result)}`)
+            for (const reservationDAO of result) {
+                // get home
+                console.log(`Home ${JSON.stringify(reservationDAO)}`)
 
+                const home: Home | null = await this.homeRepository.getHomeById(reservationDAO.homeId)
+                if (home != null) {
+                    const numberOfNights: number = differenceInDays(reservationDAO.toDate, reservationDAO.fromDate)
+                    const reservation: Reservation = {
+                        id: reservationDAO.id,
+                        username: reservationDAO.username,
+                        home: home,
+                        fromDate: reservationDAO.fromDate,
+                        toDate: reservationDAO.toDate,
+                        nights: numberOfNights,
+                        totalPrice: Math.round(home.pricePerNight*numberOfNights),
+                        numberOfGuests: reservationDAO.guests,
+                    }
+
+                    if (reservation.toDate >= today) {
+                        upcomingReservations.push(reservation);
+                    } else {
+                        pastReservations.push(reservation);
+                    }
+                }
+            }
             res.status(200).json(new ReservationsResponse(upcomingReservations, pastReservations));
         } catch (err: unknown) {
             if (err instanceof Error) {

@@ -228,6 +228,7 @@ export class HomeController {
             const city = europeanCountries[countryIndex].cities[randomInt(0, europeanCountries[countryIndex].cities.length-1)];
 
             return {
+                id: id,
                 city: city,
                 country: country.name,
                 categories: randomSelection(categories, randomInt(1, 3)),

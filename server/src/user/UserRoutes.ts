@@ -4,13 +4,17 @@ import {UserRepository} from "./UserRepository";
 import express from 'express';
 import {ConnectionPool} from "mssql";
 import {authenticate} from '../config/auth'
+import {HomeRepositoryElastic} from "../home/HomeRepositoryElastic";
+import {Client} from "@elastic/elasticsearch";
+import {HomeRepository} from "../home/HomeRepository";
 
 const router = express.Router();
 
-export function userRoutes(db: ConnectionPool): Router {
+export function userRoutes(db: ConnectionPool, client: Client): Router {
   const router = Router();
   const userRepository = new UserRepository(db);
-  const userController = new UserController(userRepository);
+  const homeRepository = new HomeRepository(db)
+  const userController = new UserController(userRepository, homeRepository);
 
   router.get('/', authenticate, (req, res) => userController.getAllUsers(req, res));
   router.get('/:id', authenticate, (req, res) => userController.getUserById(req, res));
@@ -23,7 +27,7 @@ export function userRoutes(db: ConnectionPool): Router {
   router.put('/profile/:username', authenticate, (req, res) => { userController.updateProfile(req, res) });
   router.put('/profile/:username/change-password', authenticate, (req, res) => { userController.changePassword(req, res) });
 
-  router.get('/user/reservations/:username', (req, res) => { userController.getAllReservations(req, res) });
+  router.get('/reservations/:username', (req, res) => { userController.getAllReservations(req, res) });
 
   return router;
 }

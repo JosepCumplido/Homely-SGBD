@@ -25,14 +25,25 @@ export class HomeRepositoryElastic {
         }
     }
 
-    async getHomeById(id: string) {
+    async getHomeById(id: number): Promise<Home | null> {
         try {
-            const response = await this.client.get({
+            console.log('Home ID:', id);
+            const response = await this.client.search<Home>({
                 index: 'home',
-                id: id
+                query: {
+                    term: {
+                        id: id, // Busca pel camp personalitzat 'id'
+                    },
+                },
             });
-            console.log('Home by ID:', response._source);
-            return response._source;
+            if (response.hits.hits.length > 0) {
+                const home = response.hits.hits[0]._source;
+                console.log('Home by ID:', home);
+                return home as Home;
+            } else {
+                console.log(`No home found with ID ${id}`);
+                return null;
+            }
         } catch (error) {
             console.error(`Error retrieving home with ID ${id}:`, error);
             return null;

@@ -23,11 +23,9 @@ const client = new Client({node: 'http://localhost:9200'});
 db.connect().then(() => {
     console.log('Connected to SQL Server');
 
-    // Afegeix les rutes de l'usuari
-    app.use('/user', userRoutes(db));
+    app.use('/user', userRoutes(db, client));
     app.use('/home', homeRoutes(db, client));
     app.use('/chat', chatRoutes(db));
-    app.use('/user', userRoutes(db));
 
     app.listen(port, () => {
         console.log(`Server running on port ${port}`);

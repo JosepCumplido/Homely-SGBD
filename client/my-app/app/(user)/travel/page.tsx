@@ -1,43 +1,51 @@
 "use client"; // Esto marca el archivo como un componente de cliente
-import { useEffect, useState } from "react";
-import { TravelCard } from "@/components/travel/travelCard";
-import { TravelHistoryList } from "@/components/travel/travelHistoryList";
-import { Reservation } from "shared/models/reservation";
+import {useEffect, useState} from "react";
+import {TravelCard} from "@/components/travel/travelCard";
+import {TravelHistoryList} from "@/components/travel/travelHistoryList";
+import {Reservation} from "shared/models/reservation";
 import Link from "next/link";
-import { ArrowBack } from "@mui/icons-material";
-import {useAuth} from "@/hooks/useAuth";
+import {ArrowBack} from "@mui/icons-material";
+import {useRouter} from "next/navigation";
+import {useAuth} from "@/context/authContext";
+import {ReservationsResponse} from 'shared/data/reservationsRequest'
+import {Button} from "@/components/ui/button";
 
 export default function TravelHistory2() {
-    const { user } = useAuth(); // Hook que verifica si el usuario está autenticado
+    const {user, isAuthenticated} = useAuth();
+    const router = useRouter();
 
-    const [upcomingReservation, setUpcomingReservation] = useState<Reservation | null>(null);
-    const [pastReservations, setPastReservations] = useState<Reservation[]>([]);
+    const [upcomingReservation, setUpcomingReservation] = useState<Reservation>();
+    const [upcomingReservationsList, setUpcomingReservationsList] = useState<Reservation[]>([]);
+    const [pastReservationsList, setPastReservationsList] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Efecto para cargar los datos del backend
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push("/login");
+        }
+    }, [isAuthenticated, router]);
+
     useEffect(() => {
         const fetchTravelHistory = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`/user/reservations/${username}`);
-                const data = await response.json();
+                console.log(user?.username)
+                if (user != null) {
+                    const response: Response = await fetch(`http://localhost:4000/user/reservations/${user.username}`);
 
-                const currentDate = new Date();
+                    if (response.ok) {
+                        const result: ReservationsResponse = await response.json();
+                        if (result.upcomingReservations.length > 0) {
+                            setUpcomingReservation(result.upcomingReservations[0]);
+                            setUpcomingReservationsList(result.upcomingReservations.slice(1, result.upcomingReservations.length));
+                        }
+                        setPastReservationsList(result.pastReservations);
+                        console.log(`Results: ${JSON.stringify(result.upcomingReservations[0])}`);
+                    }
 
-                const upcoming = data.filter((travel: Reservation) => {
-                    const startDate = new Date(travel.fromDate);
-                    return !isNaN(startDate.getTime()) && startDate >= currentDate;
-                });
-
-                const past = data.filter((travel: Reservation) => {
-                    const endDate = new Date(travel.toDate);
-                    return !isNaN(endDate.getTime()) && endDate < currentDate;
-                });
-
-                setUpcomingReservation(upcoming.length > 0 ? upcoming[0] : null);
-                setPastReservations(past);
-                setLoading(false);
+                    setLoading(false);
+                }
             } catch (err) {
                 console.error("Error fetching travel data:", err);
                 setError("Failed to load travel data.");
@@ -46,17 +54,15 @@ export default function TravelHistory2() {
         };
 
         fetchTravelHistory();
-    }, []);
+    }, [user]);
 
-
-    // Renderizar en caso de error o carga
-    if (loading) {
+    /*if (loading) {
         return <div>Loading...</div>;
     }
 
     if (error) {
         return <div>Error: {error}</div>;
-    }
+    }*/
 
     return (
         <div className="flex flex-row w-full h-full">
@@ -69,15 +75,16 @@ export default function TravelHistory2() {
                             "absolute -top-16 -left-4 font-normal transition-all duration-200 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                         }
                     >
-                        <ArrowBack /> Back to explore
+                        <ArrowBack/> Back to explore
                     </Link>
                 </h2>
                 <div className={"w-full relative"}>
-                    {/* Renderizar tarjeta del próximo viaje */}
-                    {upcomingReservation ? (
-                        <TravelCard upcomingReservation={upcomingReservation} />
+                    {upcomingReservation != undefined ? (
+                        <TravelCard upcomingReservation={upcomingReservation}/>
                     ) : (
-                        <p>No upcoming reservations.</p>
+                        <Link href={"/"} className={"block w-1/2 m-auto"}>
+                            <Button>Book your next dream home</Button>
+                        </Link>
                     )}
                 </div>
             </div>
@@ -85,11 +92,20 @@ export default function TravelHistory2() {
                 <div className={"space-y-12 overflow-y-auto h-full w-10/12"}>
                     <div className="space-y-8">
                         <h2 className={"font-bold text-2xl"}>Upcoming reservations</h2>
-                        <TravelHistoryList travelHistoryList={upcomingReservation ? [upcomingReservation] : []} />
+                        {upcomingReservationsList.length > 0 ? (
+                            <TravelHistoryList travelHistoryList={upcomingReservationsList}/>
+                        ) : (
+                            <p>Nothing coming up</p>
+                        )}
+
                     </div>
                     <div className="space-y-8">
                         <h2 className={"font-bold text-2xl"}>Where you've been</h2>
-                        <TravelHistoryList travelHistoryList={pastReservations} />
+                        {pastReservationsList.length > 0 ? (
+                            <TravelHistoryList travelHistoryList={pastReservationsList}/>
+                        ) : (
+                            <p>No history available</p>
+                        )}
                     </div>
                 </div>
             </div>

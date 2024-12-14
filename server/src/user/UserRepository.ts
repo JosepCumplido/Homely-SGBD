@@ -2,7 +2,7 @@ import {ConnectionPool} from 'mssql';
 import {User} from 'shared/models/user';
 import {ReservationsResponse} from 'shared/data/reservationsRequest'
 import * as QueryString from "node:querystring";
-import {Reservation} from "shared/models/reservation";
+import {ReservationDAO} from "shared/models/reservation";
 
 export class UserRepository {
     private db: ConnectionPool;
@@ -105,13 +105,13 @@ export class UserRepository {
         throw new Error("Password update failed");
     }
 
-    async getReservations(username: string): Promise<Reservation[]> {
+    async getReservations(username: string): Promise<ReservationDAO[]> {
         try {
             const query = `
-                SELECT *
+                SELECT id, username, homeId, fromDate, toDate, guests, totalPrice, createdAt
                 FROM dbo.Reservations
                 WHERE username = @username
-                ORDER BY start_date
+                ORDER BY fromDate
             `;
 
             const result = await this.db.request()
