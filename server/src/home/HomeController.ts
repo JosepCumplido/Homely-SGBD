@@ -32,7 +32,7 @@ export class HomeController {
     }
 
     async getHomeById(req: Request, res: Response): Promise<void> {
-        /*try {
+        try {
             const home = await this.homeRepository.findById(Number(req.params.id));
             if (home) {
                 res.json(home);
@@ -41,25 +41,17 @@ export class HomeController {
             }
         } catch (err) {
             res.status(500).send('Error retrieving home');
-        }*/
-
-        /*const { index, id } = req.params;
-        try {
-            const response = await this.homeRepositoryElastic.getHome(index, id);
-            res.json(response);
-        } catch (error) {
-            res.status(500).send(error);
-        }*/
+        }
     }
 
     async createHome(req: Request, res: Response): Promise<void> {
-        /*try {
+        try {
             const newHome = req.body;
             await this.homeRepository.create(newHome);
             res.status(201).send('Home created');
         } catch (err) {
             res.status(500).send('Error creating home');
-        }*/
+        }
 
         try {
             const response = await this.homeRepositoryElastic.createHome(req.body);

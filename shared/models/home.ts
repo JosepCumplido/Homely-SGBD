@@ -6,5 +6,6 @@ export type Home = {
     pricePerNight: number,
     score: number,
     features: string[],
-    amenities: string[]
+    amenities: string[],
+    categories: string[]
 }
