@@ -56,14 +56,6 @@ export default function TravelHistory2() {
         fetchTravelHistory();
     }, [user]);
 
-    /*if (loading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }*/
-
     return (
         <div className="flex flex-row w-full h-full">
             <div className={"flex-1 p-20 space-y-8 relative"}>

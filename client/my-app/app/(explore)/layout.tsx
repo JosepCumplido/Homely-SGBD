@@ -50,7 +50,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                     <Link href="/">Homely</Link>
                 </h1>
                 <div className="flex flex-row gap-6 items-center">
-                    <Link href={"/travel"} className={"font-bold text-white hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}>Your reservations</Link>
+                    <Link href={"/host"} className={"font-bold text-white hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"}>Homely your home</Link>
                     <UserAvatar
                         user={user}
                         onLogout={logout}
@@ -62,34 +62,3 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         </>
     );
 }
-
-/*export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
-
-    const { user, logout, isAuthenticated } = useAuth();
-
-    return (
-        <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} w-full h-full relative antialiased`}>
-        <NextUIProvider>
-            <AuthProvider>
-                {/!* header *!/}
-                <section
-                    className={"h-6 flex flex-row justify-between items-center py-8 absolute top-0 w-[90vw] left-1/2 -translate-x-1/2 z-10"}>
-                    <h1 className={"text-2xl font-bold text-white"}><Link href={"/"}>Homely</Link></h1>
-                    <div className={"flex flex-row gap-6 items-center"}>
-                        <Button variant={"ghost"} className={"font-bold text-white"}>Your reservations</Button>
-                        <UserAvatar
-                            user={user}
-                            onLogout={logout}
-                            isAuthenticated={isAuthenticated}
-                        />
-                    </div>
-                </section>
-                {/!* body *!/}
-                {children}
-            </AuthProvider>
-        </NextUIProvider>
-        </body>
-        </html>
-    );
-}*/

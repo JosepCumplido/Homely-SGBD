@@ -16,14 +16,10 @@ import {
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import PasswordInput from "@/components/ui/password-input";
-import {User} from "shared/models/user";
 import {useAuth} from "@/context/authContext";
 import {z} from "zod";
 import {UpdateProfileRequest, UpdateProfileResponse} from 'shared/data/udpateProfileRequest';
-import SuccessAlert from "@/components/originui/successSooner";
-import SuccessSooner from "@/components/originui/successSooner";
-import { useToast } from "@/hooks/use-toast"
-
+import {useToast} from "@/hooks/use-toast";
 
 const ProfileSchema = z.object({
     name: z.string(),
@@ -38,7 +34,6 @@ type ProfileFormData = z.infer<typeof ProfileSchema>;
 const ProfilePage = () => {
     const {token, user, login, isAuthenticated} = useAuth();
     const router = useRouter();
-    console.log(`User: ${JSON.stringify(user)}`)
 
     const { toast } = useToast()
     const [message, setMessage] = useState('');
@@ -67,10 +62,6 @@ const ProfilePage = () => {
         setErrors({});
         try {
             if (user != null) {
-                /*console.log(`User password: ${user.password}`)
-                console.log(`Current password: ${data.currentPassword}`)
-                console.log(`New password: ${data.password}`)*/
-
                 if (data.password !== "" && data.currentPassword !== user.password) {
                     console.log("passwords don't match")
                     throw new Error("passwords don't match");
@@ -87,7 +78,7 @@ const ProfilePage = () => {
                 });
 
                 if (response.ok) {
-                    const result: UpdateProfileResponse = await response.json();
+                    await response.json();
                     setMessage('Profile updated successfully.');
 
                     if (data.password !== "") login(user.username, data.password)

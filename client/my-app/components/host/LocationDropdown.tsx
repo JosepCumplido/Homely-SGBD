@@ -1,8 +1,6 @@
 // Dependencies: pnpm install lucide-react
 
 "use client";
-import {Country} from 'shared/models/country'
-import {Label} from "@/components/ui/label";
 import {Check, ChevronDown} from "lucide-react";
 import {Fragment, useState} from "react";
 
@@ -17,6 +15,7 @@ import {
 } from "@/components/ui/command";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {cn} from "@/lib/utils";
+import {Pair} from "@/utils/types";
 
 const europeanCountries = [
     {
@@ -81,9 +80,9 @@ const europeanCountries = [
     },
 ];
 
-export default function DropdownSearch({selectedCity, onCityChange}: {
-    selectedCity: string | null,
-    onCityChange: (city: string) => void
+export default function LocationDropdown({value, onValueChange}: {
+    value: Pair<string, string>,
+    onValueChange: (value: Pair<string, string>) => void
 }) {
     const [open, setOpen] = useState<boolean>(false);
 
@@ -92,14 +91,14 @@ export default function DropdownSearch({selectedCity, onCityChange}: {
             <PopoverTrigger asChild>
                 <Button
                     id="select-44"
-                    variant="ghost"
+                    variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full h-6 justify-between !bg-transparent !px-0 py-0 font-normal outline-offset-0 focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
+                    className="w-full justify-between bg-background px-3 hover:bg-background font-normal outline-offset-0 focus-visible:border-ring focus-visible:outline-[3px] focus-visible:outline-ring/20"
                 >
-                    {selectedCity ? (
+                    {value[1] ? (
                         <span className="flex min-w-0 items-center gap-2">
-                            <span className="truncate text-white font-bold">{selectedCity}</span>
+                            <span className="truncate font-bold">{value[1]}</span>
                         </span>
                     ) : (
                         <span className="text-muted-foreground text-gray-500">Search destination</span>
@@ -122,7 +121,7 @@ export default function DropdownSearch({selectedCity, onCityChange}: {
                                             key={city}
                                             value={city}
                                             onSelect={(currentValue) => {
-                                                onCityChange(currentValue);
+                                                onValueChange([country.name, currentValue]);
                                                 setOpen(false);
                                             }}
                                         >
@@ -130,7 +129,7 @@ export default function DropdownSearch({selectedCity, onCityChange}: {
                                             <Check
                                                 className={cn(
                                                     "ml-auto",
-                                                    selectedCity === city ? "opacity-100" : "opacity-0",
+                                                    value[1] === city ? "opacity-100" : "opacity-0",
                                                 )}
                                             />
                                         </CommandItem>

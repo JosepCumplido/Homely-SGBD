@@ -1,10 +1,10 @@
 export type Home = {
-    id: number,
+    id: number|null,
     city: string,
     country: string,
     imagesUrls: string[],
     pricePerNight: number,
-    score: number,
+    score: number|null,
     features: string[],
     amenities: string[],
     categories: string[]

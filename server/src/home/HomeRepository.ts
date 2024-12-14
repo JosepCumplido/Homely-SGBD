@@ -21,8 +21,8 @@ export class HomeRepository {
         return result.recordset[0] || null;
     }*/
 
-    async create(home: Home): Promise<void> {
-        await this.db.request()
+    async create(home: Home): Promise<Home|null> {
+        const result = await this.db.request()
             .input('city', home.city)
             .input('country', home.country)
             .input('imagesUrls', JSON.stringify(home.imagesUrls))  // Convertim a JSON
@@ -35,6 +35,7 @@ export class HomeRepository {
                 INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories)
                 VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories)
             `);
+        return result.recordset[0] || null;
     }
 /*
     async update(user: Home): Promise<void> {

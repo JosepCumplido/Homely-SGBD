@@ -5,6 +5,7 @@ import {HomeRepositoryElastic} from "./HomeRepositoryElastic";
 import {Home} from "shared/models/home";
 import {Country} from "shared/models/country";
 import {SearchRequest, SearchResponse} from 'shared/data/searchRequest';
+import {HomeRequest, HomeResponse} from 'shared/data/homeRequest';
 
 export class HomeController {
     private homeRepository: HomeRepository;
@@ -248,7 +249,7 @@ export class HomeController {
     }
     // end create bulk homes
 
-    async searchHomes(req: Request, res: Response): Promise<any> {
+    async searchHomes(req: any, res: any): Promise<any> {
         try {
             const request = req.body as SearchRequest
             const page: number = request.page
@@ -279,5 +280,47 @@ export class HomeController {
             console.log("Bad request format:" + e)
             return res.status(400).send("Bad request format")
         }
+    }
+
+    async uploadHome(req: any, res: any): Promise<void> {
+        const request: HomeRequest = req.body;
+        const home: Home = {
+            id: null,
+            city: request.city,
+            country: request.country,
+            imagesUrls: request.imagesUrls.split(","),
+            pricePerNight: request.pricePerNight,
+            score: null,
+            features: request.features.split(","),
+            amenities: request.amenities.split(","),
+            categories: request.categories.split(","),
+        }
+
+        let userCreated: Boolean;
+        let userCreatedElastic: Boolean;
+
+        let insertedValue: Home | null = null;
+        try {
+            insertedValue = await this.homeRepository.create(home);
+            userCreated = true
+            console.log("test")
+            if (insertedValue != null && insertedValue.id != undefined) {
+                console.log(`inserted id: ${insertedValue.id}`)
+                home.id = insertedValue?.id
+            }
+        } catch (err) {
+            userCreated = false
+            res.status(500).send(`Error creating home: ${err}`);
+        }
+
+        try {
+            await this.homeRepositoryElastic.createHome(home);
+            userCreatedElastic = true
+        } catch (error) {
+            userCreatedElastic = false
+            res.status(500).send(`Error creating home elastic: ${error}`);
+        }
+
+        if (userCreated && userCreatedElastic) return res.status(201).json(new HomeResponse(insertedValue))
     }
 }

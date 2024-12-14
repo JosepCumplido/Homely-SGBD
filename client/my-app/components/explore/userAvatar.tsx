@@ -14,7 +14,7 @@ import {User} from "shared/models/user";
 
 /*import {useAuth} from "@/hooks/useAuth";*/
 
-export function UserAvatar({ user, onLogout, isAuthenticated}: {
+export function UserAvatar({user, onLogout, isAuthenticated}: {
     user: User | null;
     onLogout: () => void;
     isAuthenticated: boolean;
@@ -59,13 +59,15 @@ export function UserAvatar({ user, onLogout, isAuthenticated}: {
                     </>
                 ) : (
                     <>
-                        <DropdownMenuLabel>Hi, {user?.name ||"guest"}!</DropdownMenuLabel>
+                        <DropdownMenuLabel>Hi, {user?.name || "guest"}!</DropdownMenuLabel>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem>
                             <Link href="/profile">Profile</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>Messages</DropdownMenuItem>
-                        <DropdownMenuItem>Reservations</DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Link href="/travel">Reservations</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>

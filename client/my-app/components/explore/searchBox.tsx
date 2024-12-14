@@ -1,13 +1,10 @@
 "use client"
 
-import {DestinationSelector} from "@/components/explore/destinationSelector";
 import {DatePickerRange} from "@/components/explore/dateRangePicker";
 import {GuestsSelector} from "@/components/explore/guestsSelector";
 import {Separator} from "@/components/ui/separator";
-import {Button} from "@/components/ui/button";
 import * as React from "react";
 import {FiltersDialog} from "@/components/explore/searchFilters/filtersDialog";
-import {MagnifyingGlassIcon, MixerHorizontalIcon} from "@radix-ui/react-icons";
 import type {FeatureType} from "shared/models/featureType";
 import type {AmenityType} from "shared/models/amenityType";
 import DropdownSearch from "@/components/ui/dropdown-search";

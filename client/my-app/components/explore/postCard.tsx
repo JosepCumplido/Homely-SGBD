@@ -14,23 +14,21 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import {Home} from "shared/models/home";
-
-const imagesUrls = ["/explore/posts/post_1_1.webp", "/explore/posts/post_1_2.webp", "/explore/posts/post_1_3.webp", "/explore/posts/post_1_4.webp"]
+import Link from "next/link";
 
 export function PostCard({home}: { home: Home }) {
     const [isFavorite, setIsFavorite] = useState(false);
-
     return (
-        /*<Link href={""}>*/
+        <Link href={`/home/${home.id}`}>
             <div className={"relative flex flex-col rounded-lg space-y-1 group"}>
                 <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
                     <Carousel className="relative rounded-lg w-full h-full">
                         <CarouselContent className={"h-full"}>
-                            {imagesUrls.map((image, index) => (
+                            {home.imagesUrls.map((image, index) => (
                                 <CarouselItem key={index} className={"h-full w-full"}>
                                     <Card className={"h-full"}>
                                         <CardContent className="flex items-center justify-center p-0 h-full">
-                                            <Image src={image} alt={"Card image"} width={540} height={720}
+                                            <Image src={`/uploads/${image}`} alt={"Card image"} width={540} height={720}
                                                    className={"object-cover w-full h-full rounded-lg"} priority/>
                                         </CardContent>
                                     </Card>
@@ -66,6 +64,6 @@ export function PostCard({home}: { home: Home }) {
                 </div>
                 <p className={"font-bold"}>€ {home.pricePerNight} <span className={"font-medium"}>night</span></p>
             </div>
-        /*</Link>*/
+        </Link>
     )
 }

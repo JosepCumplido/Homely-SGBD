@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
 
-export const POST = async (req) => {
+export const POST = async (req: { formData: () => any; }) => {
     try {
         // Obtenim el contingut de la petició
         const formData = await req.formData();
