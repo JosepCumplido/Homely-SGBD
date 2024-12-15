@@ -289,12 +289,12 @@ export class HomeController {
             id: null,
             city: request.city,
             country: request.country,
-            imagesUrls: request.imagesUrls.split(","),
+            imagesUrls: request.imagesUrls.split(", "),
             pricePerNight: request.pricePerNight,
             score: null,
-            features: request.features.split(","),
-            amenities: request.amenities.split(","),
-            categories: request.categories.split(","),
+            features: request.features.split(", "),
+            amenities: request.amenities.split(", "),
+            categories: request.categories.split(", "),
         }
 
         let userCreated: Boolean;

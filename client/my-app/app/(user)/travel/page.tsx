@@ -41,9 +41,7 @@ export default function TravelHistory2() {
                             setUpcomingReservationsList(result.upcomingReservations.slice(1, result.upcomingReservations.length));
                         }
                         setPastReservationsList(result.pastReservations);
-                        console.log(`Results: ${JSON.stringify(result.upcomingReservations[0])}`);
                     }
-
                     setLoading(false);
                 }
             } catch (err) {
@@ -55,6 +53,12 @@ export default function TravelHistory2() {
 
         fetchTravelHistory();
     }, [user]);
+
+    useEffect(() => {
+        console.log(`Upcoming reservation: ${JSON.stringify(upcomingReservation)}`);
+        console.log(`Upcoming reservations: ${JSON.stringify(upcomingReservationsList)}`);
+        console.log(`Past reservations: ${JSON.stringify(pastReservationsList)}`);
+    }, [upcomingReservation, upcomingReservationsList, pastReservationsList]);
 
     return (
         <div className="flex flex-row w-full h-full">

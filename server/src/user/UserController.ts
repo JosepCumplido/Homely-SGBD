@@ -242,8 +242,8 @@ export class UserController {
                 // get home
                 console.log(`Home ${JSON.stringify(reservationDAO)}`)
 
-                /*const home: Home | null = await this.homeRepository.getHomeById(reservationDAO.homeId)*/
-                /*if (home != null) {
+                const home: Home | null = await this.homeRepository.findById(reservationDAO.homeId)
+                if (home != null) {
                     const numberOfNights: number = differenceInDays(reservationDAO.toDate, reservationDAO.fromDate)
                     const reservation: Reservation = {
                         id: reservationDAO.id,
@@ -261,7 +261,7 @@ export class UserController {
                     } else {
                         pastReservations.push(reservation);
                     }
-                }*/
+                }
             }
             res.status(200).json(new ReservationsResponse(upcomingReservations, pastReservations));
         } catch (err: unknown) {

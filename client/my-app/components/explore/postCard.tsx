@@ -19,10 +19,10 @@ import Link from "next/link";
 export function PostCard({home}: { home: Home }) {
     const [isFavorite, setIsFavorite] = useState(false);
     return (
-        <Link href={`/home/${home.id}`}>
-            <div className={"relative flex flex-col rounded-lg space-y-1 group"}>
-                <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
-                    <Carousel className="relative rounded-lg w-full h-full">
+        <div className={"relative flex flex-col rounded-lg space-y-1 group"}>
+            <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
+                <Carousel className="relative rounded-lg w-full h-full">
+                    <Link href={`/home/${home.id}`}>
                         <CarouselContent className={"h-full"}>
                             {home.imagesUrls.map((image, index) => (
                                 <CarouselItem key={index} className={"h-full w-full"}>
@@ -35,26 +35,28 @@ export function PostCard({home}: { home: Home }) {
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
-                        <CarouselPrevious
-                            className={"absolute left-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
-                        <CarouselNext
-                            className={"absolute right-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
-                    </Carousel>
-                </div>
-                <button
-                    onClick={() => setIsFavorite(!isFavorite)}
-                    className={"absolute top-2 right-2 p-1"}
-                    aria-label="Add to favorites"
-                >
-                    {isFavorite ? (
-                        <HeartSolid
-                            className="h-6 w-6 text-red-500 transform transition-transform duration-200 hover:scale-110"/>
-                    ) : (
-                        <HeartSolid
-                            className="h-6 w-6 text-gray-500 transform transition-transform duration-200 hover:scale-110"
-                            stroke={"white"}/>
-                    )}
-                </button>
+                    </Link>
+                    <CarouselPrevious
+                        className={"absolute left-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
+                    <CarouselNext
+                        className={"absolute right-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
+                </Carousel>
+            </div>
+            <button
+                onClick={() => setIsFavorite(!isFavorite)}
+                className={"absolute top-2 right-2 p-1"}
+                aria-label="Add to favorites"
+            >
+                {isFavorite ? (
+                    <HeartSolid
+                        className="h-6 w-6 text-red-500 transform transition-transform duration-200 hover:scale-110"/>
+                ) : (
+                    <HeartSolid
+                        className="h-6 w-6 text-gray-500 transform transition-transform duration-200 hover:scale-110"
+                        stroke={"white"}/>
+                )}
+            </button>
+            <Link href={`/home/${home.id}`}>
                 <div className={"flex flex-row justify-between"}>
                     <p className={"font-bold"}>{home.city}, {home.country}</p>
                     <span className={"flex flex-row space-x-1 items-center mr-1"}>
@@ -63,7 +65,7 @@ export function PostCard({home}: { home: Home }) {
                     </span>
                 </div>
                 <p className={"font-bold"}>€ {home.pricePerNight} <span className={"font-medium"}>night</span></p>
-            </div>
-        </Link>
+            </Link>
+        </div>
     )
 }

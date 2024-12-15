@@ -16,8 +16,8 @@ export function TravelCard({upcomingReservation}: { upcomingReservation: Reserva
             <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
                 <Image
                     src={upcomingReservation.home.imagesUrls && upcomingReservation.home.imagesUrls.length > 0
-                        ? "/explore/posts/" + upcomingReservation.home.imagesUrls[0]
-                        : "/explore/posts/default_image.webp"}
+                        ? "/uploads/" + upcomingReservation.home.imagesUrls[0]
+                        : "/uploads/default_image.webp"}
                     alt={"Card image"} width={540} height={720}
                     className={"object-cover w-full h-full"} priority/>
             </div>

@@ -10,8 +10,8 @@ export function TravelCardList({reservation}: { reservation: Reservation }) {
         <div className={"flex flex-row gap-4 h-20 w-[70%] max-w-[500px]"}>
             <Image
                 src={reservation.home.imagesUrls && reservation.home.imagesUrls.length > 0
-                    ? "/explore/posts/" + reservation.home.imagesUrls[0]
-                    : "/explore/posts/default_image.webp"}
+                    ? "/uploads/" + reservation.home.imagesUrls[0]
+                    : "/uploads/default_image.webp"}
                 alt={"Card image"} width={540} height={720}
                 className={"h-20 w-20 aspect-square rounded-lg"} priority/>
             <div className={"flex flex-col gap-2 w-full"}>

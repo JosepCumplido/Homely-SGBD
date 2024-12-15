@@ -12,14 +12,36 @@ export class HomeRepository {
     /*async findAll(): Promise<Home[]> {
         const result = await this.db.request().query('SELECT * FROM [Home]');
         return result.recordset;
-    }
+    }*/
 
     async findById(id: number): Promise<Home | null> {
-        const result = await this.db.request()
-            .input('id', id)
-            .query('SELECT * FROM [Home] WHERE id = @id');
-        return result.recordset[0] || null;
-    }*/
+        try {
+            const result = await this.db.request()
+                .input('id', id)
+                .query('SELECT * FROM [Home] WHERE id = @id');
+
+            if (result.recordset.length > 0) {
+                const home = result.recordset[0];
+
+                // Parsejar JSON per a imagesUrls si és una cadena
+                const parseJson = (field: string | null): string[] =>
+                    field ? JSON.parse(field) : [];
+
+                return {
+                    ...home,
+                    imagesUrls: parseJson(home.imagesUrls),
+                    features: home.features ? home.features.split(', ') : [],
+                    amenities: home.amenities ? home.amenities.split(', ') : [],
+                    categories: home.categories ? home.categories.split(', ') : [],
+                } as Home;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error(`Error retrieving home with ID ${id}:`, error);
+            throw new Error('Error retrieving home');
+        }
+    }
 
     async create(home: Home): Promise<Home|null> {
         try{
@@ -56,35 +78,4 @@ export class HomeRepository {
             .input('id', id)
             .query('DELETE FROM [Home] WHERE id = @id');
     }*/
-    async findById(id: number): Promise<Home | null> {
-        try {
-            const result = await this.db.request()
-                .input('id', id)
-                .query('SELECT * FROM [Home] WHERE id = @id');
-
-            if (result.recordset.length > 0) {
-                const home = result.recordset[0];
-
-                // Parsejar JSON per a imagesUrls si és una cadena
-                const parseJson = (field: string | null): string[] =>
-                    field ? JSON.parse(field) : [];
-
-                return {
-                    ...home,
-                    imagesUrls: parseJson(home.imagesUrls),
-                    features: home.features ? home.features.split(',') : [],
-                    amenities: home.amenities ? home.amenities.split(',') : [],
-                    categories: home.categories ? home.categories.split(',') : [],
-                } as Home;
-            } else {
-                return null;
-            }
-        } catch (error) {
-            console.error(`Error retrieving home with ID ${id}:`, error);
-            throw new Error('Error retrieving home');
-        }
-    }
-
-
-
 }
