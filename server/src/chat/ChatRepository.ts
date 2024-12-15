@@ -24,6 +24,27 @@ export class ChatRepository {
             `);
         return result.recordset;
     }
+    async updateLastMessage(chatId: number, lastMessage: string) {
+        // Actualitzem l'últim missatge del xat
+        await this.db.request()
+            .input('chatId', chatId)
+            .input('lastMessage', lastMessage)
+            .query(`
+            UPDATE Chat
+            SET lastMessage = @lastMessage
+            WHERE chatId = @chatId
+        `);
+
+        // Recuperem el xat actualitzat amb el nou missatge
+        const result = await this.db.request()
+            .input('chatId', chatId)
+            .query(`
+            SELECT * FROM Chat
+            WHERE chatId = @chatId
+        `);
+
+        return result.recordset[0] || null; // Retornem el xat actualitzat
+    }
 
     // Obtener un chat específico por ID
     async findById(id: number) {

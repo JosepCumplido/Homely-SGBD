@@ -1,21 +1,64 @@
-import * as React from "react"
+import * as React from "react";
+import { Chat } from "shared/models/chat";
+import { io } from "socket.io-client";
 
-import {Chat} from "shared/models/chat";
+// Conexió al servidor Socket.IO
+const socket = io("http://localhost:4000");
 
-export function ChatsList({chatsList, currentUsername, onSelectChat}: { chatsList: Chat[], currentUsername: string | null, onSelectChat: (chat: Chat) => void}) {
+export function ChatsList({
+                              chatsList,
+                              currentUsername,
+                              onSelectChat,
+                          }: {
+    chatsList: Chat[];
+    currentUsername: string | null;
+    onSelectChat: (chat: Chat) => void;
+}) {
+    // Estat per a la llista de xats, inicialitzat amb chatsList si està disponible
+    const [chats, setChats] = React.useState<Chat[]>(chatsList);
 
+    // Funció per a seleccionar un xat
     const handleChatClick = (chat: Chat) => {
-        onSelectChat(chat)
+        onSelectChat(chat);
     };
+
+    // Socket.IO: escoltar per les actualitzacions dels xats
+    React.useEffect(() => {
+        // Si la llista de xats és buida al principi, assegura't que estigui inicialitzada
+        setChats(chatsList);
+
+        // Escoltar el missatge d'actualització del xat
+        socket.on("chatUpdated", (updatedChat: Chat) => {
+            console.log("Chat actualitzat:", updatedChat);
+
+            // Actualitzar l'últim missatge del xat a la llista
+            setChats((prevChats) =>
+                prevChats.map((chat) =>
+                    chat.chatId === updatedChat.chatId ? updatedChat : chat
+                )
+            );
+        });
+
+        // Netejar l'escoltador quan el component es desmunta
+        return () => {
+            socket.off("chatUpdated");
+        };
+    }, [chatsList]); // Assegura't que l'efecte es reexecuti si `chatsList` canvia
 
     return (
         <aside className="w-1/3 bg-gray-50 border-r">
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Tus Chats</h1>
+                <button
+                    onClick={() => (window.location.href = "http://localhost:3000/profile")}
+                    className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                >
+                    Volver
+                </button>
             </div>
             <div className="overflow-y-auto h-[calc(100vh-73px)]">
-                {chatsList.length > 0 ? (
-                    chatsList.map((chat) => {
+                {chats.length > 0 ? (
+                    chats.map((chat) => {
                         const otherUser = chat.user1 === currentUsername ? chat.user2 : chat.user1;
 
                         return (
@@ -34,5 +77,5 @@ export function ChatsList({chatsList, currentUsername, onSelectChat}: { chatsLis
                 )}
             </div>
         </aside>
-    )
+    );
 }
