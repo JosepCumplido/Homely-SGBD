@@ -22,20 +22,26 @@ export class HomeRepository {
     }*/
 
     async create(home: Home): Promise<Home|null> {
-        const result = await this.db.request()
-            .input('city', home.city)
-            .input('country', home.country)
-            .input('imagesUrls', JSON.stringify(home.imagesUrls))  // Convertim a JSON
-            .input('pricePerNight', home.pricePerNight)
-            .input('score', home.score)
-            .input('features', JSON.stringify(home.features))     // Convertim a JSON
-            .input('amenities', JSON.stringify(home.amenities))   // Convertim a JSON
-            .input('categories', JSON.stringify(home.categories))
-            .query(`
-                INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories)
-                VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories)
-            `);
-        return result.recordset[0] || null;
+        try{
+            const result = await this.db.request()
+                .input('city', home.city)
+                .input('country', home.country)
+                .input('imagesUrls', JSON.stringify(home.imagesUrls))  // Convertim a JSON
+                .input('pricePerNight', home.pricePerNight)
+                .input('score', home.score)
+                .input('features', JSON.stringify(home.features))     // Convertim a JSON
+                .input('amenities', JSON.stringify(home.amenities))   // Convertim a JSON
+                .input('categories', JSON.stringify(home.categories))
+                .query(`
+                    INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories)
+                    OUTPUT inserted.id
+                    VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories)
+                `);
+            return result.recordset[0]
+        } catch (error) {
+            console.log("Error inserting home: " + error);
+            return null
+        }
     }
 /*
     async update(user: Home): Promise<void> {

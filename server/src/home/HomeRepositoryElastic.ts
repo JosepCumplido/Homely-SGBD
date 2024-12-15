@@ -153,8 +153,8 @@ export class HomeRepositoryElastic {
             const body = response.hits.hits.map(hit => hit._source);
 
             let homes: Home[] = []
-            if(body as Home[]) homes = body as Home[]
-            /*console.log('Homes search result:', homes);*/
+            if (body as Home[]) homes = body as Home[]
+            console.log('Homes search result:', homes);
 
             return new SearchResponse(page, size, homes.length, homes)
         } catch (error) {

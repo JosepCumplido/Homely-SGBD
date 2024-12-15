@@ -10,8 +10,6 @@ import { Building2, CableCar, Castle, Fence, Gem, Mountain, Sailboat, TentTree, 
 import { RatingStars } from '@/components/showAd/ratingStars';
 import { Button } from "@/components/ui/button";
 
-
-
 const categoriesWithIcons = {
     beach: <TreePalm height={24} width={24} strokeWidth={1.2} />,
     countryside: <Fence height={24} width={24} strokeWidth={1.2} />,
@@ -44,10 +42,6 @@ const fetchHomeData = async (id: string) => {
     return res.json();
 };
 
-const cleanList = (list: string[]) => {
-    return list.map(item => item.replace(/^\["|\"|\"]$|\]$/g, '').trim());
-};
-
 export default async function HomePage({ params }: { params: { id: string } }) {
     const home: Home | null = await fetchHomeData(params.id);
 
@@ -55,26 +49,16 @@ export default async function HomePage({ params }: { params: { id: string } }) {
         notFound();
     }
 
-    const parsedCategories = cleanList(home.categories);
-    const parsedFeatures = cleanList(home.features);
-    const parsedAmenities = cleanList(home.amenities);
-
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h1 className="text-3xl font-bold">{home.city}, {home.country}</h1>
-                    {home.score !== null ? (
-                        <RatingStars score={home.score} />
-                    ) : (
-                        <span className="text-muted-foreground">No reviews yet</span>
-                    )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {parsedCategories && parsedCategories.length > 0 ? (
-                        parsedCategories.map((category, index) => (
+                    {home.categories && home.categories.length > 0 ? (
+                        home.categories.map((category, index) => (
                             <Badge key={index} variant="secondary" className="flex items-center gap-2">
-                                {categoriesWithIcons[category] || null}
                                 <span>{category}</span>
                             </Badge>
                         ))
@@ -124,9 +108,9 @@ export default async function HomePage({ params }: { params: { id: string } }) {
                             </TabsList>
                             <TabsContent value="features">
                                 <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                                    {parsedFeatures && parsedFeatures.length > 0 ? (
+                                    {home.features && home.features.length > 0 ? (
                                         <div className="grid grid-cols-2 gap-2">
-                                            {parsedFeatures.map((feature, index) => (
+                                            {home.features.map((feature, index) => (
                                                 <div key={index} className="flex items-center gap-2">
                                                     <Badge variant="outline">{feature}</Badge>
                                                 </div>
@@ -139,9 +123,9 @@ export default async function HomePage({ params }: { params: { id: string } }) {
                             </TabsContent>
                             <TabsContent value="amenities">
                                 <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                                    {parsedAmenities && parsedAmenities.length > 0 ? (
+                                    {home.amenities && home.amenities.length > 0 ? (
                                         <ul className="grid grid-cols-2 gap-2">
-                                            {parsedAmenities.map((amenity, index) => (
+                                            {home.amenities.map((amenity, index) => (
                                                 <li key={index} className="flex items-center gap-2">
                                                     <Badge variant="outline">{amenity}</Badge>
                                                 </li>
@@ -164,13 +148,12 @@ export default async function HomePage({ params }: { params: { id: string } }) {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Euro className="text-green-600" />
-                                    <span className="text-2xl font-bold">{home.pricePerNight}</span>
+                                    <span className="text-2xl font-bold">{`€ ${home.pricePerNight}`}</span>
                                 </div>
                                 <span className="text-sm text-muted-foreground">per night</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <MapPin className="text-blue-600" />
+                                <MapPin className="text-blue-600" size={20} color={"black"}/>
                                 <span>{home.city}, {home.country}</span>
                             </div>
                             <div className="flex items-stretch">

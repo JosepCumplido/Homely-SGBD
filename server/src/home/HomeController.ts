@@ -283,6 +283,7 @@ export class HomeController {
     }
 
     async uploadHome(req: any, res: any): Promise<void> {
+        console.log("Insert home")
         const request: HomeRequest = req.body;
         const home: Home = {
             id: null,
@@ -297,7 +298,7 @@ export class HomeController {
         }
 
         let userCreated: Boolean;
-        let userCreatedElastic: Boolean;
+        let userCreatedElastic: Boolean = false;
 
         let insertedValue: Home | null = null;
         try {
@@ -307,19 +308,20 @@ export class HomeController {
             if (insertedValue != null && insertedValue.id != undefined) {
                 console.log(`inserted id: ${insertedValue.id}`)
                 home.id = insertedValue?.id
+
+                try {
+                    await this.homeRepositoryElastic.createHome(home);
+                    userCreatedElastic = true
+                } catch (error) {
+                    userCreatedElastic = false
+                    res.status(500).send(`Error creating home elastic: ${error}`);
+                }
             }
         } catch (err) {
             userCreated = false
             res.status(500).send(`Error creating home: ${err}`);
         }
 
-        try {
-            await this.homeRepositoryElastic.createHome(home);
-            userCreatedElastic = true
-        } catch (error) {
-            userCreatedElastic = false
-            res.status(500).send(`Error creating home elastic: ${error}`);
-        }
 
         if (userCreated && userCreatedElastic) return res.status(201).json(new HomeResponse(insertedValue))
     }

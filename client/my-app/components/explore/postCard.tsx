@@ -57,10 +57,10 @@ export function PostCard({home}: { home: Home }) {
                 </button>
                 <div className={"flex flex-row justify-between"}>
                     <p className={"font-bold"}>{home.city}, {home.country}</p>
-                    <span className={"flex flex-row space-x-1 items-center"}>
-                    <StarSolid className={"h-4 w-4"}/>
-                    <p className={"font-bold"}>{home.score}</p>
-                </span>
+                    <span className={"flex flex-row space-x-1 items-center mr-1"}>
+                        <StarSolid className={"h-4 w-4"}/>
+                        <p className={""}>{home.score ? (home.score) : ("New")}</p>
+                    </span>
                 </div>
                 <p className={"font-bold"}>€ {home.pricePerNight} <span className={"font-medium"}>night</span></p>
             </div>
