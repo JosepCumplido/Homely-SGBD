@@ -5,13 +5,9 @@ import { io } from "socket.io-client";
 // Conexió al servidor Socket.IO
 const socket = io("http://localhost:4000");
 
-export function ChatsList({
-                              chatsList,
-                              currentUsername,
-                              onSelectChat,
-                          }: {
+export function ChatsList({chatsList, currentUsername ,onSelectChat}: {
     chatsList: Chat[];
-    currentUsername: string | null;
+    currentUsername: string | undefined;
     onSelectChat: (chat: Chat) => void;
 }) {
     // Estat per a la llista de xats, inicialitzat amb chatsList si està disponible
@@ -49,12 +45,12 @@ export function ChatsList({
         <aside className="w-1/3 bg-gray-50 border-r">
             <div className="p-4 border-b flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Tus Chats</h1>
-                <button
+                {/*<button
                     onClick={() => (window.location.href = "http://localhost:3000/profile")}
                     className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                 >
                     Volver
-                </button>
+                </button>*/}
             </div>
             <div className="overflow-y-auto h-[calc(100vh-73px)]">
                 {chats.length > 0 ? (

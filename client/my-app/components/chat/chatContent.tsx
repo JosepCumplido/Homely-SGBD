@@ -7,11 +7,11 @@ import useUsername from "@/hooks/useUsername";
 
 const socket = io("http://localhost:4000"); // Conecta al servidor
 
-export function ChatContent({ chat }: { chat: Chat | null }) {
+export function ChatContent({ chat, loggedUsername }: { chat: Chat | null, loggedUsername?: string }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const { loggedUsername } = useUsername();
 
+    console.log(`Chat username: ${loggedUsername}`)
     useEffect(() => {
         // Unirse a un chat específico
         if (chat?.chatId) {

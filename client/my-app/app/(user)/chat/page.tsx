@@ -5,11 +5,15 @@ import { Chat } from 'shared/models/chat';
 import {useEffect, useState} from "react";
 import useUsername from "@/hooks/useUsername";
 import {ChatContent} from "@/components/chat/chatContent";
+import {useAuth} from "@/context/authContext";
+import {useRouter} from "next/navigation";
 
 const ChatsPage = () => {
 
+    const {token, user, login, isAuthenticated} = useAuth();
+    const router = useRouter();
+
     const [chats, setChats] = useState<Chat[]>([]);
-    const { loggedUsername } = useUsername();
     const [currentChat, setCurrentChat] = useState<Chat | null>(null);
 
     const onSelectChat = (chat: Chat) => {
@@ -17,13 +21,15 @@ const ChatsPage = () => {
     }
 
     useEffect(() => {
-        if (!loggedUsername) return;
+        console.log(`Logged username: ${user?.username}`)
+        if (!isAuthenticated) return;
 
         const fetchChats = async () => {
             try {
-                const response = await fetch(`http://localhost:4000/chat?username=${loggedUsername}`);
+                const response = await fetch(`http://localhost:4000/chat?username=${user?.username}`);
                 if (!response.ok) new Error('Error fetching chats');
                 const data = await response.json();
+                console.log(`Chats: ${JSON.stringify(data)}`);
                 setChats(data);
             } catch (error) {
                 console.error('Error fetching chats:', error);
@@ -31,14 +37,14 @@ const ChatsPage = () => {
         };
 
         fetchChats();
-    }, [loggedUsername]);
+    }, [user, isAuthenticated, router]);
 
     return (
         <div className="flex h-screen">
             {/* Panel Izquierdo: Lista de Chats */}
-            <ChatsList chatsList={chats} currentUsername={loggedUsername} onSelectChat={onSelectChat} />
+            <ChatsList chatsList={chats} currentUsername={user?.username} onSelectChat={onSelectChat} />
             {/* Panel Derecho: Contenido del chat */}
-            <ChatContent chat={currentChat}/>
+            <ChatContent chat={currentChat} loggedUsername={user?.username}/>
         </div>
     );
 };

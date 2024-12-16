@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "build": "npx tsc",
-    "start": "node dist/app.js"
+    "start": "nodemon src/app.ts"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.16.2",
+    "@types/socket.io": "^3.0.1",
     "clsx": "^2.1.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
