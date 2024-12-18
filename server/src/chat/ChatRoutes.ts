@@ -18,11 +18,14 @@ export function chatRoutes(db: ConnectionPool): Router {
         chatController.getChatsByUser(req, res).catch(next);
     });
 
+    router.put('/', (req, res) => chatController.createChat(req, res));
+
     // Rutas para obtener mensajes de un chat
     router.get('/:chatId/messages', (req, res) => chatController.getMessagesByChatId(req, res));
 
     // Ruta para enviar un mensaje
     router.post('/:chatId/messages', (req, res) => chatController.sendMessage(req, res));
+
 
     return router;
 }

@@ -222,6 +222,8 @@ export class HomeController {
 
             return {
                 id: id,
+                hostUsername: "josep",
+                imagesUrls: [],
                 city: city,
                 country: country.name,
                 categories: randomSelection(categories, randomInt(1, 3)),
@@ -241,6 +243,9 @@ export class HomeController {
         }
 
         try {
+            for (const home of homes) {
+                await this.homeRepository.create(home)
+            }
             const response = await this.homeRepositoryElastic.populate(homes);
             return res.status(201).json(response);
         } catch (error) {
@@ -287,14 +292,16 @@ export class HomeController {
         const request: HomeRequest = req.body;
         const home: Home = {
             id: null,
+            hostUsername: request.hostUsername,
             city: request.city,
             country: request.country,
-            imagesUrls: request.imagesUrls.split(", "),
+            imagesUrls: request.imagesUrls.split(","),
             pricePerNight: request.pricePerNight,
             score: null,
-            features: request.features.split(", "),
-            amenities: request.amenities.split(", "),
-            categories: request.categories.split(", "),
+            features: request.features.split(","),
+            amenities: request.amenities.split(","),
+            categories: request.categories.split(","),
+            maxGuests: request.maxGuests
         }
 
         let userCreated: Boolean;

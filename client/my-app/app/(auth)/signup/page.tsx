@@ -8,6 +8,7 @@ import PasswordInput from "@/components/ui/password-input";
 import {useAuth} from "@/context/authContext";
 import {useRouter} from "next/navigation";
 import {SignupRequest} from "shared/data/signupRequest";
+import Link from "next/link";
 
 const SignupSchema = z.object({
     name: z.string(),
@@ -53,7 +54,7 @@ const SignupPage = () => {
         try {
             console.log("Username " + data.username)
             const request = new SignupRequest(data.name, data.surname, data.username, data.email, data.password);
-            const response = await fetch('http://localhost:4000/user/signup', {
+            const response = await fetch('http://88.223.95.53:4000/user/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,10 +74,6 @@ const SignupPage = () => {
         } catch (e) {
             setMessage('Something went wrong. Please try again later.');
         }
-    };
-
-    const handleLogin = () => {
-        router.push("/login");
     };
 
     return (
@@ -121,7 +118,9 @@ const SignupPage = () => {
 
                 <Button type="submit" className={"!mt-8 w-full"}>Create account</Button>
                 <p className={"w-full text-sm text-center text-gray-500 my-4"}>Already have an account?</p>
-                <Button variant={"secondary"} onClick={handleLogin} className={"w-full"}>Log in</Button>
+                <Link href={"/login"} className={"block"}>
+                    <Button variant={"secondary"} className={"w-full"}>Log in</Button>
+                </Link>
             </form>
         </div>
     )

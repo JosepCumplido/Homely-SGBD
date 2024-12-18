@@ -22,7 +22,7 @@ const ChatDetailPage = () => {
 
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`http://localhost:4000/chats/${chatId}`);
+                const response = await fetch(`http://88.223.95.53:4000/chats/${chatId}`);
                 if (!response.ok) throw new Error('Error fetching messages');
                 const data = await response.json();
                 setMessages(data);
@@ -39,7 +39,7 @@ const ChatDetailPage = () => {
         if (!newMessage.trim()) return;
 
         try {
-            const response = await fetch(`http://localhost:4000/chats/${chatId}/messages`, {
+            const response = await fetch(`http://88.223.95.53:4000/chats/${chatId}/messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

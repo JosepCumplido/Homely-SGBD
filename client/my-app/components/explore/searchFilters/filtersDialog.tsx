@@ -17,7 +17,17 @@ import type {AmenityType} from 'shared/models/amenityType';
 import {FeatureSelector} from "@/components/explore/searchFilters/featureSelector";
 import {useState} from "react";
 
-export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, featureTypes, onFeatureClick, amenityTypes, onAmenityClick, filtersNumber, onClearAllFilters}: {
+export function FiltersDialog({
+                                  priceRange,
+                                  onPriceRangeChange,
+                                  searchResults,
+                                  featureTypes,
+                                  onFeatureClick,
+                                  amenityTypes,
+                                  onAmenityClick,
+                                  filtersNumber,
+                                  onClearAllFilters
+                              }: {
     priceRange: number[],
     onPriceRangeChange: (range: number[]) => void,
     searchResults: number,
@@ -30,6 +40,7 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
 }) {
 
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
+    const [selectedAmenitiesList, setSelectedAmenitiesList] = useState<string[]>([]);
 
     const handleRangeChange = (newRange: number[]) => {
         onPriceRangeChange(newRange)
@@ -45,14 +56,21 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
         );
     };
 
-    const handleAmenityClick = (feature: string) => {
-        onAmenityClick(feature)
+    const handleAmenityClick = (amenity: string) => {
+        onAmenityClick(amenity)
+
+        setSelectedAmenitiesList((prevSelected) =>
+            prevSelected.includes(amenity)
+                ? prevSelected.filter((item) => item !== amenity) // Remove if already selected
+                : [...prevSelected, amenity] // Add if not selected
+        );
     };
 
     const handleClearAllFilters = () => {
         onClearAllFilters()
         setSelectedFeaturesList([])
-        onPriceRangeChange([20,540])
+        setSelectedAmenitiesList([])
+        onPriceRangeChange([20, 540])
     }
 
     return (
@@ -83,10 +101,7 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
                             onRangeChange={handleRangeChange}
                         />
                     </div>
-                    <div>
-                        <p className={"text-lg font-semibold leading-none tracking-tight"}>Rooms and beds</p>
-                    </div>
-                    <div className={"flex flex-col gap-8 pb-8"}>
+                    <div className={"flex flex-col gap-8 pb-1"}>
                         <p className={"text-lg font-semibold leading-none tracking-tight"}>Property features</p>
                         {featureTypes.map((featureTypes, index) => (
                             <div key={index} className={"flex flex-col gap-4"}>
@@ -100,6 +115,27 @@ export function FiltersDialog({priceRange, onPriceRangeChange, searchResults, fe
                                                 label={feature}
                                                 selected={selected}
                                                 onClick={() => handleFeatureClick(feature)}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className={"flex flex-col gap-8 pb-8"}>
+                        <p className={"text-lg font-semibold leading-none tracking-tight"}>Property amenities</p>
+                        {amenityTypes.map((amenityTypes, index) => (
+                            <div key={index} className={"flex flex-col gap-4"}>
+                                <p className={"text-md font-semibold leading-none tracking-tight"}>{amenityTypes.label}</p>
+                                <div key={index} className={"flex flex-wrap gap-3"}>
+                                    {amenityTypes.amenities.map((amenity, index) => {
+                                        const selected = selectedAmenitiesList.includes(amenity);
+                                        return (
+                                            <FeatureSelector
+                                                key={index}
+                                                label={amenity}
+                                                selected={selected}
+                                                onClick={() => handleAmenityClick(amenity)}
                                             />
                                         );
                                     })}

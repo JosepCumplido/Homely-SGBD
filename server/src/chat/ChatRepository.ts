@@ -8,6 +8,27 @@ export class ChatRepository {
         this.db = db;
     }
 
+    async createChat(username1: string, username2: string) {
+        const result = await this.db.request()
+            .input('username1', username1)
+            .input('username2', username2)
+            .query('INSERT INTO Chat (user1, user2, createdAt) OUTPUT INSERTED.* VALUES (@username1, @username2, GETDATE())');
+        return result.recordset[0];
+    }
+
+    async findChatByUsernames(username1: string, username2: string) {
+        const result = await this.db.request()
+            .input('username1', username1)
+            .input('username2', username2)
+            .query(`
+                SELECT *
+                FROM Chat
+                WHERE (user1 = @username1 AND user2 = @username2)
+                   OR (user1 = @username2 AND user2 = @username1)
+            `);
+        return result.recordset;
+    }
+
     // Obtener todos los chats con los participantes
     async findAll() {
         const result = await this.db.request().query('SELECT * FROM Chat');
@@ -52,14 +73,5 @@ export class ChatRepository {
             .input('id', id)
             .query('SELECT * FROM Chat WHERE chatId = @id');
         return result.recordset[0] || null;
-    }
-
-    // Crear un nuevo chat
-    async create(user1: string, user2: string) {
-        const result = await this.db.request()
-            .input('user1', user1)
-            .input('user2', user2)
-            .query('INSERT INTO Chat (user1, user2, createdAt) OUTPUT INSERTED.chatId VALUES (@user1, @user2, GETDATE())');
-        return result.recordset[0];
     }
 }

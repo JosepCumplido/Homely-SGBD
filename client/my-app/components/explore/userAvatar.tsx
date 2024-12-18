@@ -27,8 +27,7 @@ export function UserAvatar({user, onLogout, isAuthenticated}: {
         router.refresh()
     };
 
-    console.log("Authenticated: " + isAuthenticated)
-    console.log("User: " + user)
+    console.log("User: " + JSON.stringify(user?.username))
 
     return (
         <DropdownMenu>
@@ -64,11 +63,13 @@ export function UserAvatar({user, onLogout, isAuthenticated}: {
                         <DropdownMenuItem>
                             <Link href="/profile">Profile</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Messages</DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Link href="/chat">Messages</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>
                             <Link href="/travel">Reservations</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuItem className={"cursor-not-allowed"}>Settings</DropdownMenuItem>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                     </>

@@ -5,7 +5,7 @@ import { Message } from "shared/models/message";
 import { io } from "socket.io-client";
 import useUsername from "@/hooks/useUsername";
 
-const socket = io("http://localhost:4000"); // Conecta al servidor
+const socket = io("http://88.223.95.53:4000"); // Conecta al servidor
 
 export function ChatContent({ chat, loggedUsername }: { chat: Chat | null, loggedUsername?: string }) {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -38,7 +38,7 @@ export function ChatContent({ chat, loggedUsername }: { chat: Chat | null, logge
             if (!chat?.chatId) return;
 
             try {
-                const response = await fetch(`http://localhost:4000/chat/${chat.chatId}/messages`);
+                const response = await fetch(`http://88.223.95.53:4000/chat/${chat.chatId}/messages`);
                 if (!response.ok) throw new Error('Error fetching messages');
                 const data = await response.json();
                 setMessages(data);

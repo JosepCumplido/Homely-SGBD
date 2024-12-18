@@ -8,6 +8,7 @@ import React, {useEffect, useState} from "react";
 import {useAuth} from "@/context/authContext";
 import {Label} from "@/components/ui/label";
 import { LoginRequest } from 'shared/data/loginRequest';
+import Link from "next/link";
 
 const LoginSchema = z.object({
     username: z.string(),
@@ -42,7 +43,7 @@ const LoginPage = () => {
         setErrors({});
         try {
             const request = new LoginRequest(data.username, data.password);
-            const response = await fetch('http://localhost:4000/user/login', {
+            const response = await fetch('http://88.223.95.53:4000/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +87,9 @@ const LoginPage = () => {
                 </div>
                 <Button type="submit" className={"!mt-6 w-full"}>Log in</Button>
                 <p className={"w-full text-sm text-center text-gray-500 my-4"}>Not a member yet?</p>
-                <Button variant={"secondary"} className={"w-full"}>Create account</Button>
+                <Link href={"/signup"} className={"block"}>
+                    <Button variant={"secondary"} className={"w-full"}>Create account</Button>
+                </Link>
                 {message && <p className="text-green-500">{message}</p>}
             </form>
         </div>

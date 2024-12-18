@@ -76,10 +76,12 @@ mkdir -p $DestDir
 tar -xzf /tmp/build.tar.gz -C $DestDir
 cd $DestDir/frontend
 npm install --omit=dev
-npm run start &
+pm2 delete ""homely-frontend""
+pm2 start npm --name ""homely-frontend"" -- start &
 cd $DestDir/backend
 npm install
-npm start &
+pm2 delete ""homely-backend""
+pm2 start npm --name ""homely-backend"" -- start &
 "
 
 Write-Host "Projecte desplegat correctament!"

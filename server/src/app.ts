@@ -9,27 +9,24 @@ import { chatRoutes } from "./chat/ChatRoutes";
 import { Server as HttpServer } from 'http'; // Importar para crear un servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // Importar socket.io
 import { MessageRepository } from './chat/MessageRepository';
-import {ChatRepository} from "./chat/ChatRepository"; // Repositorio de mensajes
+import {ChatRepository} from "./chat/ChatRepository";
+import {reservationRoutes} from "./reservation/ReservationRoutes"; // Repositorio de mensajes
 
 const app = express();
 const port = 4000;
 
 // Configurar CORS
-app.use(cors({
-    origin: 'http://localhost:3000', // Permetre connexions del client
-}));
+app.use(cors());
 
 app.use(express.json());
 
 const db = new ConnectionPool(config);
-const client = new Client({node: 'http://localhost:9200'});
+const client = new Client({node: 'http://194.164.72.178:9200'}); // servidor Joel
 
 // Crear un servidor HTTP a partir de Express
 const server = new HttpServer(app);
 // Crear el servidor de WebSockets con Socket.IO
-const io = new SocketIOServer(server, {
-    cors: { origin: 'http://localhost:3000' }, // Permitir conexiones desde el cliente
-});
+const io = new SocketIOServer(server);
 
 // Conexión a la base de datos
 db.connect().then(() => {
@@ -38,6 +35,7 @@ db.connect().then(() => {
     app.use('/user', userRoutes(db, client));
     app.use('/home', homeRoutes(db, client));
     app.use('/chat', chatRoutes(db));
+    app.use('/reservation', reservationRoutes(db));
 
     // Configurar eventos de WebSocket
     io.on('connection', (socket) => {

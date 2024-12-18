@@ -1,5 +1,5 @@
 'use client';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import type {Category} from 'shared/models/category';
@@ -29,6 +29,8 @@ import {z} from "zod";
 import {Pair} from "@/utils/types";
 import LocationDropdown from "@/components/host/LocationDropdown";
 import {HomeRequest} from "shared/data/homeRequest"
+import {router} from "next/client";
+import {useAuth} from "@/context/authContext";
 
 const categories: Category[] = [
     {name: 'beach', label: 'Beach', icon: <TreePalm height={24} width={24} strokeWidth={1.2}/>},
@@ -81,35 +83,16 @@ const HomeSchema = z.object({
     pricePerNight: z.number(),
     features: z.array(z.string()),
     amenities: z.array(z.string()),
-    categories: z.array(z.string())
+    categories: z.array(z.string()),
+    maxGuests: z.number()
 })
 
 type HomeFormData = z.infer<typeof HomeSchema>;
 
-/*interface FormData {
-    city: string;
-    country: string;
-    imagesUrls: string[];
-    pricePerNight: number;
-    features: string[];
-    amenities: string[];
-    categories: string[];
-}*/
-
 const CreateAddPage: React.FC = () => {
-    /*const [formData, setFormData] = useState<FormData>({
-        city: '',
-        country: '',
-        imagesUrls: [],
-        pricePerNight: 0,
-        features: [],
-        amenities: [],
-        categories: [],
-    });*/
 
+    const {user, isAuthenticated} = useAuth();
     const router = useRouter();
-    const [message, setMessage] = useState('');
-    const [errors, setErrors] = useState<Partial<Record<keyof HomeFormData, string[]>>>({});
 
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
@@ -121,37 +104,16 @@ const CreateAddPage: React.FC = () => {
 
     const [uploading, setUploading] = useState(false);
 
-    /*const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-
-        const formData = new FormData();
-        Array.from(files).forEach(file => formData.append("images", file));
-
-        const response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            setUploadedImages(data.imageUrls);
-        } else {
-            console.error("Error uploading files");
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push("/login");
         }
-    };*/
-
-   /*const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setFormData((prev) => ({...prev, [name]: name === 'pricePerNight' ? parseFloat(value) : value}));
-    };*/
+    }, [isAuthenticated, router]);
 
     const handleCreateHome = async (formData: any) => {
-        const data = Object.fromEntries(formData) as HomeFormData;
         formData.append("imagesUrls", JSON.stringify(uploadedImages));
 
         setUploading(true); // Marquem que s'està pujant les imatges i creant l'anunci
-        setErrors({});
 
         // Enviar primer les imatges a l'API
         const uploadedImageUrls = await Promise.all(uploadedImages.map(async (file: string | Blob) => {
@@ -163,27 +125,20 @@ const CreateAddPage: React.FC = () => {
             return result.url;
         }));
 
-        // Després de pujar les imatges, enviem la crida per crear l'anunci
-        /*const updatedFormData = {
-            ...formData,
-            /!*imagesUrls: uploadedImageUrls,*!/ // Incloem les URLs de les imatges pujades
-            categories: selectedCategoriesList,
-            features: selectedFeaturesList,
-            amenities: selectedAmenitiesList,
-        };*/
-
         try {
             const request: HomeRequest = {
+                hostUsername: user.username,
                 city: city,
                 country: country,
-                imagesUrls: uploadedImageUrls.join(", "),
+                imagesUrls: uploadedImageUrls.join(","),
                 pricePerNight: formData.get("pricePerNight"),
-                features: selectedFeaturesList.join(", "),
-                amenities: selectedAmenitiesList.join(", "),
-                categories: selectedCategoriesList.join(", "),
+                features: selectedFeaturesList.join(","),
+                amenities: selectedAmenitiesList.join(","),
+                categories: selectedCategoriesList.join(","),
+                maxGuests: formData.get("maxGuests")
             }
 
-            const response = await fetch("http://localhost:4000/home/upload/", {
+            const response = await fetch("http://88.223.95.53:4000/home/upload/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -204,7 +159,7 @@ const CreateAddPage: React.FC = () => {
             alert("Failed to create ad. Please try again later.");
         } finally {
             setUploading(false); // Desactivem l'estat d'uploading quan hagi acabat
-            /*router.push('/');*/
+            await router.push('/');
         }
     };
 
@@ -258,22 +213,24 @@ const CreateAddPage: React.FC = () => {
                             formData.append("city", city);
                             formData.append("country", country);
 
-                            /*for (const [key, value] of formData.entries()) {
-                                console.log(`${key}: ${value}`);
-                            }*/
-
                             handleCreateHome(formData)
                         }}
                     >
                         <div>
                             <h2 className="text-xl font-semibold mb-4">Main Information</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <LocationDropdown value={[country, city]} onValueChange={onLocationChange}/>
                                 <Input
                                     type="number"
                                     id="pricePerNight"
                                     name="pricePerNight"
                                     placeholder="Price per night"
+                                />
+                                <Input
+                                    type="number"
+                                    id="maxGuests"
+                                    name="maxGuests"
+                                    placeholder="Number of guests"
                                 />
                             </div>
                         </div>

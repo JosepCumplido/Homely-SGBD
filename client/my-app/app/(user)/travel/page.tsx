@@ -32,10 +32,11 @@ export default function TravelHistory2() {
                 setLoading(true);
                 console.log(user?.username)
                 if (user != null) {
-                    const response: Response = await fetch(`http://localhost:4000/user/reservations/${user.username}`);
+                    const response: Response = await fetch(`http://88.223.95.53:4000/user/reservations/${user.username}`);
 
+                    const result: ReservationsResponse = await response.json();
                     if (response.ok) {
-                        const result: ReservationsResponse = await response.json();
+                        console.log("Response: ", JSON.stringify(result));
                         if (result.upcomingReservations.length > 0) {
                             setUpcomingReservation(result.upcomingReservations[0]);
                             setUpcomingReservationsList(result.upcomingReservations.slice(1, result.upcomingReservations.length));
@@ -52,7 +53,7 @@ export default function TravelHistory2() {
         };
 
         fetchTravelHistory();
-    }, [user]);
+    }, [user, router]);
 
     useEffect(() => {
         console.log(`Upcoming reservation: ${JSON.stringify(upcomingReservation)}`);

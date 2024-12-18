@@ -28,16 +28,16 @@ const app = (0, express_1.default)();
 const port = 4000;
 // Configurar CORS
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:3000', // Permetre connexions del client
+    origin: 'http://88.223.95.53:3000', // Permetre connexions del client
 }));
 app.use(express_1.default.json());
 const db = new mssql_1.ConnectionPool(dbConfig_1.default);
-const client = new elasticsearch_1.Client({ node: 'http://localhost:9200' });
+const client = new elasticsearch_1.Client({ node: 'http://88.223.95.53:9200' });
 // Crear un servidor HTTP a partir de Express
 const server = new http_1.Server(app);
 // Crear el servidor de WebSockets con Socket.IO
 const io = new socket_io_1.Server(server, {
-    cors: { origin: 'http://localhost:3000' }, // Permitir conexiones desde el cliente
+    cors: { origin: 'http://88.223.95.53:3000' }, // Permitir conexiones desde el cliente
 });
 // Conexión a la base de datos
 db.connect().then(() => {

@@ -3,7 +3,7 @@ import {User} from "shared/models/user";
 
 /*
 export async function fetchPosts(request: SearchRequest): Promise<SearchResponse> {
-    const response = await fetch('http://localhost:4000/home/search', {
+    const response = await fetch('http://88.223.95.53:4000/home/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
@@ -17,7 +17,7 @@ export async function fetchPosts(request: SearchRequest): Promise<SearchResponse
 
 export async function fetchUser(username: string): Promise<User | null> {
     try {
-        const response = await fetch(`http://localhost:4000/user/${username}`);
+        const response = await fetch(`http://88.223.95.53:4000/user/${username}`);
         if (!response.ok) new Error('Failed to fetch user');
         return await response.json();
     } catch (error) {

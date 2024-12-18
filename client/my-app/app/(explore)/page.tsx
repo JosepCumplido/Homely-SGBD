@@ -9,6 +9,8 @@ import type {FeatureType} from 'shared/models/featureType';
 import type {AmenityType} from 'shared/models/amenityType';
 import React, {useCallback, useEffect, useState} from "react";
 import Image from "next/image";
+import {DateRange} from "react-day-picker";
+import {addDays} from "date-fns";
 
 const iconRoute = "/explore/category-icons"
 const categories: Category[] = [
@@ -92,7 +94,7 @@ const categories: Category[] = [
 const featureTypes: FeatureType[] = [
     {
         label: "Kitchen",
-        features: ["Oven", "Microwave", "Dishwasher", "Refigerator", "Freezer", "Utensils and dishware", "Electric kettle", "Toaster", "Coffee machine"]
+        features: ["Oven", "Microwave", "Dishwasher", "Refrigerator", "Freezer", "Utensils and dishware", "Electric kettle", "Toaster", "Coffee machine"]
     },
     {
         label: "Bathroom",
@@ -124,7 +126,11 @@ const amenityTypes: AmenityType[] = [
 export default function Home() {
     // Search filters
     const [searchCity, setSearchCity] = useState<string | null>(null)
-    const [guestsNumber, setGuestsNumber] = useState<number | undefined>(undefined)
+    const [dateRange, setDate] = React.useState<DateRange>({
+        from: addDays(new Date(), 7),
+        to: addDays(new Date(), 10),
+    })
+    const [guestsNumber, setGuestsNumber] = useState<number>(2)
     const [searchCategory, setSearchCategory] = useState<Category | null>(null)
     const [searchPriceRange, setSearchPriceRange] = useState<number[]>([20, 540])
     const [selectedFeaturesList, setSelectedFeaturesList] = useState<string[]>([]);
@@ -132,12 +138,28 @@ export default function Home() {
     const [searchResultsNumber, setSearchResultsNumber] = useState(0)
     const [appliedFiltersNumber, setAppliedFiltersNumber] = useState(0)
 
+    if (typeof window !== "undefined") {
+        sessionStorage.setItem("dateRange", JSON.stringify(dateRange))
+        sessionStorage.setItem("guests", JSON.stringify(guestsNumber))
+    }
+
     const onCityChange = useCallback((city: string) => {
         setSearchCity(city)
     }, [])
 
+    const onDateRangeChange = useCallback((dateRange: DateRange) => {
+        setDate(dateRange)
+        console.log(dateRange)
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("dateRange", JSON.stringify(dateRange))
+        }
+    }, [])
+
     const onGuestsNumberChange = useCallback((guests: number) => {
         setGuestsNumber(guests)
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("guests", JSON.stringify(guests))
+        }
     }, [])
 
     const onCategoryChange = useCallback((category: Category) => {
@@ -213,6 +235,8 @@ export default function Home() {
                         onAmenityClick={onAmenityClick}
                         filtersNumber={appliedFiltersNumber}
                         onClearAllFilters={onClearAllFilters}
+                        dateRange={dateRange}
+                        onDateRangeChange={onDateRangeChange}
                     />
                 </div>
 

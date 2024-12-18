@@ -18,7 +18,7 @@ const ChatsPage = () => {
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                const response = await fetch('http://localhost:4000/chats');
+                const response = await fetch('http://88.223.95.53:4000/chats');
                 if (!response.ok) throw new Error('Error fetching chats');
                 const data = await response.json();
                 setChats(data);

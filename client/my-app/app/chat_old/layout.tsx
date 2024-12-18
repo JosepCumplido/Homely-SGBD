@@ -15,7 +15,7 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
 
         const fetchChats = async () => {
             try {
-                const response = await fetch(`http://localhost:4000/chat?username=${loggedUsername}`);
+                const response = await fetch(`http://88.223.95.53:4000/chat?username=${loggedUsername}`);
                 if (!response.ok) new Error('Error fetching chats');
                 const data = await response.json();
                 setChats(data);

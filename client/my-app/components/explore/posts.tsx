@@ -42,7 +42,7 @@ export function Posts({
         const request = new SearchRequest(searchPage, limit, searchCity, guestsNumber, searchCategory?.name ?? null, searchPriceRange, selectedFeaturesList, selectedAmenitiesList)
 
         try {
-            const response = await fetch('http://localhost:4000/home/search', {
+            const response = await fetch('http://88.223.95.53:4000/home/search', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(request),

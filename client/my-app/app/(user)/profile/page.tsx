@@ -68,7 +68,7 @@ const ProfilePage = () => {
                 }
 
                 const request = new UpdateProfileRequest(user.username, data.name, data.surname, data.email, data.password)
-                const response = await fetch(`http://localhost:4000/user/${user.username}`, {
+                const response = await fetch(`http://88.223.95.53:4000/user/${user.username}`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -84,10 +84,10 @@ const ProfilePage = () => {
                     if (data.password !== "") login(user.username, data.password)
                     else login(user.username, user.password)
 
-                    toast({
+                    /*toast({
                         title: "Scheduled: Catch up",
                         description: "Friday, February 10, 2023 at 5:57 PM",
-                    })
+                    })*/
                 } else {
                     const errorData = await response.json();
                     setErrors(errorData.error || 'Could not update profile');
@@ -124,7 +124,7 @@ const ProfilePage = () => {
                             <AvatarImage src={user?.avatarUrl || "default-avatar.png"} alt="User Avatar"/>
                             <AvatarFallback>{user?.username ? user.username[0].toUpperCase() : 'U'}</AvatarFallback>
                         </Avatar>
-                        <Button variant={"ghost"}>Upload image</Button>
+                        <Button variant={"ghost"} className={"cursor-not-allowed"}>Upload image</Button>
                     </div>
                     <div className="space-y-2 w-full">
                         <Label htmlFor="username">Username</Label>

@@ -31,9 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (username: string, password: string) => {
         try {
-            console.log("Logging in...")
+            /*console.log("Logging in...")*/
             const request = new LoginRequest(username, password);
-            const response = await fetch('http://localhost:4000/user/login', {
+            const response = await fetch('http://88.223.95.53:4000/user/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (response.ok) {
                 const result = await response.json();
-                console.log("Login ok")
+                /*console.log("Login ok")*/
                 saveToken(result.token)
             } else {
                 const errorData = await response.json();

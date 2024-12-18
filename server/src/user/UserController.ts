@@ -252,7 +252,7 @@ export class UserController {
                         fromDate: reservationDAO.fromDate,
                         toDate: reservationDAO.toDate,
                         nights: numberOfNights,
-                        totalPrice: Math.round(home.pricePerNight*numberOfNights),
+                        totalPrice: reservationDAO.totalPrice,
                         numberOfGuests: reservationDAO.guests,
                     }
 

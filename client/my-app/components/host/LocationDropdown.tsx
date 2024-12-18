@@ -101,7 +101,7 @@ export default function LocationDropdown({value, onValueChange}: {
                             <span className="truncate font-bold">{value[1]}</span>
                         </span>
                     ) : (
-                        <span className="text-muted-foreground text-gray-500">Search destination</span>
+                        <span className="text-muted-foreground text-gray-500">Search location</span>
                     )}
                 </Button>
             </PopoverTrigger>

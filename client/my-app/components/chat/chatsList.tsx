@@ -3,7 +3,7 @@ import { Chat } from "shared/models/chat";
 import { io } from "socket.io-client";
 
 // Conexió al servidor Socket.IO
-const socket = io("http://localhost:4000");
+const socket = io("http://88.223.95.53:4000");
 
 export function ChatsList({chatsList, currentUsername ,onSelectChat}: {
     chatsList: Chat[];
@@ -46,7 +46,7 @@ export function ChatsList({chatsList, currentUsername ,onSelectChat}: {
             <div className="p-4 border-b flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Tus Chats</h1>
                 {/*<button
-                    onClick={() => (window.location.href = "http://localhost:3000/profile")}
+                    onClick={() => (window.location.href = "http://88.223.95.53:3000/profile")}
                     className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                 >
                     Volver

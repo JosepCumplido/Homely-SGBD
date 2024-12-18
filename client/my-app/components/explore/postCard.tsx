@@ -23,23 +23,34 @@ export function PostCard({home}: { home: Home }) {
             <div className="relative aspect-[27/25.5] overflow-hidden rounded-lg mb-1">
                 <Carousel className="relative rounded-lg w-full h-full">
                     <Link href={`/home/${home.id}`}>
-                        <CarouselContent className={"h-full"}>
-                            {home.imagesUrls.map((image, index) => (
-                                <CarouselItem key={index} className={"h-full w-full"}>
-                                    <Card className={"h-full"}>
-                                        <CardContent className="flex items-center justify-center p-0 h-full">
-                                            <Image src={`/uploads/${image}`} alt={"Card image"} width={540} height={720}
-                                                   className={"object-cover w-full h-full rounded-lg"} priority/>
-                                        </CardContent>
-                                    </Card>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
+                        {(home.imagesUrls.length > 0 && home.imagesUrls[0] != '') ? (
+                            <CarouselContent className={"h-full"}>
+                                {home.imagesUrls.map((image, index) => (
+                                    <CarouselItem key={index} className={"h-full w-full"}>
+                                        <Card className={"h-full"}>
+                                            <CardContent className="flex items-center justify-center p-0 h-full">
+                                                <Image src={`/uploads/${image}`} alt={"Card image"} width={540}
+                                                       height={720}
+                                                       className={"object-cover w-full h-full rounded-lg"} priority/>
+                                            </CardContent>
+                                        </Card>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                        ) : (
+                            <Image src={`/uploads/default_image.webp`} alt={"Card image"} width={540}
+                                   height={720}
+                                   className={"object-cover w-full h-full rounded-lg"} priority/>
+                        )}
                     </Link>
-                    <CarouselPrevious
-                        className={"absolute left-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
-                    <CarouselNext
-                        className={"absolute right-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
+                    {(home.imagesUrls.length > 0 && home.imagesUrls[0] != '') &&
+                        <>
+                            <CarouselPrevious
+                                className={"absolute left-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
+                            <CarouselNext
+                                className={"absolute right-4 size-6 group-hover:!opacity-80 !opacity-0 transition-opacity duration-300"}/>
+                        </>
+                    }
                 </Carousel>
             </div>
             <button
@@ -56,7 +67,7 @@ export function PostCard({home}: { home: Home }) {
                         stroke={"white"}/>
                 )}
             </button>
-            <Link href={`/home/${home.id}`}>
+            <Link href={`/my-app/app/(user)/home/${home.id}`}>
                 <div className={"flex flex-row justify-between"}>
                     <p className={"font-bold"}>{home.city}, {home.country}</p>
                     <span className={"flex flex-row space-x-1 items-center mr-1"}>

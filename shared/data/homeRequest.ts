@@ -2,6 +2,7 @@ import {Home} from "../models/home";
 
 export class HomeRequest {
     constructor(
+        public hostUsername: string,
         public city: string,
         public country: string,
         public imagesUrls: string,
@@ -9,6 +10,7 @@ export class HomeRequest {
         public features: string,
         public amenities: string,
         public categories: string,
+        public maxGuests: number,
     ) {}
 }
 

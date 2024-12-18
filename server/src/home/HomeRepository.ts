@@ -54,10 +54,11 @@ export class HomeRepository {
                 .input('features', JSON.stringify(home.features))     // Convertim a JSON
                 .input('amenities', JSON.stringify(home.amenities))   // Convertim a JSON
                 .input('categories', JSON.stringify(home.categories))
+                .input('hostUsername', home.hostUsername)
                 .query(`
-                    INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories)
+                    INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories, hostUsername)
                     OUTPUT inserted.id
-                    VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories)
+                    VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories, @hostUsername)
                 `);
             return result.recordset[0]
         } catch (error) {

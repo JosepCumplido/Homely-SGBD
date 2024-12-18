@@ -22,7 +22,7 @@ export default function ChatDetailPage() {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`http://localhost:4000/chat/${chatId}/messages`);
+                const response = await fetch(`http://88.223.95.53:4000/chat/${chatId}/messages`);
                 if (!response.ok) throw new Error('Error fetching messages');
                 const data = await response.json();
                 setMessages(data);
@@ -38,14 +38,14 @@ export default function ChatDetailPage() {
         if (!newMessage.trim()) return;
 
         try {
-            await fetch(`http://localhost:4000/chat/${chatId}/messages`, {
+            await fetch(`http://88.223.95.53:4000/chat/${chatId}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content: newMessage, senderUsername: username }),
             });
 
             setNewMessage('');
-            const response = await fetch(`http://localhost:4000/chat/${chatId}/messages`);
+            const response = await fetch(`http://88.223.95.53:4000/chat/${chatId}/messages`);
             const data = await response.json();
             setMessages(data);
         } catch (error) {

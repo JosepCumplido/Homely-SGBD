@@ -12,6 +12,20 @@ export class ChatController {
         this.messageRepository = messageRepository;
     }
 
+    async createChat(req: Request, res: Response): Promise<void> {
+        try {
+            const { username1, username2 } = req.body;
+            const existsChat = await this.chatRepository.findChatByUsernames(username1, username2)
+
+            if (existsChat.length == 0) {
+                const newChat = await this.chatRepository.createChat(username1, username2);
+                res.status(201).send(newChat)
+            } else res.status(401).send('Chat already exists');
+        } catch (err) {
+            res.status(500).send('Error sending message');
+        }
+    }
+
     // Obtener los chats de un usuario específico
     async getChatsByUser(req: Request, res: Response): Promise<Response> {
         try {

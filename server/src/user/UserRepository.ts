@@ -108,7 +108,7 @@ export class UserRepository {
     async getReservations(username: string): Promise<ReservationDAO[]> {
         try {
             const query = `
-                SELECT id, username, homeId, fromDate, toDate, guests, totalPrice, createdAt
+                SELECT id, username, homeId, fromDate, toDate, guests, totalPrice
                 FROM dbo.Reservations
                 WHERE username = @username
                 ORDER BY fromDate
