@@ -215,37 +215,35 @@ export class HomeController {
         }
 
         // Funció per generar un objecte aleatori `Home`
-        function generateRandomHome(id: number) {
+        function generateRandomHome() {
             const countryIndex = randomInt(0, europeanCountries.length - 1);
             const country = europeanCountries[countryIndex];
             const city = europeanCountries[countryIndex].cities[randomInt(0, europeanCountries[countryIndex].cities.length-1)];
 
             return {
-                id: id,
+                id: null,
                 hostUsername: "josep",
                 imagesUrls: [],
                 city: city,
                 country: country.name,
                 categories: randomSelection(categories, randomInt(1, 3)),
-                maxGuests: randomInt(1, 16),
                 pricePerNight: randomInt(50, 500),
-                score: /*parseFloat((Math.random() * 5).toFixed(1)),*/ id,
+                score: parseFloat((Math.random() * 5).toFixed(1)),
                 features: featureTypes.flatMap(ft => randomSelection(ft.features, randomInt(1, ft.features.length))),
                 amenities: amenityTypes.flatMap(at => randomSelection(at.amenities, randomInt(1, at.amenities.length))),
+                maxGuests: randomInt(1, 16),
             };
         }
 
-        // Genera una llista de 50 objectes `Home` i imprimeix-la en format JSON
-        const homes = Array.from({length: 200}, (_, index) => generateRandomHome(index));
-
-        if (!Array.isArray(homes) || homes.length === 0) {
-            return res.status(400).send('Request body must be an array of homes');
-        }
-
+        const homesNumber = 1
         try {
-            for (const home of homes) {
-                await this.homeRepository.create(home)
+            const homes: Home[] = []
+            for (let i = 0; i < homesNumber; i++) {
+                const home: Home = generateRandomHome();
+                const insertedHome = await this.homeRepository.create(home)
+                if (insertedHome) homes.push(insertedHome)
             }
+
             const response = await this.homeRepositoryElastic.populate(homes);
             return res.status(201).json(response);
         } catch (error) {

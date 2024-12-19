@@ -55,10 +55,11 @@ export class HomeRepository {
                 .input('amenities', JSON.stringify(home.amenities))   // Convertim a JSON
                 .input('categories', JSON.stringify(home.categories))
                 .input('hostUsername', home.hostUsername)
+                .input('maxGuests', home.maxGuests)
                 .query(`
-                    INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories, hostUsername)
-                    OUTPUT inserted.id
-                    VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories, @hostUsername)
+                    INSERT INTO [Home] (city, country, imagesUrls, pricePerNight, score, features, amenities, categories, hostUsername, maxGuests)
+                    OUTPUT INSERTED.*
+                    VALUES (@city, @country, @imagesUrls, @pricePerNight, @score, @features, @amenities, @categories, @hostUsername, @maxGuests)
                 `);
             return result.recordset[0]
         } catch (error) {
